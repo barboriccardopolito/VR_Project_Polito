@@ -38,7 +38,7 @@ Il giocatore deve completare diverse task per preparare la scena finale:
 3.  **Setup:** Posizionamento degli attori e dell'attrezzatura.
 4.  **Azione:** Ripresa della scena finale.
 
-![Diagramma di Flusso](game-flow.jpg)
+![Diagramma di Flusso](game-flow.png)
 *(Il diagramma logico dell'esperienza)*
 
 ## 👥 Target
