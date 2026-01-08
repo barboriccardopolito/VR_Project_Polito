@@ -53,4 +53,4 @@ Il progetto è pensato per:
 * **Assets:** Blender
 
 ---
-*Progetto sviluppato per il corso di [Nome del Corso] al Politecnico di Torino.*
+*Progetto sviluppato per il corso di Realtà Virtuale al Politecnico di Torino.*
