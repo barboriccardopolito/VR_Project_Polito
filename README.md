@@ -29,6 +29,7 @@ L'esperienza è un'applicazione **Desktop 3D** in prima persona.
 | **SPAZIO** | Salto |
 | **E** | Interazione con oggetti e NPC |
 | **G** | Rilascio di oggetti |
+| **R** | Radio |
 
 ### Flusso di Gioco
 Il giocatore deve completare diverse task per preparare la scena finale:
