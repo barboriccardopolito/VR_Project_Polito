@@ -913,7 +913,7 @@ GameObject:
   - component: {fileID: 3479492485885121419}
   - component: {fileID: 6291308832461505840}
   m_Layer: 0
-  m_Name: 50mm
+  m_Name: Lente-proxy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
