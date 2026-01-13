@@ -6,7 +6,6 @@ public class AttoreMicrofonabile : MonoBehaviour
 
     public void ProvaAMicrofonare()
     {
-        // Controlliamo la stringa invece del vecchio bool
         if (GameManager.instance.micDaInstallare == "Lavalier")
         {
             if (!giaMicrofonato)

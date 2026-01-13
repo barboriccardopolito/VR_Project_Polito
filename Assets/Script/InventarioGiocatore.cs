@@ -16,7 +16,7 @@ public class InventarioGiocatore : MonoBehaviour
         haUnOggetto = true;
         riferimentoOggettoFisico = oggettoFisico;
 
-        // APPLICAZIONE IMMEDIATA EFFETTO VISIVO
+        // APPLICAZIONE EFFETTO VISIVO
         if (tipo == OggettoRaccolta.TipoOggetto.Lente)
         {
             GameManager.instance.ApplicaEffettoLente(nome);

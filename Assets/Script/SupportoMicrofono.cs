@@ -21,11 +21,10 @@ public class SupportoMicrofono : MonoBehaviour
         {
             if (!giaPiazzato)
             {
-                // --- LOGICA AGGIORNATA: Permessiva ---
                 if (tipoSupporto == "Ambisonic" && GameManager.instance.rumoreCaffeAttivo)
                 {
                     Debug.Log("<color=orange>[Attenzione]:</color> Stai piazzando l'Ambisonic con la macchinetta accesa! Questo rumore finirà nella registrazione.");
-                    // NON mettiamo return. Lasciamo che il giocatore faccia l'errore se vuole.
+                    // No return, lasciamo che il giocatore faccia l'errore se vuole.
                 }
 
                 giaPiazzato = true;

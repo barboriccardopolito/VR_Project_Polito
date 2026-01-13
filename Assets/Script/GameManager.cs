@@ -18,8 +18,8 @@ public class GameManager : MonoBehaviour
     public string micScelto;
 
     [Header("Puzzle Ambientale (Macchinetta Caffè)")]
-    public bool rumoreCaffeAttivo = true; // Tiene traccia se è accesa o spenta
-    public AudioSource audioMacchinetta;  // Trascina qui l'AudioSource del rumore della macchinetta
+    public bool rumoreCaffeAttivo = true;
+    public AudioSource audioMacchinetta;
 
     [Header("Sottotask Audio (Installazione)")]
     public string micDaInstallare = ""; 
@@ -79,7 +79,7 @@ public class GameManager : MonoBehaviour
         {
             case Reparto.Produzione: return "Vai in Produzione per recuperare la radio.";
             case Reparto.Fotografia: return "Prendi una lente e portala al Direttore della Fotografia.";
-            case Reparto.Luci: return "Il Capo Elettricista aspetta i proiettori.";
+            case Reparto.Luci: return "L'addetto all'illuminazione del set ti aspetta!.";
             case Reparto.Fonico: 
                 if (micDaInstallare == "Lavalier") return $"Devi ancora microfonare {attoriDaMicrofonare - attoriMicrofonatiAttuali} attori.";
                 if (micDaInstallare == "Boom") return "Posiziona l'asta del Boom davanti agli attori.";
@@ -125,8 +125,6 @@ public class GameManager : MonoBehaviour
     {
         if (sorgenteAttori == null) return;
         if (lowPass == null || highPass == null) SetupFiltriAudio();
-
-        // Variabile per decidere quanto rumore di fondo entra nel microfono
         float volumeRumoreFondo = 0f;
 
         switch (nomeMic) 
@@ -163,9 +161,9 @@ public class GameManager : MonoBehaviour
         if (audioMacchinetta != null)
         {
             if (rumoreCaffeAttivo)
-                audioMacchinetta.volume = volumeRumoreFondo; // Si adatta al microfono
+                audioMacchinetta.volume = volumeRumoreFondo;
             else
-                audioMacchinetta.volume = 0f; // Spenta
+                audioMacchinetta.volume = 0f;
         }
 
         Debug.Log($"Effetto Audio Applicato: {nomeMic} (Rumore Fondo: {volumeRumoreFondo * 100}%)");
@@ -173,12 +171,10 @@ public class GameManager : MonoBehaviour
 
     public void ResetEffettoAudio() 
     {
-        // Reset filtri voce
         if (lowPass) lowPass.enabled = false;
         if (highPass) highPass.enabled = false;
         if (sorgenteAttori) sorgenteAttori.spatialBlend = 1f;
 
-        // Reset volume ambiente (lo rimettiamo udibile per il giocatore mentre cammina)
         if (audioMacchinetta != null && rumoreCaffeAttivo) 
             audioMacchinetta.volume = 0.5f; 
     }

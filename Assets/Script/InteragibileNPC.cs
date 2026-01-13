@@ -13,15 +13,11 @@ public class InteragibileNPC : MonoBehaviour
         // Verifica se stiamo installando qualcosa (qualsiasi mic)
         bool installazioneInCorso = (GameManager.instance.micDaInstallare != "");
 
-        // --- ECCEZIONI PER SOTTOTASK ---
         // Se siamo Attori o Supporti durante l'installazione, saltiamo il controllo turno
-        bool isSottotaskAttiva = installazioneInCorso; 
-        // Nota: Il controllo vero e proprio lo fanno gli script specifici (AttoreMicrofonabile / SupportoMicrofono)
-        // Qui ci serve solo per non bloccare l'interazione se l'NPC ha questo script.
+        bool isSottotaskAttiva = installazioneInCorso;
 
         // --- CONTROLLO TURNO ---
         // Se non è il mio turno E non stiamo facendo una sottotask di installazione su Attori/Supporti
-        // (Nota: Gli attori hanno questo script, i supporti ne hanno uno nuovo, ma per sicurezza lasciamo logica aperta)
         if (GameManager.instance.taskAttuale != tipoReparto && !isSottotaskAttiva)
         {
             Debug.Log($"[{tipoReparto}]: Non è il mio turno. Vai da {GameManager.instance.taskAttuale}.");
@@ -84,11 +80,10 @@ public class InteragibileNPC : MonoBehaviour
 
             if (oggettoCorretto)
             {
-                // Se siamo dal Fonico, attiviamo la SOTTOTASK invece di finire subito
                 if (tipoReparto == GameManager.Reparto.Fonico)
                 {
                     GameManager.instance.micScelto = inv.oggettoInMano;
-                    GameManager.instance.micDaInstallare = inv.oggettoInMano; // "Boom", "Lavalier" o "Ambisonic"
+                    GameManager.instance.micDaInstallare = inv.oggettoInMano;
                     
                     if (inv.oggettoInMano == "Lavalier")
                         Debug.Log("[Fonico]: Lavalier scelti. Vai a metterli ai 3 attori!");
@@ -99,7 +94,6 @@ public class InteragibileNPC : MonoBehaviour
                 }
                 else
                 {
-                    // Consegna Standard (Fotografia, Luci)
                     Debug.Log($"[Task]: Grazie per {inv.oggettoInMano}!");
                     if (tipoReparto == GameManager.Reparto.Fotografia) GameManager.instance.lenteSceltaFinale = inv.oggettoInMano;
                     if (tipoReparto == GameManager.Reparto.Luci) GameManager.instance.luceScelta = inv.oggettoInMano;

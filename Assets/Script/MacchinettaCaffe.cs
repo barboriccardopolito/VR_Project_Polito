@@ -2,8 +2,6 @@ using UnityEngine;
 
 public class MacchinettaCaffe : MonoBehaviour
 {
-    // Non serve riferimento esterno, lo prende dal GameManager se serve, 
-    // ma per semplicità usiamo un AudioSource locale su questo oggetto.
     private AudioSource audioSourceLocale;
 
     void Start()
@@ -34,7 +32,7 @@ public class MacchinettaCaffe : MonoBehaviour
         }
         else
         {
-            // (Opzionale) Se vuoi riaccenderla
+            // Se vuoi riaccenderla
             Debug.Log("La macchinetta è già spenta.");
         }
     }
