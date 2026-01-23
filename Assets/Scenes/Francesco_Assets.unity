@@ -807,6 +807,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: luce palco tetto_fix
       objectReference: {fileID: 0}
+    - target: {fileID: 4749989253399097905, guid: 900c375df0b244647ad817409adbf27d, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 9c110471e90ab894393b3f7bf6147746, type: 2}
     - target: {fileID: 7486966349940816824, guid: 900c375df0b244647ad817409adbf27d, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.6180792
