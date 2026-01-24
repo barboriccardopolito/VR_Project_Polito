@@ -67,5 +67,5 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "VR_Project.slnx"
+    "dotnet.defaultSolution": "VR_Project_new_folder.slnx"
 }

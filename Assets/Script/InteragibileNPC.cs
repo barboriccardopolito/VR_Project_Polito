@@ -70,6 +70,26 @@ public class InteragibileNPC : MonoBehaviour
             return;
         }
 
+        // --- LOGICA REGIA (NUOVO) ---
+        if (tipoReparto == GameManager.Reparto.Regia)
+        {
+            // Stato 1: Non ho ancora visto la preview
+            if (!RegiaManager.instance.previewInCorso && !RegiaManager.instance.registrazioneInCorso)
+            {
+                RegiaManager.instance.AttivaPreview();
+                Debug.Log("<color=cyan>[Regista]:</color> Guarda il monitor. Ecco come verranno le inquadrature con le lenti e le luci che hai scelto. Se sei pronto, interagisci di nuovo per il CIAK.");
+                return;
+            }
+
+            // Stato 2: Sto guardando la preview, voglio registrare
+            if (RegiaManager.instance.previewInCorso)
+            {
+                Debug.Log("<color=red>[Regista]:</color> Silenzio sul set... AZIONE!");
+                RegiaManager.instance.AvviaCiak();
+                return;
+            }
+        }
+
         // --- LOGICA CONSEGNA OGGETTI ---
         if (inv != null && inv.haUnOggetto)
         {
