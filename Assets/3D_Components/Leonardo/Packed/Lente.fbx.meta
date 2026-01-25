@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: c46f4d9239f3d415890d806952ccfa65
+guid: 2c74543c41f45454e9f90d5055ea85b4
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
@@ -7,13 +7,8 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: 21mm
-    second: {fileID: 2100000, guid: 5c46412f39dcf464abad80b848a8abda, type: 2}
-  - first:
-      type: UnityEngine:Texture2D
-      assembly: UnityEngine.CoreModule
-      name: 21mm
-    second: {fileID: 2800000, guid: 513db345f58204837b8439d736471fd9, type: 3}
+      name: Lente
+    second: {fileID: 2100000, guid: 8f9a1208b595941b099cecc97c24a1a8, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
