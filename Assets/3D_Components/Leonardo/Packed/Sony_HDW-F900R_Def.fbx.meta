@@ -1,9 +1,44 @@
 fileFormatVersion: 2
-guid: 8413579d1dcd64a40a9bca6eecc3b8d3
+guid: bc84efe9288954251af50df826ee55a3
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 50mm
+    second: {fileID: 2100000, guid: 2ea58ebb790d841cb84c1057543a3212, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Base
+    second: {fileID: 2100000, guid: 6bf8701d3de9e406d8a9e218ae7579c3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Paraluce
+    second: {fileID: 2100000, guid: 2f29b6e27d8e14560acd1ef6fd11fad0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Sony
+    second: {fileID: 2100000, guid: 51e361bca2a1345b292e639e9d6094c2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Sterzo
+    second: {fileID: 2100000, guid: 1f8ad4c0b87984634882a3e3e5171ae6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Wheels
+    second: {fileID: 2100000, guid: 0e016fe87f0a846a4a3410c900457d00, type: 2}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: 50mm
+    second: {fileID: 2800000, guid: f319ad2f037eb4e94b25ab06d2a63272, type: 3}
   materials:
     materialImportMode: 2
     materialName: 0
