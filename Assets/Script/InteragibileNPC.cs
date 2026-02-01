@@ -8,6 +8,18 @@ public class InteragibileNPC : MonoBehaviour
 
     public void Interagisci()
     {
+        NPCWander movimento = GetComponent<NPCWander>();
+        if (movimento != null)
+        {
+            // Cerchiamo il giocatore per girarci verso di lui
+            // Nota: Usa FindObjectOfType per sicurezza, funziona sempre se hai lo script InterazioneGiocatore sul player
+            InterazioneGiocatore playerScript = FindObjectOfType<InterazioneGiocatore>();
+            if (playerScript != null)
+            {
+                movimento.AscoltaGiocatore(playerScript.transform);
+            }
+        }
+
         InventarioGiocatore inv = FindObjectOfType<InventarioGiocatore>();
         
         // Verifica se stiamo installando qualcosa (qualsiasi mic)

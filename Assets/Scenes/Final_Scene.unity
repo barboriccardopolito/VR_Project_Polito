@@ -932,6 +932,7 @@ MonoBehaviour:
   raggioMovimento: 10
   tempoAttesaMin: 2
   tempoAttesaMax: 5
+  durataStopDialogo: 5
 --- !u!195 &231873741
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -1255,6 +1256,7 @@ MonoBehaviour:
   raggioMovimento: 10
   tempoAttesaMin: 2
   tempoAttesaMax: 5
+  durataStopDialogo: 5
 --- !u!195 &293664995
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -3050,6 +3052,7 @@ MonoBehaviour:
   raggioMovimento: 10
   tempoAttesaMin: 2
   tempoAttesaMax: 5
+  durataStopDialogo: 5
 --- !u!195 &684401557
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -3337,7 +3340,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 796235972}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.5000002
+  m_Radius: 2
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
@@ -4199,6 +4202,7 @@ MonoBehaviour:
   raggioMovimento: 10
   tempoAttesaMin: 2
   tempoAttesaMax: 5
+  durataStopDialogo: 5
 --- !u!195 &1104776633
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -5184,6 +5188,7 @@ MonoBehaviour:
   raggioMovimento: 10
   tempoAttesaMin: 2
   tempoAttesaMax: 5
+  durataStopDialogo: 5
 --- !u!195 &1409844405
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -5613,6 +5618,7 @@ MonoBehaviour:
   raggioMovimento: 10
   tempoAttesaMin: 2
   tempoAttesaMax: 5
+  durataStopDialogo: 5
 --- !u!195 &1499088859
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -5987,7 +5993,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 1707318484}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.5000001
+  m_Radius: 2
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
@@ -6218,7 +6224,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 1789673019}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.5000001
+  m_Radius: 2
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
