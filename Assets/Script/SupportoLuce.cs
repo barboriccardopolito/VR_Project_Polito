@@ -9,32 +9,48 @@ public class SupportoLuce : MonoBehaviour
     public GameObject modelloArtistica;
 
     private bool luceGiaPosizionata = false;
-    public void PiazzaLuce()
+public void PiazzaLuce()
     {
-        if (luceGiaPosizionata) return; // Se c'è già una luce, non fare nulla
+        Debug.Log("1. Tentativo di piazzare luce..."); // Se non vedi questo, il Raycast del Player non sta chiamando questa funzione.
 
-        // 1. Chiediamo al GameManager quale luce ha scelto l'utente
-        // (Assumo tu abbia una variabile nel GameManager chiamata 'LuceScelta')
-        string luceScelta = FindObjectOfType<GameManager>().LuceScelta; 
+        if (luceGiaPosizionata) return;
 
-        if (string.IsNullOrEmpty(luceScelta))
+        // Recuperiamo il GameManager
+        GameManager gm = FindFirstObjectByType<GameManager>();
+        string luceScelta = gm.LuceScelta;
+
+        Debug.Log("2. Luce trovata nel GameManager: '" + luceScelta + "'"); // Cosa stampa qui? È vuoto?
+
+        NascondiTutto();
+
+        bool luceTrovata = false;
+
+        if (luceScelta == "Softbox")
         {
-            Debug.Log("Devi prima scegliere una luce dal menu!");
-            return;
+            if (modelloSoftbox != null) { modelloSoftbox.SetActive(true); luceTrovata = true; }
+            else Debug.LogError("ERRORE: Manca il collegamento al Modello Softbox nell'Inspector!");
+        }
+        else if (luceScelta == "Fresnel")
+        {
+            if (modelloFresnel != null) { modelloFresnel.SetActive(true); luceTrovata = true; }
+            else Debug.LogError("ERRORE: Manca il collegamento al Modello Fresnel nell'Inspector!");
+        }
+        else if (luceScelta == "Artistica")
+        {
+            if (modelloArtistica != null) { modelloArtistica.SetActive(true); luceTrovata = true; }
+            else Debug.LogError("ERRORE: Manca il collegamento al Modello Artistica nell'Inspector!");
         }
 
-        // 2. Attiviamo il modello giusto
-        NascondiTutto();
-        
-        if (luceScelta == "Softbox") modelloSoftbox.SetActive(true);
-        else if (luceScelta == "Fresnel") modelloFresnel.SetActive(true);
-        else if (luceScelta == "Artistica") modelloArtistica.SetActive(true);
-
-        // 3. Avvisiamo il GameManager che il lavoro è fatto
-        luceGiaPosizionata = true;
-        FindObjectOfType<GameManager>().LucePosizionataCorrettamente = true;
-        
-        Debug.Log("Luce montata correttamnte!");
+        if (luceTrovata)
+        {
+            luceGiaPosizionata = true;
+            gm.LucePosizionataCorrettamente = true;
+            Debug.Log("3. SUCCESSO: Luce attivata!");
+        }
+        else
+        {
+            Debug.LogWarning("4. FALLITO: Nessuna corrispondenza trovata per il nome: '" + luceScelta + "'");
+        }
     }
 
     void NascondiTutto()
