@@ -39,6 +39,18 @@ public class GameManager : MonoBehaviour
     private AudioLowPassFilter lowPass;
     private AudioHighPassFilter highPass;
 
+    [Header("Stato Task Luci")]
+    public string LuceScelta = ""; // Diventa "Fresnel", "Softbox", etc. quando clicchi sulla UI
+    public bool LucePosizionataCorrettamente = false; // Diventa TRUE solo dopo averla messa sul supporto
+
+    // Funzione chiamata dai pulsanti della UI (Scelta Luce)
+    public void ScegliLuce(string nomeLuce)
+    {
+        LuceScelta = nomeLuce;
+        LucePosizionataCorrettamente = false; // Reset nel caso cambi idea
+        Debug.Log("Hai preso la luce: " + nomeLuce + ". Ora vai a montarla!");
+    }
+
     void Awake() 
     { 
         if (instance == null) instance = this; 
