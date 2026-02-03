@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI visualizzatoreObiettivo;
 
     [Header("Collegamenti Grafici")]
-    public GestoreSchermi gestoreSchermi; // <--- NUOVO: Trascina qui l'oggetto "Schermi"
+    public GestoreSchermi gestoreSchermi;
 
     [Header("Salvataggio Scelte")]
     public string lenteSceltaFinale;
@@ -76,12 +76,9 @@ public class GameManager : MonoBehaviour
 
     void Start() 
     {
-        // Setup Lenti
         if (globalVolume != null && globalVolume.profile.TryGet(out distortion))
             Debug.Log("Effetti Lente HDRP pronti.");
 
-        // --- NUOVO: Setup Schermi Iniziale ---
-        // Appena inizia il gioco, siamo in modalità "Lavoro" (Rosso)
         if (gestoreSchermi != null) 
         {
             gestoreSchermi.CambiaStato(true); 
@@ -118,20 +115,14 @@ public class GameManager : MonoBehaviour
     {
         if (repartoInteragito == taskAttuale)
         {
-            // Reset effetti specifici
             if (taskAttuale == Reparto.Fotografia) ResetEffettoLente();
 
-            // Avanzamento Task
             taskAttuale++;
             Debug.Log("<color=orange>--- BIP! Nuova comunicazione Radio (R) ---</color>");
 
-            // --- NUOVO: Gestione Colore Schermi ---
             if (gestoreSchermi != null)
             {
-                // 1. Task finita -> VERDE (Feedback positivo)
                 gestoreSchermi.CambiaStato(false); 
-
-                // 2. Se il gioco non è finito, dopo 4 secondi torna ROSSO (Nuova allerta)
                 if (taskAttuale != Reparto.Finito)
                 {
                     Invoke("AttivaAllertaSchermi", 4.0f);
@@ -140,16 +131,15 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Funzione helper chiamata dall'Invoke dopo 4 secondi
     void AttivaAllertaSchermi()
     {
         if (gestoreSchermi != null)
         {
-            gestoreSchermi.CambiaStato(true); // Torna ROSSO
+            gestoreSchermi.CambiaStato(true); 
         }
     }
 
-    // --- SEZIONE VISIVA (LENTI) ---
+    // --- SEZIONI EFFETTI LENTI E AUDIO (INVARIATE) ---
     public void ApplicaEffettoLente(string nomeLente) 
     {
         Camera cam = Camera.main;
@@ -168,7 +158,6 @@ public class GameManager : MonoBehaviour
         if (distortion != null) distortion.intensity.value = 0f;
     }
 
-    // --- SEZIONE AUDIO (MICROFONI & AMBIENTE) ---
     public void ApplicaEffettoMicrofono(string nomeMic) 
     {
         if (sorgenteAttori == null) return;
@@ -206,8 +195,6 @@ public class GameManager : MonoBehaviour
             else
                 audioMacchinetta.volume = 0f;
         }
-
-        Debug.Log($"Effetto Audio Applicato: {nomeMic} (Rumore Fondo: {volumeRumoreFondo * 100}%)");
     }
 
     public void ResetEffettoAudio() 

@@ -5171,8 +5171,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 338768823}
-  - {fileID: 766253594}
   - {fileID: 1436290150}
+  - {fileID: 766253594}
   - {fileID: 420916827}
   - {fileID: 1178400545}
   - {fileID: 1161090736}
@@ -14834,6 +14834,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7632886891723049378, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1499088858}
+    - targetCorrespondingSourceObject: {fileID: 7632886891723049378, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1499088863}
   m_SourcePrefab: {fileID: 100100000, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
 --- !u!1001 &1292385513
 PrefabInstance:
@@ -18142,6 +18145,21 @@ NavMeshAgent:
   m_BaseOffset: 1
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &1499088863
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1499088851}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b023387528141c74aa2c607a479ebfd7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Evidenziatore
+  accendiAllAvvio: 1
+  coloreHighlight: {r: 1, g: 1, b: 0, a: 1}
+  intensita: 10
 --- !u!1001 &1499993687
 PrefabInstance:
   m_ObjectHideFlags: 0

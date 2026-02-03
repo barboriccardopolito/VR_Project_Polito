@@ -4,10 +4,8 @@ public class InteragibileNPC : MonoBehaviour
 {
     public GameManager.Reparto tipoReparto;
 
-    // --- ECCO LA RIGA CHE MANCAVA ---
     [Header("Solo per Produzione")]
-    public GameObject radioDaAttivare; // Trascina qui la radio sotto la Main Camera
-    // -------------------------------
+    public GameObject radioDaAttivare; 
 
     [TextArea(3, 10)]
     public string messaggioTask;
@@ -54,7 +52,6 @@ public class InteragibileNPC : MonoBehaviour
         // --- LOGICA RITORNO DAL FONICO ---
         if (tipoReparto == GameManager.Reparto.Fonico && installazioneAudioInCorso)
         {
-             // (Codice standard del fonico per chiudere la task)
              bool taskCompletata = false;
              if (GameManager.instance.micDaInstallare == "Lavalier" && GameManager.instance.attoriMicrofonatiAttuali >= GameManager.instance.attoriDaMicrofonare) taskCompletata = true;
              else if ((GameManager.instance.micDaInstallare == "Boom" || GameManager.instance.micDaInstallare == "Ambisonic") && GameManager.instance.supportoPiazzato) taskCompletata = true;
@@ -74,17 +71,19 @@ public class InteragibileNPC : MonoBehaviour
              return;
         }
 
-        // --- LOGICA PRODUZIONE (CON RADIO VISIVA) ---
+        // --- LOGICA PRODUZIONE (CON GESTIONE GLOW) ---
         if (tipoReparto == GameManager.Reparto.Produzione)
         {
             RadioSistema radio = FindFirstObjectByType<RadioSistema>();
             if (radio != null) radio.haLaRadio = true;
 
-            // ATTIVAZIONE VISIVA DELLA RADIO
-            if (radioDaAttivare != null)
-            {
-                radioDaAttivare.SetActive(true); // Accende l'oggetto in mano
-            }
+            if (radioDaAttivare != null) radioDaAttivare.SetActive(true);
+
+            // --- SPEGNIMENTO GLOW ---
+            // Se questo NPC ha l'Evidenziatore, lo spegniamo ora che ci hai parlato
+            Evidenziatore myGlow = GetComponent<Evidenziatore>();
+            if (myGlow != null) myGlow.Spegni();
+            // ------------------------
 
             Debug.Log($"[Produzione]: {messaggioTask}");
             GameManager.instance.CompletaTask(tipoReparto);
