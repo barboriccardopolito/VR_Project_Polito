@@ -12,6 +12,9 @@ public class GameManager : MonoBehaviour
 
     public TextMeshProUGUI visualizzatoreObiettivo;
 
+    [Header("Collegamenti Grafici")]
+    public GestoreSchermi gestoreSchermi; // <--- NUOVO: Trascina qui l'oggetto "Schermi"
+
     [Header("Salvataggio Scelte")]
     public string lenteSceltaFinale;
     public string luceScelta;
@@ -40,14 +43,14 @@ public class GameManager : MonoBehaviour
     private AudioHighPassFilter highPass;
 
     [Header("Stato Task Luci")]
-    public string LuceScelta = ""; // Diventa "Fresnel", "Softbox", etc. quando clicchi sulla UI
-    public bool LucePosizionataCorrettamente = false; // Diventa TRUE solo dopo averla messa sul supporto
+    public string LuceScelta = ""; 
+    public bool LucePosizionataCorrettamente = false; 
 
     // Funzione chiamata dai pulsanti della UI (Scelta Luce)
     public void ScegliLuce(string nomeLuce)
     {
         LuceScelta = nomeLuce;
-        LucePosizionataCorrettamente = false; // Reset nel caso cambi idea
+        LucePosizionataCorrettamente = false; 
         Debug.Log("Hai preso la luce: " + nomeLuce + ". Ora vai a montarla!");
     }
 
@@ -73,8 +76,16 @@ public class GameManager : MonoBehaviour
 
     void Start() 
     {
+        // Setup Lenti
         if (globalVolume != null && globalVolume.profile.TryGet(out distortion))
             Debug.Log("Effetti Lente HDRP pronti.");
+
+        // --- NUOVO: Setup Schermi Iniziale ---
+        // Appena inizia il gioco, siamo in modalità "Lavoro" (Rosso)
+        if (gestoreSchermi != null) 
+        {
+            gestoreSchermi.CambiaStato(true); 
+        }
     }
 
     void Update()
@@ -107,9 +118,34 @@ public class GameManager : MonoBehaviour
     {
         if (repartoInteragito == taskAttuale)
         {
+            // Reset effetti specifici
             if (taskAttuale == Reparto.Fotografia) ResetEffettoLente();
+
+            // Avanzamento Task
             taskAttuale++;
             Debug.Log("<color=orange>--- BIP! Nuova comunicazione Radio (R) ---</color>");
+
+            // --- NUOVO: Gestione Colore Schermi ---
+            if (gestoreSchermi != null)
+            {
+                // 1. Task finita -> VERDE (Feedback positivo)
+                gestoreSchermi.CambiaStato(false); 
+
+                // 2. Se il gioco non è finito, dopo 4 secondi torna ROSSO (Nuova allerta)
+                if (taskAttuale != Reparto.Finito)
+                {
+                    Invoke("AttivaAllertaSchermi", 4.0f);
+                }
+            }
+        }
+    }
+
+    // Funzione helper chiamata dall'Invoke dopo 4 secondi
+    void AttivaAllertaSchermi()
+    {
+        if (gestoreSchermi != null)
+        {
+            gestoreSchermi.CambiaStato(true); // Torna ROSSO
         }
     }
 
@@ -145,8 +181,6 @@ public class GameManager : MonoBehaviour
                 if (lowPass) lowPass.enabled = false; 
                 if (highPass) highPass.enabled = false; 
                 sorgenteAttori.spatialBlend = 0.5f; 
-                
-                // Il Boom è direzionale, abbatte molto il rumore di fondo
                 volumeRumoreFondo = 0.1f; 
                 break;
 
@@ -154,8 +188,6 @@ public class GameManager : MonoBehaviour
                 if (lowPass) { lowPass.enabled = true; lowPass.cutoffFrequency = 4000f; }
                 if (highPass) { highPass.enabled = true; highPass.cutoffFrequency = 300f; }
                 sorgenteAttori.spatialBlend = 0.2f; 
-                
-                // Il Lavalier è vicinissimo alla bocca, sente pochissimo il fondo
                 volumeRumoreFondo = 0.05f; 
                 break;
 
@@ -163,13 +195,10 @@ public class GameManager : MonoBehaviour
                 if (lowPass) lowPass.enabled = false; 
                 if (highPass) { highPass.enabled = true; highPass.cutoffFrequency = 100f; }
                 sorgenteAttori.spatialBlend = 1.0f; 
-                
-                // L'Ambisonic è omnidirezionale, cattura TUTTO il rumore
                 volumeRumoreFondo = 1.0f; 
                 break;
         }
 
-        // --- GESTIONE VOLUME MACCHINETTA CAFFÈ ---
         if (audioMacchinetta != null)
         {
             if (rumoreCaffeAttivo)

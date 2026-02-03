@@ -2783,6 +2783,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteragibileNPC
   tipoReparto: 4
+  radioDaAttivare: {fileID: 0}
   messaggioTask: Registra!
 --- !u!4 &231873739 stripped
 Transform:
@@ -8492,6 +8493,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteragibileNPC
   tipoReparto: 2
+  radioDaAttivare: {fileID: 0}
   messaggioTask: Portami le luci giuste!
 --- !u!114 &684401556
 MonoBehaviour:
@@ -9263,6 +9265,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4310543819044981823, guid: d6a00bf5a96a3be4eb7a5c2211ebb399, type: 3}
   m_PrefabInstance: {fileID: 1093635171}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &792783636 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9100363676666943866, guid: 66f1351cb4b720e48963992206088d60, type: 3}
+  m_PrefabInstance: {fileID: 1888339477}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &796235970
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9382,6 +9389,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteragibileNPC
   tipoReparto: 5
+  radioDaAttivare: {fileID: 0}
   messaggioTask: Portaci il caffe!
 --- !u!114 &796235981
 MonoBehaviour:
@@ -9547,6 +9555,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   taskAttuale: 0
   visualizzatoreObiettivo: {fileID: 1412070064}
+  gestoreSchermi: {fileID: 1776337951}
   lenteSceltaFinale: 
   luceScelta: 
   micScelto: 
@@ -12133,6 +12142,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteragibileNPC
   tipoReparto: 1
+  radioDaAttivare: {fileID: 0}
   messaggioTask: Portami le lenti giuste!
 --- !u!114 &1104776632
 MonoBehaviour:
@@ -13743,6 +13753,11 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 5061987605647816630, guid: a32e10b072d64d744acd6927dc6698d9, type: 3}
   m_PrefabInstance: {fileID: 1219400404}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &1229592858 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 1470131678524632472, guid: 66f1351cb4b720e48963992206088d60, type: 3}
+  m_PrefabInstance: {fileID: 1888339477}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1231829988
 PrefabInstance:
@@ -15450,6 +15465,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteragibileNPC
   tipoReparto: 3
+  radioDaAttivare: {fileID: 0}
   messaggioTask: Portami i microfoni giusti!
 --- !u!4 &1409844403 stripped
 Transform:
@@ -17198,6 +17214,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteragibileNPC
   tipoReparto: 0
+  radioDaAttivare: {fileID: 792783636}
   messaggioTask: Consegna radio + blocco note
 --- !u!114 &1499088858
 MonoBehaviour:
@@ -19179,6 +19196,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteragibileNPC
   tipoReparto: 5
+  radioDaAttivare: {fileID: 0}
   messaggioTask: Portaci il caffe!
 --- !u!114 &1707318493
 MonoBehaviour:
@@ -19971,6 +19989,54 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1422444761717653423, guid: 3151106a91e1c024c8bf00a3ce73a966, type: 3}
   m_PrefabInstance: {fileID: 1770629050}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1776337950
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1776337952}
+  - component: {fileID: 1776337951}
+  m_Layer: 0
+  m_Name: GestoreSchermi
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1776337951
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1776337950}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 949656616206041489e156ebc85f1fc2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GestoreSchermi
+  listaSchermi:
+  - {fileID: 1229592858}
+  materialeVerde: {fileID: 2100000, guid: 11885b85623561b43bfd90f47ea1d085, type: 2}
+  materialeRosso: {fileID: 2100000, guid: d715a0a8e2ecaa64f8f2cc9d9015de31, type: 2}
+--- !u!4 &1776337952
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1776337950}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -19.04829, y: -0.25, z: 3.34987}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1781099088
 GameObject:
   m_ObjectHideFlags: 0
@@ -20381,6 +20447,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteragibileNPC
   tipoReparto: 5
+  radioDaAttivare: {fileID: 0}
   messaggioTask: Portaci il caffe!
 --- !u!114 &1789673022
 MonoBehaviour:
@@ -21052,7 +21119,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0.8, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1888339478}
   m_Father: {fileID: 858305087}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1823688468
@@ -21639,6 +21707,92 @@ Transform:
 Transform:
   m_CorrespondingSourceObject: {fileID: 2297321233409764932, guid: a2ed17d5203c6b44eadc4cd7b4354261, type: 3}
   m_PrefabInstance: {fileID: 1586703842}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1888339477
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1823688467}
+    m_Modifications:
+    - target: {fileID: 1470131678524632472, guid: 66f1351cb4b720e48963992206088d60, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 3f1b68228047d4cc2beb0ecb7c99a5c1, type: 2}
+    - target: {fileID: 1965772250280200404, guid: 66f1351cb4b720e48963992206088d60, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8431068496723018688, guid: 66f1351cb4b720e48963992206088d60, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.07142857
+      objectReference: {fileID: 0}
+    - target: {fileID: 8431068496723018688, guid: 66f1351cb4b720e48963992206088d60, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.07142857
+      objectReference: {fileID: 0}
+    - target: {fileID: 8431068496723018688, guid: 66f1351cb4b720e48963992206088d60, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.07142857
+      objectReference: {fileID: 0}
+    - target: {fileID: 8431068496723018688, guid: 66f1351cb4b720e48963992206088d60, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.498
+      objectReference: {fileID: 0}
+    - target: {fileID: 8431068496723018688, guid: 66f1351cb4b720e48963992206088d60, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.433
+      objectReference: {fileID: 0}
+    - target: {fileID: 8431068496723018688, guid: 66f1351cb4b720e48963992206088d60, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.757
+      objectReference: {fileID: 0}
+    - target: {fileID: 8431068496723018688, guid: 66f1351cb4b720e48963992206088d60, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.5362565
+      objectReference: {fileID: 0}
+    - target: {fileID: 8431068496723018688, guid: 66f1351cb4b720e48963992206088d60, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.05726948
+      objectReference: {fileID: 0}
+    - target: {fileID: 8431068496723018688, guid: 66f1351cb4b720e48963992206088d60, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.82944584
+      objectReference: {fileID: 0}
+    - target: {fileID: 8431068496723018688, guid: 66f1351cb4b720e48963992206088d60, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.14549479
+      objectReference: {fileID: 0}
+    - target: {fileID: 8431068496723018688, guid: 66f1351cb4b720e48963992206088d60, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -17.625
+      objectReference: {fileID: 0}
+    - target: {fileID: 8431068496723018688, guid: 66f1351cb4b720e48963992206088d60, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -113.663
+      objectReference: {fileID: 0}
+    - target: {fileID: 8431068496723018688, guid: 66f1351cb4b720e48963992206088d60, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -3.672
+      objectReference: {fileID: 0}
+    - target: {fileID: 9100363676666943866, guid: 66f1351cb4b720e48963992206088d60, type: 3}
+      propertyPath: m_Name
+      value: radiolina
+      objectReference: {fileID: 0}
+    - target: {fileID: 9100363676666943866, guid: 66f1351cb4b720e48963992206088d60, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 66f1351cb4b720e48963992206088d60, type: 3}
+--- !u!4 &1888339478 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8431068496723018688, guid: 66f1351cb4b720e48963992206088d60, type: 3}
+  m_PrefabInstance: {fileID: 1888339477}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1890887229
 PrefabInstance:
@@ -25608,3 +25762,4 @@ SceneRoots:
   - {fileID: 1146339644}
   - {fileID: 414358795}
   - {fileID: 162856864}
+  - {fileID: 1776337952}
