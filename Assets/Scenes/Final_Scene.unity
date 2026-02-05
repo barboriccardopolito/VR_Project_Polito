@@ -9514,6 +9514,19 @@ MonoBehaviour:
   sorgenteAttori: {fileID: 1810205299}
   LuceScelta: 
   LucePosizionataCorrettamente: 0
+  tuttiGliOggettiRaccoglibili:
+  - {fileID: 699858030}
+  - {fileID: 607215851}
+  - {fileID: 1470305928}
+  - {fileID: 2018526031}
+  - {fileID: 102302435}
+  - {fileID: 53884770}
+  - {fileID: 1720880027}
+  - {fileID: 889476869}
+  - {fileID: 1754344508}
+  supportiLuciFisici:
+  - {fileID: 3462232357534464264}
+  - {fileID: 619271142}
 --- !u!1 &814281343
 GameObject:
   m_ObjectHideFlags: 0
@@ -9903,6 +9916,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RadioSistema
   haLaRadio: 0
+  fumettoUI: {fileID: 0}
+  testoRadio: {fileID: 0}
+  durataMessaggio: 5
 --- !u!114 &858305093
 MonoBehaviour:
   m_ObjectHideFlags: 0

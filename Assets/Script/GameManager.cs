@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.HighDefinition;
+using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class GameManager : MonoBehaviour
     public enum Reparto { Produzione, Fotografia, Luci, Fonico, Regia, Attori, Finito }
     public Reparto taskAttuale = Reparto.Produzione;
 
+    [Header("UI Obiettivi")]
     public TextMeshProUGUI visualizzatoreObiettivo;
 
     [Header("Collegamenti Grafici")]
@@ -20,11 +22,11 @@ public class GameManager : MonoBehaviour
     public string luceScelta;
     public string micScelto;
 
-    [Header("Puzzle Ambientale (Macchinetta Caffè)")]
+    [Header("Puzzle Ambientale")]
     public bool rumoreCaffeAttivo = true;
     public AudioSource audioMacchinetta;
 
-    [Header("Sottotask Audio (Installazione)")]
+    [Header("Sottotask Audio")]
     public string micDaInstallare = ""; 
     public bool supportoPiazzato = false; 
     public int attoriDaMicrofonare = 3;
@@ -37,7 +39,7 @@ public class GameManager : MonoBehaviour
     public Volume globalVolume; 
     private LensDistortion distortion;
 
-    [Header("Parametri Audio (Microfoni Attori)")]
+    [Header("Parametri Audio")]
     public AudioSource sorgenteAttori; 
     private AudioLowPassFilter lowPass;
     private AudioHighPassFilter highPass;
@@ -46,13 +48,20 @@ public class GameManager : MonoBehaviour
     public string LuceScelta = ""; 
     public bool LucePosizionataCorrettamente = false; 
 
-    // Funzione chiamata dai pulsanti della UI (Scelta Luce)
-    public void ScegliLuce(string nomeLuce)
+    // --- SISTEMA DI RESTITUZIONE E PULIZIA ---
+    [Header("Registro Oggetti Scena")]
+    public GameObject[] tuttiGliOggettiRaccoglibili; 
+    
+    // TI MANCAVA QUESTA RIGA?
+    public GameObject[] supportiLuciFisici;
+
+    private class PosizioneOggetto
     {
-        LuceScelta = nomeLuce;
-        LucePosizionataCorrettamente = false; 
-        Debug.Log("Hai preso la luce: " + nomeLuce + ". Ora vai a montarla!");
+        public Vector3 posizione;
+        public Quaternion rotazione;
     }
+    
+    private Dictionary<string, PosizioneOggetto> registroPosizioni = new Dictionary<string, PosizioneOggetto>();
 
     void Awake() 
     { 
@@ -60,39 +69,38 @@ public class GameManager : MonoBehaviour
         SetupFiltriAudio();
     }
 
-    void SetupFiltriAudio()
-    {
-        if (sorgenteAttori != null) 
-        {
-            lowPass = sorgenteAttori.gameObject.GetComponent<AudioLowPassFilter>();
-            if (lowPass == null) lowPass = sorgenteAttori.gameObject.AddComponent<AudioLowPassFilter>();
-
-            highPass = sorgenteAttori.gameObject.GetComponent<AudioHighPassFilter>();
-            if (highPass == null) highPass = sorgenteAttori.gameObject.AddComponent<AudioHighPassFilter>();
-
-            ResetEffettoAudio();
-        }
-    }
-
     void Start() 
     {
+        // Setup Dizionario Posizioni (Salva dove sono gli oggetti all'inizio)
+        foreach (GameObject obj in tuttiGliOggettiRaccoglibili)
+        {
+            if (obj != null)
+            {
+                PosizioneOggetto pos = new PosizioneOggetto();
+                pos.posizione = obj.transform.position;
+                pos.rotazione = obj.transform.rotation;
+                if (!registroPosizioni.ContainsKey(obj.name))
+                    registroPosizioni.Add(obj.name, pos);
+            }
+        }
+
         if (globalVolume != null && globalVolume.profile.TryGet(out distortion))
             Debug.Log("Effetti Lente HDRP pronti.");
 
-        if (gestoreSchermi != null) 
-        {
-            gestoreSchermi.CambiaStato(true); 
-        }
+        if (gestoreSchermi != null) gestoreSchermi.CambiaStato(true); 
     }
 
     void Update()
     {
         if (visualizzatoreObiettivo != null)
         {
-            visualizzatoreObiettivo.text = (taskAttuale != Reparto.Finito) ? "Obiettivo: Vai da " + taskAttuale : "Giornata finita!";
+            string testoObiettivo = (taskAttuale != Reparto.Finito) ? "Obiettivo: Vai da " + taskAttuale : "Giornata finita!";
+            if (visualizzatoreObiettivo.text != testoObiettivo)
+                visualizzatoreObiettivo.text = testoObiettivo;
         }
     }
 
+    // --- QUESTA È LA FUNZIONE CHE MANCAVA ---
     public string OttieniSuggerimentoRadio()
     {
         switch (taskAttuale)
@@ -110,36 +118,83 @@ public class GameManager : MonoBehaviour
             default: return "Fine giornata.";
         }
     }
+    // ----------------------------------------
 
     public void CompletaTask(Reparto repartoInteragito)
     {
+        // CASO 1: REVISIONE
+        if (taskAttuale == Reparto.Regia && repartoInteragito != Reparto.Regia)
+        {
+            Debug.Log($"<color=cyan>[Revisione]: Modifiche a {repartoInteragito}. Torna dal Regista.</color>");
+            if (repartoInteragito == Reparto.Fotografia) ResetEffettoLente();
+            return; 
+        }
+
+        // CASO 2: FLUSSO NORMALE
         if (repartoInteragito == taskAttuale)
         {
             if (taskAttuale == Reparto.Fotografia) ResetEffettoLente();
 
             taskAttuale++;
-            Debug.Log("<color=orange>--- BIP! Nuova comunicazione Radio (R) ---</color>");
+            Debug.Log($"<color=orange>--- BIP! Nuova comunicazione Radio: Task Aggiornata a {taskAttuale} ---</color>");
 
             if (gestoreSchermi != null)
             {
                 gestoreSchermi.CambiaStato(false); 
-                if (taskAttuale != Reparto.Finito)
+                if (taskAttuale != Reparto.Finito) Invoke("AttivaAllertaSchermi", 4.0f);
+            }
+        }
+    }
+    
+    void AttivaAllertaSchermi() { if (gestoreSchermi != null) gestoreSchermi.CambiaStato(true); }
+
+    // --- GESTIONE OGGETTI ---
+    public void RestituisciOggettoAlTavolo(string nomeOggetto)
+    {
+        if (string.IsNullOrEmpty(nomeOggetto)) return;
+        
+        foreach (GameObject obj in tuttiGliOggettiRaccoglibili)
+        {
+            if (obj != null && obj.name == nomeOggetto)
+            {
+                obj.SetActive(true); // Riaccende l'oggetto
+                if (registroPosizioni.ContainsKey(nomeOggetto))
                 {
-                    Invoke("AttivaAllertaSchermi", 4.0f);
+                    obj.transform.position = registroPosizioni[nomeOggetto].posizione;
+                    obj.transform.rotation = registroPosizioni[nomeOggetto].rotazione;
                 }
+                Debug.Log($"<color=cyan>[Inventario]</color> Restituito {nomeOggetto} al tavolo.");
+                return;
             }
         }
     }
 
-    void AttivaAllertaSchermi()
+    public void ResettaVisualeSupportiLuci()
     {
-        if (gestoreSchermi != null)
+        foreach (GameObject supporto in supportiLuciFisici)
         {
-            gestoreSchermi.CambiaStato(true); 
+            if (supporto != null)
+            {
+                foreach (Transform figlio in supporto.transform)
+                {
+                    string nome = figlio.name.ToLower();
+                    if (nome.Contains("fresnel") || nome.Contains("softbox") || nome.Contains("artistica"))
+                    {
+                        figlio.gameObject.SetActive(false);
+                    }
+                }
+            }
         }
+        Debug.Log("[Luci] Supporti puliti visivamente.");
     }
 
-    // --- SEZIONI EFFETTI LENTI E AUDIO (INVARIATE) ---
+    public void ScegliLuce(string nomeLuce) 
+    {
+        LuceScelta = nomeLuce;
+        LucePosizionataCorrettamente = false; 
+    }
+
+    // --- EFFETTI AUDIO/VIDEO ---
     public void ApplicaEffettoLente(string nomeLente) 
     {
         Camera cam = Camera.main;
@@ -172,14 +227,12 @@ public class GameManager : MonoBehaviour
                 sorgenteAttori.spatialBlend = 0.5f; 
                 volumeRumoreFondo = 0.1f; 
                 break;
-
             case "Lavalier": 
                 if (lowPass) { lowPass.enabled = true; lowPass.cutoffFrequency = 4000f; }
                 if (highPass) { highPass.enabled = true; highPass.cutoffFrequency = 300f; }
                 sorgenteAttori.spatialBlend = 0.2f; 
                 volumeRumoreFondo = 0.05f; 
                 break;
-
             case "Ambisonic": 
                 if (lowPass) lowPass.enabled = false; 
                 if (highPass) { highPass.enabled = true; highPass.cutoffFrequency = 100f; }
@@ -190,10 +243,8 @@ public class GameManager : MonoBehaviour
 
         if (audioMacchinetta != null)
         {
-            if (rumoreCaffeAttivo)
-                audioMacchinetta.volume = volumeRumoreFondo;
-            else
-                audioMacchinetta.volume = 0f;
+            if (rumoreCaffeAttivo) audioMacchinetta.volume = volumeRumoreFondo;
+            else audioMacchinetta.volume = 0f;
         }
     }
 
@@ -202,8 +253,18 @@ public class GameManager : MonoBehaviour
         if (lowPass) lowPass.enabled = false;
         if (highPass) highPass.enabled = false;
         if (sorgenteAttori) sorgenteAttori.spatialBlend = 1f;
-
-        if (audioMacchinetta != null && rumoreCaffeAttivo) 
-            audioMacchinetta.volume = 0.5f; 
+        if (audioMacchinetta != null && rumoreCaffeAttivo) audioMacchinetta.volume = 0.5f; 
+    }
+    
+    void SetupFiltriAudio()
+    {
+         if (sorgenteAttori != null) 
+        {
+            lowPass = sorgenteAttori.gameObject.GetComponent<AudioLowPassFilter>();
+            if (lowPass == null) lowPass = sorgenteAttori.gameObject.AddComponent<AudioLowPassFilter>();
+            highPass = sorgenteAttori.gameObject.GetComponent<AudioHighPassFilter>();
+            if (highPass == null) highPass = sorgenteAttori.gameObject.AddComponent<AudioHighPassFilter>();
+            ResetEffettoAudio();
+        }
     }
 }

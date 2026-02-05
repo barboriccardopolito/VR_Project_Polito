@@ -21,93 +21,76 @@ public class InteragibileNPC : MonoBehaviour
 
         InventarioGiocatore inv = FindFirstObjectByType<InventarioGiocatore>();
 
-        // 1. VERIFICHE PRELIMINARI
+        bool faseRevisione = (GameManager.instance.taskAttuale == GameManager.Reparto.Regia);
+        bool installazioneLuciInCorso = (GameManager.instance.LuceScelta != "");
         bool installazioneAudioInCorso = (GameManager.instance.micDaInstallare != "");
-        bool installazioneLuciInCorso = (GameManager.instance.LuceScelta != "" && GameManager.instance.taskAttuale == GameManager.Reparto.Luci);
+        
+        bool èIlMioTurno = (GameManager.instance.taskAttuale == tipoReparto);
+        bool possoInteragire = èIlMioTurno || installazioneAudioInCorso || installazioneLuciInCorso || (faseRevisione && tipoReparto != GameManager.Reparto.Produzione && tipoReparto != GameManager.Reparto.Regia);
 
-        bool isSottotaskAttiva = installazioneAudioInCorso || installazioneLuciInCorso;
-
-        // --- CONTROLLO TURNO ---
-        if (GameManager.instance.taskAttuale != tipoReparto && !isSottotaskAttiva)
+        if (tipoReparto == GameManager.Reparto.Regia && !èIlMioTurno) { /* Niente */ }
+        else if (!possoInteragire)
         {
-            Debug.Log($"[{tipoReparto}]: Non è il mio turno. Vai da {GameManager.instance.taskAttuale}.");
+            Debug.Log($"[{tipoReparto}]: Non disturbare ora.");
             return;
         }
 
-        // --- LOGICA REPARTO LUCI ---
-        if (tipoReparto == GameManager.Reparto.Luci && installazioneLuciInCorso)
+        // --- COMPLETAMENTO STANDARD ---
+        
+        // LUCI: Verifica se hai finito di montare (e NON hai una nuova luce in mano)
+        if (tipoReparto == GameManager.Reparto.Luci && installazioneLuciInCorso && !inv.haUnOggetto)
         {
-            if (GameManager.instance.LucePosizionataCorrettamente == true)
-            {
-                Debug.Log("<color=yellow>[Addetto Luci]:</color> Ottimo lavoro! Task Completata.");
+            if (GameManager.instance.LucePosizionataCorrettamente) {
+                Debug.Log("<color=yellow>[Addetto Luci]:</color> Installazione confermata.");
                 GameManager.instance.CompletaTask(tipoReparto); 
-            }
-            else
-            {
-                Debug.Log($"[Addetto Luci]: Hai preso la {GameManager.instance.LuceScelta}, ma i supporti sono vuoti! Montala.");
+            } else {
+                Debug.Log($"[Addetto Luci]: Supporti vuoti! Monta la {GameManager.instance.LuceScelta}.");
             }
             return;
         }
 
-        // --- LOGICA RITORNO DAL FONICO ---
-        if (tipoReparto == GameManager.Reparto.Fonico && installazioneAudioInCorso)
+        if (tipoReparto == GameManager.Reparto.Fonico && installazioneAudioInCorso && !inv.haUnOggetto)
         {
              bool taskCompletata = false;
              if (GameManager.instance.micDaInstallare == "Lavalier" && GameManager.instance.attoriMicrofonatiAttuali >= GameManager.instance.attoriDaMicrofonare) taskCompletata = true;
              else if ((GameManager.instance.micDaInstallare == "Boom" || GameManager.instance.micDaInstallare == "Ambisonic") && GameManager.instance.supportoPiazzato) taskCompletata = true;
 
-             if (taskCompletata)
-             {
-                 Debug.Log($"<color=green>[Fonico]:</color> Ottimo! {GameManager.instance.micDaInstallare} installato.");
+             if (taskCompletata) {
+                 Debug.Log($"<color=green>[Fonico]:</color> Setup Audio completato.");
                  GameManager.instance.ApplicaEffettoMicrofono(GameManager.instance.micDaInstallare);
                  GameManager.instance.micDaInstallare = "";
                  GameManager.instance.supportoPiazzato = false; 
                  GameManager.instance.CompletaTask(tipoReparto);
-             }
-             else
-             {
-                 Debug.Log($"[Fonico]: Non hai ancora finito di installare il {GameManager.instance.micDaInstallare}.");
+             } else {
+                 Debug.Log($"[Fonico]: Finisci di installare il {GameManager.instance.micDaInstallare}.");
              }
              return;
         }
 
-        // --- LOGICA PRODUZIONE (CON GESTIONE GLOW) ---
-        if (tipoReparto == GameManager.Reparto.Produzione)
-        {
+        if (tipoReparto == GameManager.Reparto.Produzione) { 
             RadioSistema radio = FindFirstObjectByType<RadioSistema>();
             if (radio != null) radio.haLaRadio = true;
-
             if (radioDaAttivare != null) radioDaAttivare.SetActive(true);
-
-            // --- SPEGNIMENTO GLOW ---
-            // Se questo NPC ha l'Evidenziatore, lo spegniamo ora che ci hai parlato
             Evidenziatore myGlow = GetComponent<Evidenziatore>();
             if (myGlow != null) myGlow.Spegni();
-            // ------------------------
-
-            Debug.Log($"[Produzione]: {messaggioTask}");
             GameManager.instance.CompletaTask(tipoReparto);
             return;
         }
 
-        // --- LOGICA REGIA ---
-        if (tipoReparto == GameManager.Reparto.Regia)
-        {
-            if (!RegiaManager.instance.previewInCorso && !RegiaManager.instance.registrazioneInCorso)
-            {
+        if (tipoReparto == GameManager.Reparto.Regia) { 
+            if (!RegiaManager.instance.previewInCorso && !RegiaManager.instance.registrazioneInCorso) {
                 RegiaManager.instance.AttivaPreview();
-                Debug.Log("<color=cyan>[Regista]:</color> Guarda il monitor. Se sei pronto, interagisci di nuovo per il CIAK.");
+                Debug.Log("<color=cyan>[Regista]:</color> Guarda i monitor. Modifica quello che vuoi.");
                 return;
             }
-            if (RegiaManager.instance.previewInCorso)
-            {
+            if (RegiaManager.instance.previewInCorso) {
                 Debug.Log("<color=red>[Regista]:</color> AZIONE!");
                 RegiaManager.instance.AvviaCiak();
                 return;
             }
         }
 
-        // --- LOGICA CONSEGNA OGGETTI ---
+        // --- CONSEGNA E SCAMBIO OGGETTI ---
         if (inv != null && inv.haUnOggetto)
         {
             bool oggettoCorretto = false;
@@ -119,34 +102,55 @@ public class InteragibileNPC : MonoBehaviour
             {
                 if (tipoReparto == GameManager.Reparto.Luci)
                 {
+                    // 1. Restituisci la vecchia luce
+                    if (GameManager.instance.LuceScelta != "") 
+                        GameManager.instance.RestituisciOggettoAlTavolo(GameManager.instance.LuceScelta);
+                    
+                    // 2. PULISCI I SUPPORTI (Togli i modelli vecchi)
+                    GameManager.instance.ResettaVisualeSupportiLuci();
+
+                    // 3. Assegna la nuova
                     GameManager.instance.LuceScelta = inv.oggettoInMano;
-                    GameManager.instance.LucePosizionataCorrettamente = false;
-                    Debug.Log($"[Addetto Luci]: Hai scelto {inv.oggettoInMano}. Vai a montarla sui supporti!");
+                    GameManager.instance.LucePosizionataCorrettamente = false; 
+                    Debug.Log($"[Addetto Luci]: Cambio in {inv.oggettoInMano}? Vai a montarla sui supporti!");
                     inv.ConsegnaOggetto();
                 }
                 else if (tipoReparto == GameManager.Reparto.Fonico)
                 {
+                    if (GameManager.instance.micScelto != "")
+                        GameManager.instance.RestituisciOggettoAlTavolo(GameManager.instance.micScelto);
+
                     GameManager.instance.micScelto = inv.oggettoInMano;
                     GameManager.instance.micDaInstallare = inv.oggettoInMano;
-                    Debug.Log($"[Fonico]: {inv.oggettoInMano} scelto. Vai a installarlo!");
+                    GameManager.instance.attoriMicrofonatiAttuali = 0; 
+                    GameManager.instance.supportoPiazzato = false; 
+
+                    Debug.Log($"[Fonico]: Cambio piano in {inv.oggettoInMano}. Installalo!");
                     inv.ConsegnaOggetto();
                 }
                 else
                 {
-                    Debug.Log($"[Task]: Grazie per {inv.oggettoInMano}!");
+                    // Fotografia
+                    if (GameManager.instance.lenteSceltaFinale != "")
+                        GameManager.instance.RestituisciOggettoAlTavolo(GameManager.instance.lenteSceltaFinale);
+
                     if (tipoReparto == GameManager.Reparto.Fotografia) GameManager.instance.lenteSceltaFinale = inv.oggettoInMano;
+                    Debug.Log($"[Task]: Applicato cambio: {inv.oggettoInMano}.");
                     inv.ConsegnaOggetto();
                     GameManager.instance.CompletaTask(tipoReparto);
                 }
             }
             else
             {
-                Debug.Log($"[Task]: Oggetto sbagliato.");
+                Debug.Log($"[Task]: Oggetto sbagliato per questo reparto.");
             }
         }
         else
         {
-            Debug.Log($"[Info]: {messaggioTask}");
+            if (faseRevisione && tipoReparto != GameManager.Reparto.Regia)
+                Debug.Log($"[{tipoReparto}]: Portami un nuovo oggetto se vuoi fare modifiche.");
+            else
+                Debug.Log($"[Info]: {messaggioTask}");
         }
     }
 }
