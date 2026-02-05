@@ -170,23 +170,32 @@ public class GameManager : MonoBehaviour
     }
 
     public void ResettaVisualeSupportiLuci()
-    {
-        foreach (GameObject supporto in supportiLuciFisici)
         {
-            if (supporto != null)
+            foreach (GameObject supporto in supportiLuciFisici)
             {
-                foreach (Transform figlio in supporto.transform)
+                if (supporto != null)
                 {
-                    string nome = figlio.name.ToLower();
-                    if (nome.Contains("fresnel") || nome.Contains("softbox") || nome.Contains("artistica"))
+                    // 1. RESET VISIVO (Spegne i modelli 3D figli)
+                    foreach (Transform figlio in supporto.transform)
                     {
-                        figlio.gameObject.SetActive(false);
+                        string nome = figlio.name.ToLower();
+                        if (nome.Contains("fresnel") || nome.Contains("softbox") || nome.Contains("artistica"))
+                        {
+                            figlio.gameObject.SetActive(false);
+                        }
+                    }
+
+                    // 2. RESET LOGICO (Chiama lo script del supporto per dirgli "sei libero")
+                    // Cerca lo script SupportoLuce (o come l'hai chiamato tu)
+                    var scriptSupporto = supporto.GetComponent<SupportoLuce>(); // <--- VERIFICA IL NOME DELLO SCRIPT!
+                    if (scriptSupporto != null)
+                    {
+                        scriptSupporto.ResettaSupporto(); // Chiama la funzione creata al Passo 1
                     }
                 }
             }
+            Debug.Log("[Luci] Supporti puliti visivamente e logicamente.");
         }
-        Debug.Log("[Luci] Supporti puliti visivamente.");
-    }
 
     public void ScegliLuce(string nomeLuce) 
     {

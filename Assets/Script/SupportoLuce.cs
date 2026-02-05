@@ -2,29 +2,47 @@ using UnityEngine;
 
 public class SupportoLuce : MonoBehaviour
 {
-// IMPORTANTE: Devono essere 'public' per apparire nell'Inspector!
+    // IMPORTANTE: Devono essere 'public' per apparire nell'Inspector!
     [Header("Trascina qui i modelli figli")]
     public GameObject modelloSoftbox;
     public GameObject modelloFresnel;
     public GameObject modelloArtistica;
 
     private bool luceGiaPosizionata = false;
-public void PiazzaLuce()
-    {
-        Debug.Log("1. Tentativo di piazzare luce..."); // Se non vedi questo, il Raycast del Player non sta chiamando questa funzione.
 
+    // --- NUOVA FUNZIONE: Chiamata dal GameManager quando cambi idea ---
+    public void ResettaSupporto()
+    {
+        // 1. Sblocchiamo la logica: il supporto torna disponibile
+        luceGiaPosizionata = false;
+
+        // 2. Spegniamo tutto visivamente per pulizia
+        NascondiTutto();
+
+        Debug.Log($"[Supporto] {gameObject.name} resettato. Pronto per una nuova luce!");
+    }
+    // -----------------------------------------------------------------
+
+    public void PiazzaLuce()
+    {
+        Debug.Log("1. Tentativo di piazzare luce..."); 
+
+        // Se c'è già una luce, non facciamo nulla (a meno che non venga resettato prima)
         if (luceGiaPosizionata) return;
 
         // Recuperiamo il GameManager
         GameManager gm = FindFirstObjectByType<GameManager>();
+        if (gm == null) return;
+
         string luceScelta = gm.LuceScelta;
 
-        Debug.Log("2. Luce trovata nel GameManager: '" + luceScelta + "'"); // Cosa stampa qui? È vuoto?
+        Debug.Log("2. Luce trovata nel GameManager: '" + luceScelta + "'"); 
 
-        NascondiTutto();
+        NascondiTutto(); // Spegni tutto prima di accendere quella giusta
 
         bool luceTrovata = false;
 
+        // Logica di accensione
         if (luceScelta == "Softbox")
         {
             if (modelloSoftbox != null) { modelloSoftbox.SetActive(true); luceTrovata = true; }
@@ -43,7 +61,7 @@ public void PiazzaLuce()
 
         if (luceTrovata)
         {
-            luceGiaPosizionata = true;
+            luceGiaPosizionata = true; // Blocchiamo il supporto finché non viene resettato
             gm.LucePosizionataCorrettamente = true;
             Debug.Log("3. SUCCESSO: Luce attivata!");
         }
