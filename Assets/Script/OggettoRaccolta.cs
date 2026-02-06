@@ -4,26 +4,29 @@ public class OggettoRaccolta : MonoBehaviour
 {
     public enum TipoOggetto { Lente, Luce, Microfono }
     
-    [Header("Impostazioni Oggetto")]
-    public TipoOggetto categoria; 
+    [Header("Configurazione Oggetto")]
+    public TipoOggetto tipo;
     public string nomeOggetto; 
 
     public void EseguiRaccolta()
     {
-        InventarioGiocatore inv = FindObjectOfType<InventarioGiocatore>();
-
+        InventarioGiocatore inv = FindFirstObjectByType<InventarioGiocatore>();
+        
         if (inv != null)
         {
-            if (!inv.haUnOggetto)
+            // Controllo opzionale: Se hai già qualcosa, non farti raccogliere altro
+            if (inv.haUnOggetto)
             {
-                // Passiamo 'gameObject' così l'inventario sa cosa riattivare se lo lasciamo
-                inv.RaccogliOggetto(nomeOggetto, categoria, gameObject);
-                gameObject.SetActive(false); 
+                Debug.Log("Hai le mani piene! Premi G per lasciare l'oggetto prima di prenderne un altro.");
+                return; 
             }
-            else
-            {
-                Debug.Log("Mani occupate! Premi G per lasciare l'oggetto attuale.");
-            }
+
+            // --- MODIFICA: Passiamo 'this.gameObject' come terzo argomento ---
+            // Così l'inventario sa esattamente chi siamo e può riattivarci con G
+            inv.RaccogliOggetto(nomeOggetto, tipo, this.gameObject);
+            
+            // Ci nascondiamo dal tavolo
+            gameObject.SetActive(false);
         }
     }
 }
