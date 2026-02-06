@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class SpostamentoCamera : MonoBehaviour
 {
@@ -16,6 +17,7 @@ public class SpostamentoCamera : MonoBehaviour
     public string[] nomiScriptDaDisabilitare; 
 
     private bool inModalitaSpostamento = false;
+    private bool possoUscire = false; // VARIABILE CRITICA PER EVITARE IL BUG
 
     void Start()
     {
@@ -23,10 +25,14 @@ public class SpostamentoCamera : MonoBehaviour
         if (cameraGiocatore == null) cameraGiocatore = Camera.main;
     }
 
+    // Chiamata dallo script InterazioneGiocatore
     public void Interagisci()
     {
-        if (inModalitaSpostamento) EsciDaModalitaSpostamento();
-        else EntraInModalitaSpostamento();
+        // Se sono già dentro, ignoro la chiamata esterna (gestisco l'uscita in Update)
+        // Questo evita che InterazioneGiocatore forzi il rientro mentre cerco di uscire
+        if (inModalitaSpostamento) return;
+
+        EntraInModalitaSpostamento();
     }
 
     void Update()
@@ -34,65 +40,81 @@ public class SpostamentoCamera : MonoBehaviour
         if (inModalitaSpostamento)
         {
             GestisciMovimento();
-            if (Input.GetKeyDown(KeyCode.E)) EsciDaModalitaSpostamento();
+
+            // Uscita con tasto E (SOLO SE il cooldown è finito)
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                if (possoUscire)
+                {
+                    EsciDaModalitaSpostamento();
+                }
+                else
+                {
+                    Debug.Log("⏳ Aspetta... sto inizializzando la camera.");
+                }
+            }
         }
     }
 
     void EntraInModalitaSpostamento()
     {
         inModalitaSpostamento = true;
+        possoUscire = false; // <--- BLOCCO IMMEDIATO
+        
         BloccaGiocatore(true);
+
         if (cameraGiocatore != null) cameraGiocatore.enabled = false;
         if (cameraDallAlto != null) cameraDallAlto.gameObject.SetActive(true);
-        Debug.Log("[Camera] Spostamento ATTIVO. Usa WASD.");
+
+        Debug.Log("[Camera] Spostamento ATTIVO. Usa WASD. (Premi E tra 1 secondo per uscire)");
+        
+        // Avvia il timer di sicurezza
+        StartCoroutine(AbilitaUscitaRoutine());
+    }
+
+    IEnumerator AbilitaUscitaRoutine()
+    {
+        // Aspetta 1 secondo reale prima di permettere di premere E di nuovo
+        yield return new WaitForSeconds(1.0f);
+        possoUscire = true;
+        Debug.Log("✅ Ora puoi premere E per uscire.");
     }
 
     void EsciDaModalitaSpostamento()
     {
         inModalitaSpostamento = false;
+        possoUscire = false;
 
         if (cameraDallAlto != null) cameraDallAlto.gameObject.SetActive(false);
         if (cameraGiocatore != null) cameraGiocatore.enabled = true;
 
         BloccaGiocatore(false);
 
-        // --- PUNTO CRITICO: Salviamo il progresso ---
+        // SALVATAGGIO STATO
         if (GameManager.instance != null)
         {
             GameManager.instance.cameraPosizionata = true;
-            Debug.Log("<color=green>[Camera] Posizione Confermata e Salvata nel GameManager!</color>");
+            Debug.Log("<color=green>[Camera] Posizione Salvata! Torna dall'addetto.</color>");
         }
-        else
-        {
-            Debug.LogError("[Camera] ERRORE: GameManager non trovato! Impossibile salvare.");
-        }
-        // ---------------------------------------------
     }
 
     void GestisciMovimento()
-        {
-            float x = Input.GetAxis("Horizontal"); 
-            float z = Input.GetAxis("Vertical");   
+    {
+        float x = Input.GetAxis("Horizontal"); 
+        float z = Input.GetAxis("Vertical");   
 
-            // 1. Prendiamo le direzioni dalla Camera Drone (non dal Mondo)
-            // Nota: Per le camere dall'alto (Top-Down), 'transform.up' corrisponde visivamente all'avanti
-            Vector3 camRight = cameraDallAlto.transform.right;
-            Vector3 camForward = cameraDallAlto.transform.up; 
+        // Movimento relativo alla rotazione della camera (Fix precedente)
+        Vector3 camRight = cameraDallAlto.transform.right;
+        Vector3 camForward = cameraDallAlto.transform.up; 
 
-            // 2. Appiattiamo tutto a zero sull'asse Y (per non volare o sprofondare nel pavimento)
-            camRight.y = 0;
-            camForward.y = 0;
+        camRight.y = 0;
+        camForward.y = 0;
+        camRight.Normalize();
+        camForward.Normalize();
 
-            // 3. Normalizziamo i vettori (altrimenti muoversi in diagonale sarebbe più veloce)
-            camRight.Normalize();
-            camForward.Normalize();
-
-            // 4. Calcoliamo il movimento finale combinando gli input con le direzioni della camera
-            Vector3 move = (camRight * x + camForward * z) * velocitaSpostamento * Time.deltaTime;
-            
-            // 5. Applichiamo il movimento
-            transform.Translate(move, Space.World);
-        }
+        Vector3 move = (camRight * x + camForward * z) * velocitaSpostamento * Time.deltaTime;
+        transform.Translate(move, Space.World);
+    }
 
     void BloccaGiocatore(bool blocca)
     {
@@ -108,6 +130,7 @@ public class SpostamentoCamera : MonoBehaviour
         }
         CharacterController cc = giocatore.GetComponent<CharacterController>();
         if (cc != null) cc.enabled = !blocca;
+        
         if (blocca) { Cursor.lockState = CursorLockMode.Locked; Cursor.visible = false; }
     }
 }
