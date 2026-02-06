@@ -22,22 +22,44 @@ public class InteragibileNPC : MonoBehaviour
         InventarioGiocatore inv = FindFirstObjectByType<InventarioGiocatore>();
 
         bool faseRevisione = (GameManager.instance.taskAttuale == GameManager.Reparto.Regia);
+        bool fotografiaInCorso = (GameManager.instance.taskAttuale == GameManager.Reparto.Fotografia) || (faseRevisione && tipoReparto == GameManager.Reparto.Fotografia);
+        
         bool installazioneLuciInCorso = (GameManager.instance.LuceScelta != "");
         bool installazioneAudioInCorso = (GameManager.instance.micDaInstallare != "");
-        
         bool èIlMioTurno = (GameManager.instance.taskAttuale == tipoReparto);
-        bool possoInteragire = èIlMioTurno || installazioneAudioInCorso || installazioneLuciInCorso || (faseRevisione && tipoReparto != GameManager.Reparto.Produzione && tipoReparto != GameManager.Reparto.Regia);
 
-        if (tipoReparto == GameManager.Reparto.Regia && !èIlMioTurno) { /* Niente */ }
-        else if (!possoInteragire)
+        bool possoInteragire = èIlMioTurno || installazioneAudioInCorso || installazioneLuciInCorso || faseRevisione;
+
+        if (!possoInteragire && tipoReparto != GameManager.Reparto.Regia)
         {
             Debug.Log($"[{tipoReparto}]: Non disturbare ora.");
             return;
         }
 
-        // --- COMPLETAMENTO STANDARD ---
-        
-        // LUCI: Verifica se hai finito di montare (e NON hai una nuova luce in mano)
+        // --- 1. LOGICA FOTOGRAFIA (Conferma Finale - Step 3) ---
+        // Qui arrivi DOPO aver consegnato la lente e DOPO aver mosso la camera
+        if (tipoReparto == GameManager.Reparto.Fotografia && !inv.haUnOggetto && fotografiaInCorso)
+        {
+            // Caso A: Hai consegnato la lente E hai mosso la camera
+            if (GameManager.instance.lenteSceltaFinale != "" && GameManager.instance.cameraPosizionata)
+            {
+                Debug.Log("<color=yellow>[Dir. Fotografia]:</color> Ottimo lavoro con la camera. Task completata!");
+                GameManager.instance.CompletaTask(tipoReparto);
+            }
+            // Caso B: Hai consegnato la lente MA NON hai ancora mosso la camera
+            else if (GameManager.instance.lenteSceltaFinale != "")
+            {
+                Debug.LogWarning("[Dir. Fotografia]: Ho la lente, ma non hai ancora spostato la videocamera! Vai a posizionarla (E).");
+            }
+            // Caso C: Non hai ancora portato nulla
+            else
+            {
+                Debug.Log("[Dir. Fotografia]: Portami una lente dal tavolo per iniziare.");
+            }
+            return;
+        }
+
+        // --- 2. LOGICA LUCI ---
         if (tipoReparto == GameManager.Reparto.Luci && installazioneLuciInCorso && !inv.haUnOggetto)
         {
             if (GameManager.instance.LucePosizionataCorrettamente) {
@@ -49,6 +71,7 @@ public class InteragibileNPC : MonoBehaviour
             return;
         }
 
+        // --- 3. LOGICA FONICO ---
         if (tipoReparto == GameManager.Reparto.Fonico && installazioneAudioInCorso && !inv.haUnOggetto)
         {
              bool taskCompletata = false;
@@ -67,6 +90,7 @@ public class InteragibileNPC : MonoBehaviour
              return;
         }
 
+        // --- 4. PRODUZIONE & REGIA ---
         if (tipoReparto == GameManager.Reparto.Produzione) { 
             RadioSistema radio = FindFirstObjectByType<RadioSistema>();
             if (radio != null) radio.haLaRadio = true;
@@ -90,7 +114,7 @@ public class InteragibileNPC : MonoBehaviour
             }
         }
 
-        // --- CONSEGNA E SCAMBIO OGGETTI ---
+        // --- 5. CONSEGNA OGGETTI (Step 2 del tuo flusso) ---
         if (inv != null && inv.haUnOggetto)
         {
             bool oggettoCorretto = false;
@@ -100,16 +124,31 @@ public class InteragibileNPC : MonoBehaviour
 
             if (oggettoCorretto)
             {
-                if (tipoReparto == GameManager.Reparto.Luci)
+                if (tipoReparto == GameManager.Reparto.Fotografia)
                 {
-                    // 1. Restituisci la vecchia luce
+                    // Gestione scambio (se avevi già una lente scelta)
+                    if (GameManager.instance.lenteSceltaFinale != "")
+                        GameManager.instance.RestituisciOggettoAlTavolo(GameManager.instance.lenteSceltaFinale);
+
+                    GameManager.instance.lenteSceltaFinale = inv.oggettoInMano;
+                    
+                    // --- MODIFICA FONDAMENTALE QUI ---
+                    // Quando consegni la lente, SPEGNIAMO l'effetto (Reset).
+                    // Così torni a vedere normale per andare a spostare la camera.
+                    GameManager.instance.ResetEffettoLente();
+                    // ---------------------------------
+
+                    GameManager.instance.cameraPosizionata = false; // Devi riposizionare la camera
+
+                    Debug.Log($"[Dir. Fotografia]: Grazie per la {inv.oggettoInMano}. Ora vai alla videocamera e sistema l'inquadratura (WASD).");
+                    inv.ConsegnaOggetto();
+                }
+                else if (tipoReparto == GameManager.Reparto.Luci)
+                {
                     if (GameManager.instance.LuceScelta != "") 
                         GameManager.instance.RestituisciOggettoAlTavolo(GameManager.instance.LuceScelta);
                     
-                    // 2. PULISCI I SUPPORTI (Togli i modelli vecchi)
                     GameManager.instance.ResettaVisualeSupportiLuci();
-
-                    // 3. Assegna la nuova
                     GameManager.instance.LuceScelta = inv.oggettoInMano;
                     GameManager.instance.LucePosizionataCorrettamente = false; 
                     Debug.Log($"[Addetto Luci]: Cambio in {inv.oggettoInMano}? Vai a montarla sui supporti!");
@@ -124,20 +163,8 @@ public class InteragibileNPC : MonoBehaviour
                     GameManager.instance.micDaInstallare = inv.oggettoInMano;
                     GameManager.instance.attoriMicrofonatiAttuali = 0; 
                     GameManager.instance.supportoPiazzato = false; 
-
                     Debug.Log($"[Fonico]: Cambio piano in {inv.oggettoInMano}. Installalo!");
                     inv.ConsegnaOggetto();
-                }
-                else
-                {
-                    // Fotografia
-                    if (GameManager.instance.lenteSceltaFinale != "")
-                        GameManager.instance.RestituisciOggettoAlTavolo(GameManager.instance.lenteSceltaFinale);
-
-                    if (tipoReparto == GameManager.Reparto.Fotografia) GameManager.instance.lenteSceltaFinale = inv.oggettoInMano;
-                    Debug.Log($"[Task]: Applicato cambio: {inv.oggettoInMano}.");
-                    inv.ConsegnaOggetto();
-                    GameManager.instance.CompletaTask(tipoReparto);
                 }
             }
             else

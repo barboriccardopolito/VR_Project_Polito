@@ -38,6 +38,7 @@ public class GameManager : MonoBehaviour
     public float fovCinematic = 40f;
     public Volume globalVolume; 
     private LensDistortion distortion;
+    public bool cameraPosizionata = false;
 
     [Header("Parametri Audio")]
     public AudioSource sorgenteAttori; 

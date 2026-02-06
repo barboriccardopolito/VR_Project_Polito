@@ -29,18 +29,30 @@ public class InterazioneGiocatore : MonoBehaviour
 
     void TentativoInterazione()
     {
-        Debug.Log("--- TASTO E PREMUTO ---"); // 1. Se vedi questo, il tasto funziona
+        Debug.Log("--- TASTO E PREMUTO ---"); 
 
         Ray raggio = new Ray(transform.position, transform.forward);
         RaycastHit hit;
         
         if (Physics.Raycast(raggio, out hit, distanzaInterazione))
         {
-            Debug.Log("Ho colpito: " + hit.collider.name + " | Tag: " + hit.collider.tag); // 2. Ti dice cosa hai toccato
+            Debug.Log("Ho colpito: " + hit.collider.name + " | Tag: " + hit.collider.tag); 
 
             if (hit.collider.CompareTag("Interagibile"))
             {
-                // --- TEST SPECIFICO PER SUPPORTI LUCI ---
+                // --- 1. NUOVO: CONTROLLO VIDEOCAMERA (Spostamento) ---
+                // Cerchiamo lo script sull'oggetto colpito o sul suo genitore (per sicurezza)
+                SpostamentoCamera spostaCam = hit.collider.GetComponent<SpostamentoCamera>();
+                if (spostaCam == null) spostaCam = hit.collider.GetComponentInParent<SpostamentoCamera>();
+
+                if (spostaCam != null)
+                {
+                    Debug.Log("TROVATO SpostamentoCamera! Interagisco...");
+                    spostaCam.Interagisci();
+                    return; // Interrompiamo qui, abbiamo trovato la camera
+                }
+
+                // --- 2. CONTROLLO SUPPORTI LUCI ---
                 SupportoLuce supportoLuce = hit.collider.GetComponent<SupportoLuce>();
                 if (supportoLuce != null)
                 {
@@ -48,12 +60,8 @@ public class InterazioneGiocatore : MonoBehaviour
                     supportoLuce.PiazzaLuce();
                     return;
                 }
-                else
-                {
-                    Debug.Log("Oggetto Interagibile colpito, ma NON ha lo script SupportoLuce.");
-                }
-
-                // --- ALTRI CONTROLLI ---
+                
+                // --- 3. ALTRI CONTROLLI (NPC, Mic, Caffè) ---
                 InteragibileNPC npc = hit.collider.GetComponent<InteragibileNPC>();
                 if (npc != null) { npc.Interagisci(); return; }
 
@@ -62,6 +70,9 @@ public class InterazioneGiocatore : MonoBehaviour
 
                 MacchinettaCaffe caffe = hit.collider.GetComponent<MacchinettaCaffe>();
                 if (caffe != null) { caffe.SpegniMacchinetta(); return; }
+
+                // Se arrivi qui, è un oggetto "Interagibile" ma senza script noti
+                Debug.Log("Oggetto Interagibile colpito, ma non ha script specifici (Luce, Camera, NPC, ecc).");
             }
             else if (hit.collider.CompareTag("Lente") || hit.collider.CompareTag("Raccoglibile"))
             {
