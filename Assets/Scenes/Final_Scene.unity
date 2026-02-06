@@ -7948,6 +7948,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1436290150}
     m_Modifications:
+    - target: {fileID: 1117399405270454279, guid: 1caa624666c52bd49a149aac61fb8751, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 5bb7f9c1db005b5429e001f1e36a8f8d, type: 2}
     - target: {fileID: 8490849190315756187, guid: 1caa624666c52bd49a149aac61fb8751, type: 3}
       propertyPath: m_Name
       value: softbox_sinistra
@@ -26524,6 +26528,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1436290150}
     m_Modifications:
+    - target: {fileID: 1117399405270454279, guid: 1caa624666c52bd49a149aac61fb8751, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 5bb7f9c1db005b5429e001f1e36a8f8d, type: 2}
     - target: {fileID: 8490849190315756187, guid: 1caa624666c52bd49a149aac61fb8751, type: 3}
       propertyPath: m_Name
       value: softbox_destra
