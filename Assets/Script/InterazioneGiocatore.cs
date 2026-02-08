@@ -1,35 +1,42 @@
 using UnityEngine;
-using UnityEngine.UI; // Necessario per toccare l'Image
+using UnityEngine.UI; // NECESSARIO per controllare l'Immagine del mirino
 
 public class InterazioneGiocatore : MonoBehaviour
 {
     [Header("Collegamenti")]
     public Transform cameraGiocatore;
-    public GameObject widgetInterazione; 
+    public GameObject widgetInterazione; // L'etichetta 3D (Canvas World Space)
     
-    [Header("Mirino Dinamico (NUOVO)")]
-    public Image mirinoUI;          // Trascina qui l'Image del mirino
-    public Color coloreNormale = new Color(1, 1, 1, 0.5f); // Bianco semitrasparente
-    public Color coloreAttivo = new Color(1, 0, 0, 0.8f);  // Rosso acceso (o Verde)
-    public Vector3 scalaNormale = Vector3.one;
-    public Vector3 scalaAttiva = new Vector3(2f, 2f, 2f);  // Diventa doppio quando guardi
+    [Header("Mirino Dinamico")]
+    public Image mirinoUI;               // Trascina qui l'Image del mirino (Canvas 2D)
+    public Color coloreRiposo = new Color(1, 1, 1, 0.4f); // Bianco semi-trasparente
+    public Color coloreAttivo = Color.red;                // Rosso pieno
+    public float scalaRiposo = 1f;       // Grandezza normale
+    public float scalaAttiva = 2.5f;     // Grandezza quando punti (si espande)
+    public float velocitaAnimazione = 10f; // Quanto è veloce il cambio
 
-    [Header("Settaggi")]
+    [Header("Settaggi Raycast")]
     public float distanzaInterazione = 4f;
-    public LayerMask layerDaColpire;
+    public LayerMask layerDaColpire;     // Imposta su "Default" e "Interactable"
     public Vector3 offsetGrafico = new Vector3(0, 0.1f, 0);
+
+    // Variabile privata per sapere se stiamo puntando qualcosa
+    private bool bersaglioAgganciato = false;
 
     void Start()
     {
         if (widgetInterazione != null) widgetInterazione.SetActive(false);
-        // Setta il mirino a riposo
-        if (mirinoUI != null) ResetMirino();
     }
 
     void Update()
     {
         ControlloRaggio();
-        if (Input.GetKeyDown(KeyCode.E)) TentativoInterazione();
+        AnimaMirino(); // Gestisce il cambio colore/grandezza ogni frame
+
+        if (Input.GetKeyDown(KeyCode.E)) 
+        {
+            TentativoInterazione();
+        }
     }
 
     void ControlloRaggio()
@@ -39,29 +46,49 @@ public class InterazioneGiocatore : MonoBehaviour
         Ray raggio = new Ray(cameraGiocatore.position, cameraGiocatore.forward);
         RaycastHit hit;
 
+        // Se il raggio colpisce i layer giusti
         if (Physics.Raycast(raggio, out hit, distanzaInterazione, layerDaColpire))
         {
+            // Se l'oggetto ha i tag giusti
             if (hit.collider.CompareTag("Interagibile") || 
                 hit.collider.CompareTag("Lente") || 
-                hit.collider.CompareTag("Raccoglibile"))
+                hit.collider.CompareTag("Raccoglibile") || 
+                hit.collider.CompareTag("NPC"))
             {
                 MostraWidget(hit);
-                AttivaMirino(); // <--- Il mirino reagisce!
+                bersaglioAgganciato = true; // <--- ABBIAMO TROVATO QUALCOSA!
                 return;
             }
         }
 
-        // Se non colpisco nulla
+        // Se arriviamo qui, non stiamo guardando nulla di utile
         if (widgetInterazione != null) widgetInterazione.SetActive(false);
-        ResetMirino(); // <--- Il mirino torna normale
+        bersaglioAgganciato = false; // <--- NIENTE BERSAGLIO
+    }
+
+    // --- NUOVA FUNZIONE PER ANIMARE IL MIRINO ---
+    void AnimaMirino()
+    {
+        if (mirinoUI == null) return;
+
+        // Decidiamo i valori target in base a se abbiamo agganciato qualcosa o no
+        Color targetColor = bersaglioAgganciato ? coloreAttivo : coloreRiposo;
+        float targetScale = bersaglioAgganciato ? scalaAttiva : scalaRiposo;
+
+        // Usiamo Lerp per passare gradualmente da A a B
+        mirinoUI.color = Color.Lerp(mirinoUI.color, targetColor, Time.deltaTime * velocitaAnimazione);
+        
+        // Applichiamo la scala (mantiene le proporzioni X e Y uguali)
+        Vector3 nuovaScala = Vector3.Lerp(mirinoUI.transform.localScale, Vector3.one * targetScale, Time.deltaTime * velocitaAnimazione);
+        mirinoUI.transform.localScale = nuovaScala;
     }
 
     void MostraWidget(RaycastHit hit)
     {
         if (widgetInterazione == null) return;
+
         widgetInterazione.SetActive(true);
-        
-        // Calcolo anti-compenetrazione
+        // Posizionamento anti-compenetrazione
         Vector3 direzione = (cameraGiocatore.position - hit.point).normalized;
         widgetInterazione.transform.position = hit.point + offsetGrafico + (direzione * 0.2f);
         
@@ -69,32 +96,16 @@ public class InterazioneGiocatore : MonoBehaviour
         widgetInterazione.transform.Rotate(0, 180, 0);
     }
 
-    // --- NUOVE FUNZIONI MIRINO ---
-    void AttivaMirino()
-    {
-        if (mirinoUI == null) return;
-        // Cambia colore e grandezza in modo fluido (Lerp) per renderlo elegante
-        mirinoUI.color = Color.Lerp(mirinoUI.color, coloreAttivo, Time.deltaTime * 10f);
-        mirinoUI.transform.localScale = Vector3.Lerp(mirinoUI.transform.localScale, scalaAttiva, Time.deltaTime * 10f);
-    }
-
-    void ResetMirino()
-    {
-        if (mirinoUI == null) return;
-        mirinoUI.color = Color.Lerp(mirinoUI.color, coloreNormale, Time.deltaTime * 10f);
-        mirinoUI.transform.localScale = Vector3.Lerp(mirinoUI.transform.localScale, scalaNormale, Time.deltaTime * 10f);
-    }
-
     void TentativoInterazione()
     {
-       // ... (Copia qui la tua logica di interazione di prima) ...
-       // ... è uguale a prima ...
         if (cameraGiocatore == null) return;
         Ray raggio = new Ray(cameraGiocatore.position, cameraGiocatore.forward);
         RaycastHit hit;
+        
         if (Physics.Raycast(raggio, out hit, distanzaInterazione, layerDaColpire))
         {
-             if (hit.collider.CompareTag("Interagibile"))
+            // Stessa logica di interazione di prima...
+             if (hit.collider.CompareTag("Interagibile") || hit.collider.CompareTag("NPC"))
             {
                 SpostamentoCamera spostaCam = hit.collider.GetComponent<SpostamentoCamera>();
                 if (spostaCam == null) spostaCam = hit.collider.GetComponentInParent<SpostamentoCamera>();

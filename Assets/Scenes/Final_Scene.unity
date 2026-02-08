@@ -37200,11 +37200,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InterazioneGiocatore
   cameraGiocatore: {fileID: 1823688467}
   widgetInterazione: {fileID: 259232716}
-  mirinoUI: {fileID: 0}
-  coloreNormale: {r: 1, g: 1, b: 1, a: 0.5}
-  coloreAttivo: {r: 1, g: 0, b: 0, a: 0.8}
-  scalaNormale: {x: 1, y: 1, z: 1}
-  scalaAttiva: {x: 2, y: 2, z: 2}
+  mirinoUI: {fileID: 1540536558}
+  coloreRiposo: {r: 1, g: 1, b: 1, a: 0.39215687}
+  coloreAttivo: {r: 1, g: 0, b: 0, a: 1}
+  scalaRiposo: 1
+  scalaAttiva: 2.5
+  velocitaAnimazione: 10
   distanzaInterazione: 2
   layerDaColpire:
     serializedVersion: 2
