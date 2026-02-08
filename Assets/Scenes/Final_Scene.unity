@@ -28097,7 +28097,7 @@ PrefabInstance:
       addedObject: {fileID: 1409844405}
     - targetCorrespondingSourceObject: {fileID: 7632886891723049378, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1409844404}
+      addedObject: {fileID: 1409844409}
   m_SourcePrefab: {fileID: 100100000, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
 --- !u!1 &1409844398 stripped
 GameObject:
@@ -28124,24 +28124,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5766871148682481652, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
   m_PrefabInstance: {fileID: 1409844397}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1409844404
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1409844398}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 93eb231721d075f498e8f674c3153593, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NPCWander
-  animator: {fileID: 0}
-  oggettoRadioFisico: {fileID: 0}
-  puntoDiUscitaSedia: {fileID: 0}
-  raggioMovimento: 2
-  tempoAttesaMin: 2
-  tempoAttesaMax: 10
 --- !u!195 &1409844405
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -28164,6 +28146,22 @@ NavMeshAgent:
   m_BaseOffset: 1
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &1409844409
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1409844398}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5b390728bec2234b965b8e41ecd7de7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NPC_Staff
+  animator: {fileID: 1935052302}
+  raggioMovimento: 5
+  tempoAttesaMin: 3
+  tempoAttesaMax: 8
 --- !u!1 &1412070062
 GameObject:
   m_ObjectHideFlags: 0
@@ -40351,7 +40349,7 @@ Animator:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1935052301}
   m_Enabled: 1
-  m_Avatar: {fileID: 0}
+  m_Avatar: {fileID: 9000000, guid: 16926371b36905445a33fd4a328a7885, type: 3}
   m_Controller: {fileID: 9100000, guid: 6e864a32661b512479e52562d9d6d294, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
