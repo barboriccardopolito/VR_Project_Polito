@@ -1,9 +1,30 @@
 using UnityEngine;
+using UnityEngine.UI; // Necessario per toccare l'Image
 
 public class InterazioneGiocatore : MonoBehaviour
 {
-    public float distanzaInterazione = 5f;
-    public GameObject testoSuggerimento;
+    [Header("Collegamenti")]
+    public Transform cameraGiocatore;
+    public GameObject widgetInterazione; 
+    
+    [Header("Mirino Dinamico (NUOVO)")]
+    public Image mirinoUI;          // Trascina qui l'Image del mirino
+    public Color coloreNormale = new Color(1, 1, 1, 0.5f); // Bianco semitrasparente
+    public Color coloreAttivo = new Color(1, 0, 0, 0.8f);  // Rosso acceso (o Verde)
+    public Vector3 scalaNormale = Vector3.one;
+    public Vector3 scalaAttiva = new Vector3(2f, 2f, 2f);  // Diventa doppio quando guardi
+
+    [Header("Settaggi")]
+    public float distanzaInterazione = 4f;
+    public LayerMask layerDaColpire;
+    public Vector3 offsetGrafico = new Vector3(0, 0.1f, 0);
+
+    void Start()
+    {
+        if (widgetInterazione != null) widgetInterazione.SetActive(false);
+        // Setta il mirino a riposo
+        if (mirinoUI != null) ResetMirino();
+    }
 
     void Update()
     {
@@ -13,55 +34,75 @@ public class InterazioneGiocatore : MonoBehaviour
 
     void ControlloRaggio()
     {
-        Ray raggio = new Ray(transform.position, transform.forward);
+        if (cameraGiocatore == null) return;
+
+        Ray raggio = new Ray(cameraGiocatore.position, cameraGiocatore.forward);
         RaycastHit hit;
-        if (Physics.Raycast(raggio, out hit, distanzaInterazione))
+
+        if (Physics.Raycast(raggio, out hit, distanzaInterazione, layerDaColpire))
         {
-            // Mostriamo il testo se il tag è giusto
-            if (hit.collider.CompareTag("Interagibile") || hit.collider.CompareTag("Lente") || hit.collider.CompareTag("Raccoglibile"))
+            if (hit.collider.CompareTag("Interagibile") || 
+                hit.collider.CompareTag("Lente") || 
+                hit.collider.CompareTag("Raccoglibile"))
             {
-                if (testoSuggerimento) testoSuggerimento.SetActive(true);
+                MostraWidget(hit);
+                AttivaMirino(); // <--- Il mirino reagisce!
                 return;
             }
         }
-        if (testoSuggerimento) testoSuggerimento.SetActive(false);
+
+        // Se non colpisco nulla
+        if (widgetInterazione != null) widgetInterazione.SetActive(false);
+        ResetMirino(); // <--- Il mirino torna normale
+    }
+
+    void MostraWidget(RaycastHit hit)
+    {
+        if (widgetInterazione == null) return;
+        widgetInterazione.SetActive(true);
+        
+        // Calcolo anti-compenetrazione
+        Vector3 direzione = (cameraGiocatore.position - hit.point).normalized;
+        widgetInterazione.transform.position = hit.point + offsetGrafico + (direzione * 0.2f);
+        
+        widgetInterazione.transform.LookAt(cameraGiocatore);
+        widgetInterazione.transform.Rotate(0, 180, 0);
+    }
+
+    // --- NUOVE FUNZIONI MIRINO ---
+    void AttivaMirino()
+    {
+        if (mirinoUI == null) return;
+        // Cambia colore e grandezza in modo fluido (Lerp) per renderlo elegante
+        mirinoUI.color = Color.Lerp(mirinoUI.color, coloreAttivo, Time.deltaTime * 10f);
+        mirinoUI.transform.localScale = Vector3.Lerp(mirinoUI.transform.localScale, scalaAttiva, Time.deltaTime * 10f);
+    }
+
+    void ResetMirino()
+    {
+        if (mirinoUI == null) return;
+        mirinoUI.color = Color.Lerp(mirinoUI.color, coloreNormale, Time.deltaTime * 10f);
+        mirinoUI.transform.localScale = Vector3.Lerp(mirinoUI.transform.localScale, scalaNormale, Time.deltaTime * 10f);
     }
 
     void TentativoInterazione()
     {
-        Debug.Log("--- TASTO E PREMUTO ---"); 
-
-        Ray raggio = new Ray(transform.position, transform.forward);
+       // ... (Copia qui la tua logica di interazione di prima) ...
+       // ... è uguale a prima ...
+        if (cameraGiocatore == null) return;
+        Ray raggio = new Ray(cameraGiocatore.position, cameraGiocatore.forward);
         RaycastHit hit;
-        
-        if (Physics.Raycast(raggio, out hit, distanzaInterazione))
+        if (Physics.Raycast(raggio, out hit, distanzaInterazione, layerDaColpire))
         {
-            Debug.Log("Ho colpito: " + hit.collider.name + " | Tag: " + hit.collider.tag); 
-
-            if (hit.collider.CompareTag("Interagibile"))
+             if (hit.collider.CompareTag("Interagibile"))
             {
-                // --- 1. NUOVO: CONTROLLO VIDEOCAMERA (Spostamento) ---
-                // Cerchiamo lo script sull'oggetto colpito o sul suo genitore (per sicurezza)
                 SpostamentoCamera spostaCam = hit.collider.GetComponent<SpostamentoCamera>();
                 if (spostaCam == null) spostaCam = hit.collider.GetComponentInParent<SpostamentoCamera>();
+                if (spostaCam != null) { spostaCam.Interagisci(); return; }
 
-                if (spostaCam != null)
-                {
-                    Debug.Log("TROVATO SpostamentoCamera! Interagisco...");
-                    spostaCam.Interagisci();
-                    return; // Interrompiamo qui, abbiamo trovato la camera
-                }
-
-                // --- 2. CONTROLLO SUPPORTI LUCI ---
                 SupportoLuce supportoLuce = hit.collider.GetComponent<SupportoLuce>();
-                if (supportoLuce != null)
-                {
-                    Debug.Log("TROVATO SCRIPT SUPPORTOLUCE! Provo ad attivare...");
-                    supportoLuce.PiazzaLuce();
-                    return;
-                }
+                if (supportoLuce != null) { supportoLuce.PiazzaLuce(); return; }
                 
-                // --- 3. ALTRI CONTROLLI (NPC, Mic, Caffè) ---
                 InteragibileNPC npc = hit.collider.GetComponent<InteragibileNPC>();
                 if (npc != null) { npc.Interagisci(); return; }
 
@@ -70,19 +111,12 @@ public class InterazioneGiocatore : MonoBehaviour
 
                 MacchinettaCaffe caffe = hit.collider.GetComponent<MacchinettaCaffe>();
                 if (caffe != null) { caffe.SpegniMacchinetta(); return; }
-
-                // Se arrivi qui, è un oggetto "Interagibile" ma senza script noti
-                Debug.Log("Oggetto Interagibile colpito, ma non ha script specifici (Luce, Camera, NPC, ecc).");
             }
             else if (hit.collider.CompareTag("Lente") || hit.collider.CompareTag("Raccoglibile"))
             {
                 OggettoRaccolta obj = hit.collider.GetComponent<OggettoRaccolta>();
                 if (obj != null) obj.EseguiRaccolta();
             }
-        }
-        else
-        {
-            Debug.Log("Raggio non ha colpito nulla (sei troppo lontano?)");
         }
     }
 }
