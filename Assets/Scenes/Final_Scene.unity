@@ -5189,6 +5189,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93eb231721d075f498e8f674c3153593, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NPCWander
+  animator: {fileID: 0}
+  oggettoRadioFisico: {fileID: 0}
+  puntoDiUscitaSedia: {fileID: 0}
   raggioMovimento: 2
   tempoAttesaMin: 2
   tempoAttesaMax: 10
@@ -7037,6 +7040,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93eb231721d075f498e8f674c3153593, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NPCWander
+  animator: {fileID: 0}
+  oggettoRadioFisico: {fileID: 0}
+  puntoDiUscitaSedia: {fileID: 0}
   raggioMovimento: 10
   tempoAttesaMin: 2
   tempoAttesaMax: 5
@@ -7362,8 +7368,8 @@ Animator:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 326339379}
   m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 6e864a32661b512479e52562d9d6d294, type: 2}
+  m_Avatar: {fileID: 9000000, guid: 60188af0a66899b40ae77e056e47b908, type: 3}
+  m_Controller: {fileID: 9100000, guid: 1ec2c7c8528b8b14a9c86b651170a60c, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -8122,6 +8128,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 63408f4f6aeb10840a40e0642d652485, type: 3}
+--- !u!1 &363078924 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9100363676666943866, guid: 66f1351cb4b720e48963992206088d60, type: 3}
+  m_PrefabInstance: {fileID: 204599289248570481}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &365189728
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11594,7 +11605,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 540514399156852107, guid: 9790cbd40e5466944b06dc36efdef86a, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 1.635
       objectReference: {fileID: 0}
     - target: {fileID: 540514399156852107, guid: 9790cbd40e5466944b06dc36efdef86a, type: 3}
       propertyPath: m_LocalPosition.y
@@ -11602,7 +11613,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 540514399156852107, guid: 9790cbd40e5466944b06dc36efdef86a, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -0.071
       objectReference: {fileID: 0}
     - target: {fileID: 540514399156852107, guid: 9790cbd40e5466944b06dc36efdef86a, type: 3}
       propertyPath: m_LocalRotation.w
@@ -12563,8 +12574,8 @@ Animator:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 565422600}
   m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 6e864a32661b512479e52562d9d6d294, type: 2}
+  m_Avatar: {fileID: 9000000, guid: 738942128c20c4f45821851cab5b6653, type: 3}
+  m_Controller: {fileID: 9100000, guid: 6ccb80a8972a3d947b62851518ded864, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -12788,7 +12799,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2267312573780600459, guid: d5061be4a847c417d95518e4dc30c7fa, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 3.1400013
+      value: 3.436
       objectReference: {fileID: 0}
     - target: {fileID: 2267312573780600459, guid: d5061be4a847c417d95518e4dc30c7fa, type: 3}
       propertyPath: m_LocalPosition.y
@@ -15279,21 +15290,6 @@ MonoBehaviour:
   tipoReparto: 2
   radioDaAttivare: {fileID: 0}
   messaggioTask: Portami le luci giuste!
---- !u!114 &684401556
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 684401549}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 93eb231721d075f498e8f674c3153593, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NPCWander
-  raggioMovimento: 2
-  tempoAttesaMin: 2
-  tempoAttesaMax: 10
 --- !u!195 &684401557
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -15316,6 +15312,22 @@ NavMeshAgent:
   m_BaseOffset: 1
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &684401561
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 684401549}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5b390728bec2234b965b8e41ecd7de7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NPC_Staff
+  animator: {fileID: 565422601}
+  raggioMovimento: 5
+  tempoAttesaMin: 3
+  tempoAttesaMax: 8
 --- !u!1 &699858030 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1421282164845611995, guid: 2b58e3d8b65b12f4dacc08d12255e7cf, type: 3}
@@ -21907,7 +21919,7 @@ Animator:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1088416830}
   m_Enabled: 1
-  m_Avatar: {fileID: 0}
+  m_Avatar: {fileID: 9000000, guid: dace90034296ef348acbd62a1be9ce75, type: 3}
   m_Controller: {fileID: 9100000, guid: 6e864a32661b512479e52562d9d6d294, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
@@ -22279,21 +22291,6 @@ MonoBehaviour:
   tipoReparto: 1
   radioDaAttivare: {fileID: 0}
   messaggioTask: Portami le lenti giuste!
---- !u!114 &1104776632
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1104776625}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 93eb231721d075f498e8f674c3153593, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NPCWander
-  raggioMovimento: 2
-  tempoAttesaMin: 2
-  tempoAttesaMax: 10
 --- !u!195 &1104776633
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -22316,6 +22313,22 @@ NavMeshAgent:
   m_BaseOffset: 1
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &1104776637
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1104776625}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5b390728bec2234b965b8e41ecd7de7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NPC_Staff
+  animator: {fileID: 1088416831}
+  raggioMovimento: 5
+  tempoAttesaMin: 3
+  tempoAttesaMax: 8
 --- !u!4 &1119542640 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1422444761717653423, guid: 3151106a91e1c024c8bf00a3ce73a966, type: 3}
@@ -25343,19 +25356,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5766871148682481652, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 15.35
+      value: 18.326
       objectReference: {fileID: 0}
     - target: {fileID: 5766871148682481652, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.25001
+      value: 1.066
       objectReference: {fileID: 0}
     - target: {fileID: 5766871148682481652, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -16.39
+      value: -19.147
       objectReference: {fileID: 0}
     - target: {fileID: 5766871148682481652, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.7071078
       objectReference: {fileID: 0}
     - target: {fileID: 5766871148682481652, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
       propertyPath: m_LocalRotation.x
@@ -25363,7 +25376,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5766871148682481652, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: -0.7071058
       objectReference: {fileID: 0}
     - target: {fileID: 5766871148682481652, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
       propertyPath: m_LocalRotation.z
@@ -25375,7 +25388,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5766871148682481652, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: -90
       objectReference: {fileID: 0}
     - target: {fileID: 5766871148682481652, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -25396,6 +25409,14 @@ PrefabInstance:
     - target: {fileID: 9058350479500691861, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
       propertyPath: m_Radius
       value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 9058350479500691861, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
+      propertyPath: m_Center.x
+      value: 1.635
+      objectReference: {fileID: 0}
+    - target: {fileID: 9058350479500691861, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
+      propertyPath: m_Center.z
+      value: -0.071
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
@@ -25886,13 +25907,13 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 7632886891723049378, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
       insertIndex: -1
+      addedObject: {fileID: 1104776637}
+    - targetCorrespondingSourceObject: {fileID: 7632886891723049378, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
+      insertIndex: -1
       addedObject: {fileID: 1104776631}
     - targetCorrespondingSourceObject: {fileID: 7632886891723049378, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1104776633}
-    - targetCorrespondingSourceObject: {fileID: 7632886891723049378, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1104776632}
   m_SourcePrefab: {fileID: 100100000, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
 --- !u!1001 &1324498661
 PrefabInstance:
@@ -27300,6 +27321,37 @@ Transform:
   - {fileID: 1864836940}
   m_Father: {fileID: 6474743086991813475}
   m_LocalEulerAnglesHint: {x: 6.716, y: 0, z: 0}
+--- !u!1 &1391192914
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1391192915}
+  m_Layer: 0
+  m_Name: PuntoUscita_Produzione
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1391192915
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1391192914}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 9.567, y: 0, z: -17.113}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1396071863
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -28084,6 +28136,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93eb231721d075f498e8f674c3153593, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NPCWander
+  animator: {fileID: 0}
+  oggettoRadioFisico: {fileID: 0}
+  puntoDiUscitaSedia: {fileID: 0}
   raggioMovimento: 2
   tempoAttesaMin: 2
   tempoAttesaMax: 10
@@ -31314,6 +31369,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93eb231721d075f498e8f674c3153593, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NPCWander
+  animator: {fileID: 326339381}
+  oggettoRadioFisico: {fileID: 363078924}
+  puntoDiUscitaSedia: {fileID: 1391192915}
   raggioMovimento: 2
   tempoAttesaMin: 2
   tempoAttesaMax: 10
@@ -33263,10 +33321,10 @@ PrefabInstance:
       addedObject: {fileID: 684401555}
     - targetCorrespondingSourceObject: {fileID: 7632886891723049378, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 684401557}
+      addedObject: {fileID: 684401561}
     - targetCorrespondingSourceObject: {fileID: 7632886891723049378, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 684401556}
+      addedObject: {fileID: 684401557}
   m_SourcePrefab: {fileID: 100100000, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
 --- !u!1001 &1605863623
 PrefabInstance:
@@ -44670,3 +44728,4 @@ SceneRoots:
   - {fileID: 162856864}
   - {fileID: 1776337952}
   - {fileID: 1182327106}
+  - {fileID: 1391192915}
