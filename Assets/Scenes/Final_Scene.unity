@@ -15839,10 +15839,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1789673020}
     m_Modifications:
-    - target: {fileID: 7004692508204537994, guid: cf0003b782c496c4e9bc3d8fc7e85125, type: 3}
-      propertyPath: m_Name
-      value: NEW attrice con animazione Variant
-      objectReference: {fileID: 0}
     - target: {fileID: 3056064178707113932, guid: cf0003b782c496c4e9bc3d8fc7e85125, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -15882,6 +15878,10 @@ PrefabInstance:
     - target: {fileID: 3056064178707113932, guid: cf0003b782c496c4e9bc3d8fc7e85125, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7004692508204537994, guid: cf0003b782c496c4e9bc3d8fc7e85125, type: 3}
+      propertyPath: m_Name
+      value: NEW attrice con animazione Variant
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -33723,6 +33723,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::OggettoRaccolta
   tipo: 0
   nomeOggetto: Softbox
+--- !u!1 &1634386215 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2838297098975931674, guid: 7a135907631b74f89a2682563e9b7a06, type: 3}
+  m_PrefabInstance: {fileID: 3482109103709348718}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &1634386217
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1634386215}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: cdd2b647a6fdc1f4d93b1e01411a6329, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1001 &1641649073
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -44091,10 +44118,29 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7297616220500380769, guid: 7a135907631b74f89a2682563e9b7a06, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7297616220500380769, guid: 7a135907631b74f89a2682563e9b7a06, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7297616220500380769, guid: 7a135907631b74f89a2682563e9b7a06, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7297616220500380769, guid: 7a135907631b74f89a2682563e9b7a06, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2838297098975931674, guid: 7a135907631b74f89a2682563e9b7a06, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1634386217}
   m_SourcePrefab: {fileID: 100100000, guid: 7a135907631b74f89a2682563e9b7a06, type: 3}
 --- !u!1001 &3749938859456775739
 PrefabInstance:
