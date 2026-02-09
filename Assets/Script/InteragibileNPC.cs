@@ -185,8 +185,14 @@ public class InteragibileNPC : MonoBehaviour
         // --- 5. REGIA (Ciak e Preview) ---
         if (tipoReparto == GameManager.Reparto.Regia) { 
             if (!RegiaManager.instance.previewInCorso && !RegiaManager.instance.registrazioneInCorso) {
+                
+                // 1. Attiva i monitor (Preview video)
                 RegiaManager.instance.AttivaPreview();
-                Debug.Log("<color=cyan>[Regista]:</color> Guarda i monitor. Se vuoi cambiare qualcosa, parla con i capi reparto.");
+
+                // 2. Fai comparire gli attori sul set! (Scambio gruppi)
+                GameManager.instance.MandaAttoriInScena();
+
+                Debug.Log("<color=cyan>[Regista]:</color> Attori in posizione! Guarda i monitor. Se vuoi cambiare qualcosa, parla con i capi reparto.");
                 return;
             }
             if (RegiaManager.instance.previewInCorso) {

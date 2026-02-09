@@ -104,7 +104,7 @@ public class InterazioneGiocatore : MonoBehaviour
         if (Physics.Raycast(raggio, out hit, distanzaInterazione, layerDaColpire))
         {
             // Stessa logica di interazione di prima...
-             if (hit.collider.CompareTag("Interagibile") || hit.collider.CompareTag("NPC"))
+             if (hit.collider.CompareTag("Interagibile"))
             {
                 SpostamentoCamera spostaCam = hit.collider.GetComponent<SpostamentoCamera>();
                 if (spostaCam == null) spostaCam = hit.collider.GetComponentInParent<SpostamentoCamera>();

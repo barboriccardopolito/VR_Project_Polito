@@ -52,9 +52,7 @@ public class GameManager : MonoBehaviour
     // --- SISTEMA DI RESTITUZIONE E PULIZIA ---
     [Header("Registro Oggetti Scena")]
     public GameObject[] tuttiGliOggettiRaccoglibili; 
-    
-    // TI MANCAVA QUESTA RIGA?
-    public GameObject[] supportiLuciFisici;
+    public GameObject[] supportiLuciFisici; // I treppiedi delle luci nella scena
 
     private class PosizioneOggetto
     {
@@ -64,15 +62,21 @@ public class GameManager : MonoBehaviour
     
     private Dictionary<string, PosizioneOggetto> registroPosizioni = new Dictionary<string, PosizioneOggetto>();
 
+    [Header("Gestione Attori")]
+    public GameObject gruppoAttoriSala; // Trascina qui il padre degli attori in sala
+    public GameObject gruppoAttoriSet;  // Trascina qui il padre degli attori sul set
+
     void Awake() 
     { 
         if (instance == null) instance = this; 
+        else Destroy(gameObject);
+
         SetupFiltriAudio();
     }
 
     void Start() 
     {
-        // Setup Dizionario Posizioni (Salva dove sono gli oggetti all'inizio)
+        // 1. Setup Dizionario Posizioni (Salva dove sono gli oggetti all'inizio)
         foreach (GameObject obj in tuttiGliOggettiRaccoglibili)
         {
             if (obj != null)
@@ -85,10 +89,17 @@ public class GameManager : MonoBehaviour
             }
         }
 
+        // 2. Setup HDRP
         if (globalVolume != null && globalVolume.profile.TryGet(out distortion))
             Debug.Log("Effetti Lente HDRP pronti.");
 
+        // 3. Setup Schermi UI
         if (gestoreSchermi != null) gestoreSchermi.CambiaStato(true); 
+
+        // 4. STATO INIZIALE ATTORI
+        // All'inizio del gioco: Attori in sala SI, Attori sul set NO.
+        if (gruppoAttoriSala != null) gruppoAttoriSala.SetActive(true);
+        if (gruppoAttoriSet != null) gruppoAttoriSet.SetActive(false);
     }
 
     void Update()
@@ -101,7 +112,16 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // --- QUESTA È LA FUNZIONE CHE MANCAVA ---
+    // --- NUOVA FUNZIONE PER ATTORI ---
+    public void MandaAttoriInScena()
+    {
+        if (gruppoAttoriSala != null) gruppoAttoriSala.SetActive(false); // Nascondi sala
+        if (gruppoAttoriSet != null) gruppoAttoriSet.SetActive(true);    // Mostra set
+        
+        Debug.Log("[GameManager]: Attori chiamati sul set!");
+    }
+
+    // --- LOGICA RADIO ---
     public string OttieniSuggerimentoRadio()
     {
         switch (taskAttuale)
@@ -119,7 +139,6 @@ public class GameManager : MonoBehaviour
             default: return "Fine giornata.";
         }
     }
-    // ----------------------------------------
 
     public void CompletaTask(Reparto repartoInteragito)
     {
@@ -171,32 +190,35 @@ public class GameManager : MonoBehaviour
     }
 
     public void ResettaVisualeSupportiLuci()
-        {
-            foreach (GameObject supporto in supportiLuciFisici)
-            {
-                if (supporto != null)
-                {
-                    // 1. RESET VISIVO (Spegne i modelli 3D figli)
-                    foreach (Transform figlio in supporto.transform)
-                    {
-                        string nome = figlio.name.ToLower();
-                        if (nome.Contains("fresnel") || nome.Contains("softbox") || nome.Contains("artistica"))
-                        {
-                            figlio.gameObject.SetActive(false);
-                        }
-                    }
+    {
+        if (supportiLuciFisici == null) return;
 
-                    // 2. RESET LOGICO (Chiama lo script del supporto per dirgli "sei libero")
-                    // Cerca lo script SupportoLuce (o come l'hai chiamato tu)
-                    var scriptSupporto = supporto.GetComponent<SupportoLuce>(); // <--- VERIFICA IL NOME DELLO SCRIPT!
-                    if (scriptSupporto != null)
+        foreach (GameObject supporto in supportiLuciFisici)
+        {
+            if (supporto != null)
+            {
+                // 1. RESET VISIVO (Spegne i modelli 3D figli: Fresnel, Softbox, ecc.)
+                foreach (Transform figlio in supporto.transform)
+                {
+                    string nome = figlio.name.ToLower();
+                    // Evita di spegnere l'AnelloDiSelezione, spegne solo le mesh delle luci
+                    if ((nome.Contains("fresnel") || nome.Contains("softbox") || nome.Contains("artistica")) && !nome.Contains("anello"))
                     {
-                        scriptSupporto.ResettaSupporto(); // Chiama la funzione creata al Passo 1
+                        figlio.gameObject.SetActive(false);
                     }
                 }
+
+                // 2. RESET LOGICO (Chiama lo script del supporto per dirgli "sei libero")
+                // Nota: Assicurati di avere uno script SupportoLuce simile a SupportoMicrofono
+                var scriptSupporto = supporto.GetComponent<SupportoLuce>(); 
+                if (scriptSupporto != null)
+                {
+                    scriptSupporto.ResettaSupporto(); 
+                }
             }
-            Debug.Log("[Luci] Supporti puliti visivamente e logicamente.");
         }
+        Debug.Log("[Luci] Supporti puliti visivamente e logicamente.");
+    }
 
     public void ScegliLuce(string nomeLuce) 
     {
