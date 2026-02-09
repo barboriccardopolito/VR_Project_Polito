@@ -16,27 +16,35 @@ public class SpostamentoCamera : MonoBehaviour
     [Header("Nomi Esatti degli Script da bloccare")]
     public string[] nomiScriptDaDisabilitare; 
 
+    // Riferimento all'anello luminoso
+    private Evidenziatore evidenziatore;
+
     private bool inModalitaSpostamento = false;
-    private bool possoUscire = false; // VARIABILE CRITICA PER EVITARE IL BUG
+    private bool possoUscire = false; 
 
     void Start()
     {
         if (cameraDallAlto != null) cameraDallAlto.gameObject.SetActive(false);
         if (cameraGiocatore == null) cameraGiocatore = Camera.main;
+
+        // Cerca l'evidenziatore su questo oggetto o nei figli
+        evidenziatore = GetComponent<Evidenziatore>();
+        if (evidenziatore == null) evidenziatore = GetComponentInChildren<Evidenziatore>();
     }
 
     // Chiamata dallo script InterazioneGiocatore
     public void Interagisci()
     {
-        // Se sono già dentro, ignoro la chiamata esterna (gestisco l'uscita in Update)
-        // Questo evita che InterazioneGiocatore forzi il rientro mentre cerco di uscire
         if (inModalitaSpostamento) return;
-
         EntraInModalitaSpostamento();
     }
 
     void Update()
     {
+        // --- LOGICA ANELLO LUMINOSO ---
+        GestisciEvidenziatore();
+
+        // --- LOGICA MOVIMENTO ---
         if (inModalitaSpostamento)
         {
             GestisciMovimento();
@@ -56,10 +64,40 @@ public class SpostamentoCamera : MonoBehaviour
         }
     }
 
+    void GestisciEvidenziatore()
+    {
+        if (evidenziatore == null) return;
+
+        // Se sono DENTRO la camera, spengo l'anello (altrimenti mi dà fastidio alla vista)
+        if (inModalitaSpostamento)
+        {
+            evidenziatore.Spegni();
+            return;
+        }
+
+        // Logica di accensione:
+        // 1. Siamo nel reparto Fotografia O in Revisione (Regia)
+        bool faseFotografia = (GameManager.instance.taskAttuale == GameManager.Reparto.Fotografia);
+        bool faseRevisione = (GameManager.instance.taskAttuale == GameManager.Reparto.Regia);
+        
+        // 2. Abbiamo consegnato la lente al fotografo? (Solo se ho la lente posso muovere la camera)
+        bool hoLaLente = (GameManager.instance.lenteSceltaFinale != "");
+
+        // ACCENDITI SE: (È il momento giusto) E (Ho la lente installata)
+        if ((faseFotografia || faseRevisione) && hoLaLente)
+        {
+            evidenziatore.Accendi();
+        }
+        else
+        {
+            evidenziatore.Spegni();
+        }
+    }
+
     void EntraInModalitaSpostamento()
     {
         inModalitaSpostamento = true;
-        possoUscire = false; // <--- BLOCCO IMMEDIATO
+        possoUscire = false; 
         
         BloccaGiocatore(true);
 
@@ -68,13 +106,11 @@ public class SpostamentoCamera : MonoBehaviour
 
         Debug.Log("[Camera] Spostamento ATTIVO. Usa WASD. (Premi E tra 1 secondo per uscire)");
         
-        // Avvia il timer di sicurezza
         StartCoroutine(AbilitaUscitaRoutine());
     }
 
     IEnumerator AbilitaUscitaRoutine()
     {
-        // Aspetta 1 secondo reale prima di permettere di premere E di nuovo
         yield return new WaitForSeconds(1.0f);
         possoUscire = true;
         Debug.Log("✅ Ora puoi premere E per uscire.");
@@ -90,7 +126,6 @@ public class SpostamentoCamera : MonoBehaviour
 
         BloccaGiocatore(false);
 
-        // SALVATAGGIO STATO
         if (GameManager.instance != null)
         {
             GameManager.instance.cameraPosizionata = true;
@@ -103,7 +138,6 @@ public class SpostamentoCamera : MonoBehaviour
         float x = Input.GetAxis("Horizontal"); 
         float z = Input.GetAxis("Vertical");   
 
-        // Movimento relativo alla rotazione della camera (Fix precedente)
         Vector3 camRight = cameraDallAlto.transform.right;
         Vector3 camForward = cameraDallAlto.transform.up; 
 

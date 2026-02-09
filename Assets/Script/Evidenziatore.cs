@@ -3,72 +3,57 @@ using UnityEngine;
 public class Evidenziatore : MonoBehaviour
 {
     [Header("Impostazioni")]
-    public bool accendiAllAvvio = false; 
+    public bool AccendiAllAvvio = false;
+    public float velocitaPulsazione = 2f;
+    public float dimensioneMin = 0.8f;
+    public float dimensioneMax = 1.2f;
 
     [Header("Visuale")]
-    [ColorUsage(true, true)]
-    public Color coloreHighlight = new Color(1f, 1f, 0f, 1f); // Giallo
-    [Range(0f, 20f)]
-    public float intensita = 12f; // Valore alto per HDRP
+    public SpriteRenderer anelloGrafico; // Trascina qui l'oggetto Sprite che hai creato
+    
+    private bool isAttivo = false;
+    private Vector3 scalaIniziale;
 
-    private Renderer rend;
-    private Material[] materialiIstanza; // Array per gestire vestiti, pelle, ecc.
-
-    void Awake()
+    void Start()
     {
-        rend = GetComponent<Renderer>();
-        if (rend == null) rend = GetComponentInChildren<Renderer>();
+        if (anelloGrafico == null)
+            anelloGrafico = GetComponentInChildren<SpriteRenderer>();
 
-        if (rend != null)
+        // Memorizza la scala originale
+        if (anelloGrafico != null) scalaIniziale = anelloGrafico.transform.localScale;
+
+        if (AccendiAllAvvio) Accendi();
+        else Spegni();
+    }
+
+    void Update()
+    {
+        if (isAttivo && anelloGrafico != null)
         {
-            // Prendiamo TUTTI i materiali (vestiti, pelle, accessori)
-            materialiIstanza = rend.materials;
-
-            foreach (var mat in materialiIstanza)
-            {
-                mat.EnableKeyword("_EMISSION");
-                mat.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
-                // Impostiamo emissione zero all'inizio
-                mat.SetColor("_EmissiveColor", Color.black);
-            }
-
-            if (accendiAllAvvio) Accendi();
+            // Effetto Pulsazione (Seno)
+            float scala = Mathf.Lerp(dimensioneMin, dimensioneMax, (Mathf.Sin(Time.time * velocitaPulsazione) + 1f) / 2f);
+            anelloGrafico.transform.localScale = scalaIniziale * scala;
+            
+            // Opzionale: Ruota l'anello lentamente
+            anelloGrafico.transform.Rotate(Vector3.forward * 10 * Time.deltaTime);
         }
     }
 
     public void Accendi()
     {
-        if (rend == null || materialiIstanza == null) return;
-
-        float valoreLum = Mathf.Pow(2, intensita);
-        Color coloreFinale = coloreHighlight * valoreLum;
-
-        foreach (var mat in materialiIstanza)
+        if (anelloGrafico != null)
         {
-            mat.SetColor("_EmissiveColor", coloreFinale);
-            mat.SetColor("_EmissionColor", coloreFinale);
-            
-            if (mat.HasProperty("_EmissiveIntensity"))
-                mat.SetFloat("_EmissiveIntensity", valoreLum);
+            anelloGrafico.enabled = true;
+            isAttivo = true;
         }
-
-        rend.UpdateGIMaterials();
-        Debug.Log($"[Evidenziatore] {gameObject.name} ACCESO - Intensità: {intensita}");
     }
 
     public void Spegni()
     {
-        if (rend == null || materialiIstanza == null) return;
-
-        foreach (var mat in materialiIstanza)
+        if (anelloGrafico != null)
         {
-            mat.SetColor("_EmissiveColor", Color.black);
-            mat.SetColor("_EmissionColor", Color.black);
-            
-            if (mat.HasProperty("_EmissiveIntensity"))
-                mat.SetFloat("_EmissiveIntensity", 0f);
+            anelloGrafico.enabled = false;
+            isAttivo = false;
         }
-
-        rend.UpdateGIMaterials();
     }
 }

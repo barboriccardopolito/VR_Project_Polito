@@ -11,16 +11,71 @@ public class InteragibileNPC : MonoBehaviour
     [TextArea(3, 10)]
     public string messaggioTask;
 
+    // Riferimento allo script dell'anello luminoso
+    private Evidenziatore evidenziatore;
+
+    void Start()
+    {
+        // Trova lo script Evidenziatore sullo stesso oggetto o sui figli
+        evidenziatore = GetComponent<Evidenziatore>();
+        if (evidenziatore == null)
+            evidenziatore = GetComponentInChildren<Evidenziatore>();
+    }
+
+    void Update()
+    {
+        // --- LOGICA ACCENSIONE ANELLO LUMINOSO ---
+        if (evidenziatore != null)
+        {
+            // Recupera lo stato del gioco
+            bool faseRevisione = (GameManager.instance.taskAttuale == GameManager.Reparto.Regia);
+            bool èIlMioTurno = (GameManager.instance.taskAttuale == tipoReparto);
+            
+            bool devoIlluminarmi = false;
+
+            // 1. È il mio turno?
+            if (èIlMioTurno) devoIlluminarmi = true;
+            
+            // 2. Siamo in fase finale (tutti attivi per modifiche)?
+            if (faseRevisione) devoIlluminarmi = true;
+            
+            // 3. Sto aspettando che il giocatore finisca un'installazione per me?
+            // Luci: Ho scelto la luce ma non ho finito di piazzarla
+            if (tipoReparto == GameManager.Reparto.Luci && GameManager.instance.LuceScelta != "" && !GameManager.instance.LucePosizionataCorrettamente) 
+                devoIlluminarmi = true;
+            
+            // Fonico: Ho scelto il mic ma non ho finito di installarlo
+            if (tipoReparto == GameManager.Reparto.Fonico && GameManager.instance.micDaInstallare != "") 
+            {
+                bool taskAudioFinita = false;
+                 if (GameManager.instance.micDaInstallare == "Lavalier" && GameManager.instance.attoriMicrofonatiAttuali >= GameManager.instance.attoriDaMicrofonare) taskAudioFinita = true;
+                 else if ((GameManager.instance.micDaInstallare == "Boom" || GameManager.instance.micDaInstallare == "Ambisonic") && GameManager.instance.supportoPiazzato) taskAudioFinita = true;
+                
+                if (!taskAudioFinita) devoIlluminarmi = true;
+            }
+
+            // Fotografia: Ho scelto la lente ma non ho piazzato la camera
+            if (tipoReparto == GameManager.Reparto.Fotografia && GameManager.instance.lenteSceltaFinale != "" && !GameManager.instance.cameraPosizionata)
+                devoIlluminarmi = true;
+
+            // Applica stato
+            if (devoIlluminarmi) evidenziatore.Accendi();
+            else evidenziatore.Spegni();
+        }
+    }
+
     public void Interagisci()
     {
-// 1. Cerca lo script della PRODUZIONE (Seduta)
+        // --- 0. GESTIONE MOVIMENTO & ANIMAZIONE NPC ---
+        
+        // A. Cerca lo script della PRODUZIONE (Seduta -> Alzata)
         NPCWander produzioneScript = GetComponent<NPCWander>();
         if (produzioneScript != null)
         {
             produzioneScript.InterazioneConPlayer();
         }
 
-        // 2. Cerca lo script dello STAFF (Fotografia, Luci, Fonico) <-- NUOVO
+        // B. Cerca lo script dello STAFF (Fotografia, Luci, Fonico - Camminata -> Stop -> Gesticola)
         NPC_Staff staffScript = GetComponent<NPC_Staff>();
         if (staffScript != null)
         {
@@ -120,8 +175,8 @@ public class InteragibileNPC : MonoBehaviour
             
             if (radioDaAttivare != null) radioDaAttivare.SetActive(true);
             
-            Evidenziatore myGlow = GetComponent<Evidenziatore>();
-            if (myGlow != null) myGlow.Spegni();
+            // Spegniamo l'anello immediatamente dopo l'interazione per pulizia (anche se l'Update lo gestirebbe)
+            if (evidenziatore != null) evidenziatore.Spegni();
             
             GameManager.instance.CompletaTask(tipoReparto);
             return;

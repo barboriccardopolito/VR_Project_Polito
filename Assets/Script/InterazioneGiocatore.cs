@@ -52,8 +52,7 @@ public class InterazioneGiocatore : MonoBehaviour
             // Se l'oggetto ha i tag giusti
             if (hit.collider.CompareTag("Interagibile") || 
                 hit.collider.CompareTag("Lente") || 
-                hit.collider.CompareTag("Raccoglibile") || 
-                hit.collider.CompareTag("NPC"))
+                hit.collider.CompareTag("Raccoglibile"))
             {
                 MostraWidget(hit);
                 bersaglioAgganciato = true; // <--- ABBIAMO TROVATO QUALCOSA!
