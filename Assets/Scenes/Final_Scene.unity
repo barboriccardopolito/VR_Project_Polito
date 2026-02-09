@@ -3057,11 +3057,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7529057784968681630, guid: 3dca5940dad3946e78f671f7326a3c3a, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2.5489998
+      value: -2.497
       objectReference: {fileID: 0}
     - target: {fileID: 7529057784968681630, guid: 3dca5940dad3946e78f671f7326a3c3a, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -2.0930004
+      value: -2.093
       objectReference: {fileID: 0}
     - target: {fileID: 7529057784968681630, guid: 3dca5940dad3946e78f671f7326a3c3a, type: 3}
       propertyPath: m_LocalRotation.w
@@ -5814,7 +5814,7 @@ MeshRenderer:
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
   m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 2
+  m_SelectedEditorRenderState: 3
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
@@ -9471,7 +9471,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.RenderPipelines.Core.Runtime::UnityEngine.Rendering.ProbeVolume
   mode: 1
-  size: {x: 24.534893, y: 23.586006, z: 36.892033}
+  size: {x: 24.534893, y: 23.586006, z: 36.89203}
   overrideRendererFilters: 0
   minRendererVolumeSize: 0.1
   objectLayerMask:
@@ -9511,7 +9511,7 @@ Transform:
   m_GameObject: {fileID: 414358793}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.6174912, y: 10.011653, z: -3.0799809}
+  m_LocalPosition: {x: 4.6174912, y: 10.011653, z: -3.0799828}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -38660,11 +38660,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4513974852192652543, guid: 1433597095d5a4a27b3c61261dcc488e, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2.57
+      value: -2.498
       objectReference: {fileID: 0}
     - target: {fileID: 4513974852192652543, guid: 1433597095d5a4a27b3c61261dcc488e, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -2.4770012
+      value: -2.477
       objectReference: {fileID: 0}
     - target: {fileID: 4513974852192652543, guid: 1433597095d5a4a27b3c61261dcc488e, type: 3}
       propertyPath: m_LocalRotation.w
@@ -42564,11 +42564,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7529057784968681630, guid: 3dca5940dad3946e78f671f7326a3c3a, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2.5489998
+      value: -2.5
       objectReference: {fileID: 0}
     - target: {fileID: 7529057784968681630, guid: 3dca5940dad3946e78f671f7326a3c3a, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -2.1090012
+      value: -2.109
       objectReference: {fileID: 0}
     - target: {fileID: 7529057784968681630, guid: 3dca5940dad3946e78f671f7326a3c3a, type: 3}
       propertyPath: m_LocalRotation.w
