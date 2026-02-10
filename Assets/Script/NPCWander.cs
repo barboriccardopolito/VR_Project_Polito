@@ -1,19 +1,25 @@
 using UnityEngine;
 using UnityEngine.AI;
+using System.Collections;
 
 public class NPCWander : MonoBehaviour
 {
     [Header("Componenti")]
     public Animator animator;
-    public GameObject oggettoRadioFisico;
+    public GameObject oggettoRadioFisico; // La radio fisica sul tavolo/cintura
 
     [Header("Posizioni")]
-    public Transform puntoDiUscitaSedia; // <-- NUOVO: Trascina qui un oggetto vuoto dove vuoi che appaia in piedi
+    public Transform puntoDiUscitaSedia; // Trascina qui l'oggetto vuoto "sicuro"
 
     [Header("Movimento")]
     public float raggioMovimento = 3f;
     public float tempoAttesaMin = 2f;
     public float tempoAttesaMax = 5f;
+
+    [Header("Audio Dialoghi")]
+    public AudioClip[] clipsIntroduzione; // Trascina qui Intro_01 a Intro_06
+    public AudioClip clipConsegnaRadio;   // Trascina qui Consegna_radio
+    private AudioSource audioSource;
 
     private NavMeshAgent agent;
     private RadioSistema radioSistema;
@@ -21,20 +27,26 @@ public class NPCWander : MonoBehaviour
     private Vector3 puntoIniziale;
     
     private bool isSeduto = true;
-    private bool staParlando = false;
+    private bool staParlando = false; 
     private Transform targetGiocatore;
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         
+        // Setup Audio
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.spatialBlend = 1.0f; // Audio 3D
+
         // Se non abbiamo assegnato il punto di uscita, usiamo la posizione attuale come fallback
         if (puntoDiUscitaSedia == null) puntoDiUscitaSedia = transform; 
-        puntoIniziale = puntoDiUscitaSedia.position; // Il centro del vagabondaggio è il punto sicuro, non la sedia!
+        puntoIniziale = puntoDiUscitaSedia.position; 
 
         timer = tempoAttesaMin;
         radioSistema = FindObjectOfType<RadioSistema>();
 
+        // Se il giocatore ha già la radio, l'NPC parte già in piedi che cammina
         if (radioSistema != null && radioSistema.haLaRadio)
             StartInPiedi();
         else
@@ -44,31 +56,41 @@ public class NPCWander : MonoBehaviour
     void StartSeduto()
     {
         isSeduto = true;
-        if (animator != null) animator.SetBool("IsSeduto", true);
+        // CORRETTO: Uso "IsSeduto"
+        if (animator != null) animator.SetBool("IsSeduto", true); 
         if (agent != null) agent.enabled = false;
     }
 
     void StartInPiedi()
     {
-        Alzati(); // Usa la logica completa di alzata
+        isSeduto = false;
+        // CORRETTO: Uso "IsSeduto"
+        if (animator != null) animator.SetBool("IsSeduto", false);
+
         if (oggettoRadioFisico != null) oggettoRadioFisico.SetActive(false);
+        
+        if (agent != null) 
+        {
+            agent.enabled = true;
+            MuoviNPC();
+        }
     }
 
     void Update()
     {
-        // 1. SINCRONIZZA ANIMAZIONE VELOCITÀ (Fix Moonwalking)
+        // 1. SINCRONIZZA ANIMAZIONE VELOCITÀ
         if (animator != null && agent != null && agent.isActiveAndEnabled)
         {
-            // Passiamo la velocità reale dell'agente all'animator
             animator.SetFloat("Speed", agent.velocity.magnitude);
         }
 
+        // Se è seduto, fermati qui.
         if (isSeduto) return;
 
+        // Se sta parlando (ma è in piedi), ruota verso il giocatore e stai fermo
         if (staParlando)
         {
             RuotaVersoGiocatore();
-            // Se parla, fermiamo l'agent ma l'animazione andrà in Idle grazie al parametro Speed = 0
             if(agent.isActiveAndEnabled) agent.isStopped = true; 
             return;
         }
@@ -77,7 +99,7 @@ public class NPCWander : MonoBehaviour
             if(agent.isActiveAndEnabled) agent.isStopped = false;
         }
 
-        // Logica Vagabondaggio
+        // Logica Vagabondaggio (Solo se è in piedi e ha finito di parlare)
         timer += Time.deltaTime;
         if (timer >= tempoAttesaMax)
         {
@@ -96,35 +118,80 @@ public class NPCWander : MonoBehaviour
         }
     }
 
+    // --- INTERAZIONE ---
     public void InterazioneConPlayer()
     {
-        if (radioSistema != null && radioSistema.haLaRadio) return;
+        // Evita doppi click o interazioni se ha già dato la radio
+        if (staParlando || (radioSistema != null && radioSistema.haLaRadio)) return;
 
+        staParlando = true; // Blocca eventuali altri input
+
+        // Avvia la sequenza audio
+        StartCoroutine(SequenzaDialogo());
+    }
+
+    IEnumerator SequenzaDialogo()
+    {
+        // 1. Riproduci le 6 frasi di introduzione
+        if (clipsIntroduzione != null)
+        {
+            foreach (AudioClip clip in clipsIntroduzione)
+            {
+                if (clip != null)
+                {
+                    audioSource.clip = clip;
+                    audioSource.Play();
+                    // Aspetta la durata della clip + piccola pausa
+                    yield return new WaitForSeconds(clip.length + 0.2f);
+                }
+            }
+        }
+
+        // 2. Riproduci la frase di consegna
+        if (clipConsegnaRadio != null)
+        {
+            audioSource.clip = clipConsegnaRadio;
+            audioSource.Play();
+            yield return new WaitForSeconds(clipConsegnaRadio.length);
+        }
+
+        // 3. AUDIO FINITO: Consegna e Azione
         Debug.Log("NPC: 'Ecco a te.'");
+        
+        // Consegna Logica
         if (radioSistema != null) radioSistema.RiceviRadio();
+        
+        // Nascondi Radio Fisica
         if (oggettoRadioFisico != null) oggettoRadioFisico.SetActive(false);
 
-        Invoke("Alzati", 30.0f);
+        // Completa Task nel GameManager
+        if (GameManager.instance != null) 
+            GameManager.instance.CompletaTask(GameManager.Reparto.Produzione);
+
+        // Reset stato parlato
+        staParlando = false;
+
+        // 4. ORA MI ALZO
+        Alzati();
     }
 
     void Alzati()
     {
         isSeduto = false;
-        if (animator != null) animator.SetBool("IsSeduto", false);
+        // CORRETTO: Uso "IsSeduto"
+        if (animator != null) animator.SetBool("IsSeduto", false); 
 
         if (agent != null)
         {
-            // --- FIX TRAVERSAMENTO TAVOLO ---
-            // Teletrasportiamo l'agent nel punto sicuro (es. di fianco alla scrivania)
-            // Usiamo Warp che è il modo corretto per spostare un NavMeshAgent istantaneamente
+            // Teletrasportiamo l'agent nel punto sicuro
             if (puntoDiUscitaSedia != null)
             {
                 agent.Warp(puntoDiUscitaSedia.position);
-                transform.rotation = puntoDiUscitaSedia.rotation; // La giriamo già verso la stanza
+                transform.rotation = puntoDiUscitaSedia.rotation; 
             }
             
             agent.enabled = true;
-            MuoviNPC(); // Diamo subito una destinazione per farla partire
+            MuoviNPC(); // Parte subito
         }
     }
 
@@ -140,11 +207,18 @@ public class NPCWander : MonoBehaviour
 
     void RuotaVersoGiocatore()
     {
+        if (targetGiocatore == null)
+        {
+            InterazioneGiocatore player = FindObjectOfType<InterazioneGiocatore>();
+            if (player != null) targetGiocatore = player.transform;
+        }
+
         if (targetGiocatore != null)
         {
             Vector3 direzione = (targetGiocatore.position - transform.position).normalized;
             direzione.y = 0;
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direzione), Time.deltaTime * 5f);
+            if (direzione != Vector3.zero)
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direzione), Time.deltaTime * 5f);
         }
     }
 }

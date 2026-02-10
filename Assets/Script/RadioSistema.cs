@@ -4,35 +4,27 @@ public class RadioSistema : MonoBehaviour
 {
     public bool haLaRadio = false;
 
-    // Funzione chiamata dall'NPC per dare la radio
+    [Header("Oggetto Fisico sul Player")]
+    public GameObject radioAddossoAlPlayer; // Trascina qui la Radio che è figlia del Player
+
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip suonoRicezione;
+
     public void RiceviRadio()
     {
+        if (haLaRadio) return;
+
         haLaRadio = true;
-        Debug.Log("RADIO SISTEMA: Radio acquisita!");
-    }
 
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            UsaRadio();
-        }
-    }
+        // 1. Accendi la radio che il player ha addosso
+        if (radioAddossoAlPlayer != null) 
+            radioAddossoAlPlayer.SetActive(true);
 
-    void UsaRadio()
-    {
-        if (haLaRadio)
-        {
-            // Assicurati che GameManager esista, altrimenti darà errore
-            if (GameManager.instance != null)
-            {
-                string messaggio = GameManager.instance.OttieniSuggerimentoRadio();
-                Debug.Log("<color=cyan>[RADIO]:</color> " + messaggio);
-            }
-        }
-        else
-        {
-            Debug.Log("Non hai la radio. Vai in Produzione!");
-        }
+        // 2. Suono
+        if (audioSource != null && suonoRicezione != null)
+            audioSource.PlayOneShot(suonoRicezione);
+
+        Debug.Log("<color=green>[SYSTEM]</color> Radio ricevuta!");
     }
 }

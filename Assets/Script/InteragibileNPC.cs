@@ -170,18 +170,27 @@ public class InteragibileNPC : MonoBehaviour
 
         // --- 4. PRODUZIONE ---
         if (tipoReparto == GameManager.Reparto.Produzione) { 
-            RadioSistema radio = FindFirstObjectByType<RadioSistema>();
-            if (radio != null) radio.RiceviRadio(); // Usa il metodo pubblico corretto
             
-            if (radioDaAttivare != null) radioDaAttivare.SetActive(true);
-            
-            // Spegniamo l'anello immediatamente dopo l'interazione per pulizia (anche se l'Update lo gestirebbe)
+            // Spegniamo l'anello subito per pulizia visiva
             if (evidenziatore != null) evidenziatore.Spegni();
-            
-            GameManager.instance.CompletaTask(tipoReparto);
+
+            // Deleghiamo TUTTO allo script NPCWander che gestisce audio e consegna
+            if (produzioneScript != null)
+            {
+                // Questo farà partire la Coroutine con i dialoghi
+                produzioneScript.InterazioneConPlayer(); 
+            }
+            else
+            {
+                // Fallback di sicurezza se manca lo script (non dovrebbe succedere)
+                Debug.LogError("Manca lo script NPCWander sull'NPC Produzione!");
+                GameManager.instance.CompletaTask(tipoReparto);
+            }
+
+            // NON chiamiamo più CompletaTask qui, lo farà NPCWander alla fine dell'audio!
             return;
         }
-
+        
         // --- 5. REGIA (Ciak e Preview) ---
         if (tipoReparto == GameManager.Reparto.Regia) { 
             if (!RegiaManager.instance.previewInCorso && !RegiaManager.instance.registrazioneInCorso) {

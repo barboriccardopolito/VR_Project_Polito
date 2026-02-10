@@ -1448,7 +1448,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1421282164845611995, guid: 2b58e3d8b65b12f4dacc08d12255e7cf, type: 3}
       propertyPath: m_TagString
-      value: Raccoglibile
+      value: Untagged
       objectReference: {fileID: 0}
     - target: {fileID: 4910691654185702722, guid: 2b58e3d8b65b12f4dacc08d12255e7cf, type: 3}
       propertyPath: m_ColorTemperature
@@ -1872,7 +1872,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7703512518693552971, guid: 193f34330cbe6ae40981439b7c38f5ff, type: 3}
       propertyPath: m_TagString
-      value: Raccoglibile
+      value: Untagged
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -5309,9 +5309,11 @@ MonoBehaviour:
   animator: {fileID: 0}
   oggettoRadioFisico: {fileID: 0}
   puntoDiUscitaSedia: {fileID: 0}
-  raggioMovimento: 2
+  raggioMovimento: 3
   tempoAttesaMin: 2
-  tempoAttesaMax: 10
+  tempoAttesaMax: 5
+  clipsIntroduzione: []
+  clipConsegnaRadio: {fileID: 0}
 --- !u!195 &231873741
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -7267,9 +7269,11 @@ MonoBehaviour:
   animator: {fileID: 0}
   oggettoRadioFisico: {fileID: 0}
   puntoDiUscitaSedia: {fileID: 0}
-  raggioMovimento: 10
+  raggioMovimento: 3
   tempoAttesaMin: 2
   tempoAttesaMax: 5
+  clipsIntroduzione: []
+  clipConsegnaRadio: {fileID: 0}
 --- !u!195 &293664995
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -8097,7 +8101,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1421282164845611995, guid: 2b58e3d8b65b12f4dacc08d12255e7cf, type: 3}
       propertyPath: m_TagString
-      value: Raccoglibile
+      value: Untagged
       objectReference: {fileID: 0}
     - target: {fileID: 7665404228137716643, guid: 2b58e3d8b65b12f4dacc08d12255e7cf, type: 3}
       propertyPath: m_LocalScale.x
@@ -13665,7 +13669,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 2267312573780600459, guid: d5061be4a847c417d95518e4dc30c7fa, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 672432146}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 1735825478683611065, guid: d5061be4a847c417d95518e4dc30c7fa, type: 3}
       insertIndex: -1
@@ -16034,6 +16041,37 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2297321233409764932, guid: a2ed17d5203c6b44eadc4cd7b4354261, type: 3}
   m_PrefabInstance: {fileID: 879569750}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &672432145
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 672432146}
+  m_Layer: 0
+  m_Name: Punto_Seduta_FIX
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &672432146
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 672432145}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0.00457}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 587271314}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &674042318
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -18714,6 +18752,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RadioSistema
   haLaRadio: 0
+  radioAddossoAlPlayer: {fileID: 792783636}
+  audioSource: {fileID: 0}
+  suonoRicezione: {fileID: 0}
 --- !u!114 &858305093
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18726,10 +18767,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df37eff78c3aaf94db570e3c741c1934, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventarioGiocatore
+  manoContainer: {fileID: 0}
   haUnOggetto: 0
   oggettoInMano: 
   categoriaInMano: 0
-  pivotManoSinistra: {fileID: 148122055}
 --- !u!143 &858305097
 CharacterController:
   m_ObjectHideFlags: 0
@@ -26863,7 +26904,7 @@ GameObject:
   - component: {fileID: 1262597931}
   m_Layer: 0
   m_Name: Cinematografica
-  m_TagString: Raccoglibile
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -26876,8 +26917,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1262597929}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.039389674, y: -0.006541966, z: -0.26810133, w: 0.962563}
-  m_LocalPosition: {x: 2.636, y: 1.21, z: 2.428}
+  m_LocalRotation: {x: -0.039389674, y: -0.0065419064, z: -0.26810133, w: 0.9625629}
+  m_LocalPosition: {x: 2.6359997, y: 1.2099999, z: 2.428}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -29854,7 +29895,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1421282164845611995, guid: 2b58e3d8b65b12f4dacc08d12255e7cf, type: 3}
       propertyPath: m_TagString
-      value: Raccoglibile
+      value: Untagged
       objectReference: {fileID: 0}
     - target: {fileID: 4910691654185702722, guid: 2b58e3d8b65b12f4dacc08d12255e7cf, type: 3}
       propertyPath: m_Color.b
@@ -32605,7 +32646,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6311032725306705496, guid: 6ee21961739450e41a13fd1520b7bb05, type: 3}
       propertyPath: m_TagString
-      value: Raccoglibile
+      value: Untagged
       objectReference: {fileID: 0}
     - target: {fileID: 7939788083720464655, guid: 6ee21961739450e41a13fd1520b7bb05, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
@@ -33326,9 +33367,17 @@ MonoBehaviour:
   animator: {fileID: 326339381}
   oggettoRadioFisico: {fileID: 363078924}
   puntoDiUscitaSedia: {fileID: 1391192915}
-  raggioMovimento: 2
+  raggioMovimento: 3
   tempoAttesaMin: 2
-  tempoAttesaMax: 10
+  tempoAttesaMax: 5
+  clipsIntroduzione:
+  - {fileID: 8300000, guid: cf2e6948dbbb7154ebb814deddab0dfe, type: 3}
+  - {fileID: 8300000, guid: 9deaee89c1c66af40977fb8628b6d297, type: 3}
+  - {fileID: 8300000, guid: cefaced6ef361dc4f9b1a6e46078d915, type: 3}
+  - {fileID: 8300000, guid: 11473ddc1bcb04f49b4f5ebbd7d53105, type: 3}
+  - {fileID: 8300000, guid: ef5bd91e3f311464ab562df901411fbc, type: 3}
+  - {fileID: 8300000, guid: 4a3a1d7cc32c43343b4b66ae4056fa22, type: 3}
+  clipConsegnaRadio: {fileID: 8300000, guid: 63f1d154426585d4bab68fc39d869943, type: 3}
 --- !u!195 &1499088859
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -33367,7 +33416,7 @@ MonoBehaviour:
   velocitaPulsazione: 2
   dimensioneMin: 0.8
   dimensioneMax: 1.2
-  anelloGrafico: {fileID: 0}
+  anelloGrafico: {fileID: 472366582}
 --- !u!114 &1499088865
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -36282,7 +36331,7 @@ GameObject:
   - component: {fileID: 1677235618}
   m_Layer: 0
   m_Name: Grandangolo
-  m_TagString: Raccoglibile
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -36295,8 +36344,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1677235616}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.039389674, y: -0.006541966, z: -0.26810133, w: 0.962563}
-  m_LocalPosition: {x: 1.83, y: 1.715, z: 2.283}
+  m_LocalRotation: {x: -0.039389674, y: -0.0065419064, z: -0.26810133, w: 0.9625629}
+  m_LocalPosition: {x: 1.8299999, y: 1.7149997, z: 2.2829995}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -43979,7 +44028,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7480184048406599344, guid: d201ae0d222c9554ea38d4e0bd450cec, type: 3}
       propertyPath: m_TagString
-      value: Raccoglibile
+      value: Untagged
       objectReference: {fileID: 0}
     - target: {fileID: 7819695284314819594, guid: d201ae0d222c9554ea38d4e0bd450cec, type: 3}
       propertyPath: m_LocalScale.x
@@ -45409,7 +45458,7 @@ GameObject:
   - component: {fileID: 2109846270}
   m_Layer: 0
   m_Name: Distorta
-  m_TagString: Raccoglibile
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -45422,8 +45471,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2109846268}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.039389674, y: -0.006541966, z: -0.26810133, w: 0.962563}
-  m_LocalPosition: {x: 2.1919997, y: 1.4049997, z: 2.3880005}
+  m_LocalRotation: {x: -0.039389674, y: -0.0065419064, z: -0.26810133, w: 0.9625629}
+  m_LocalPosition: {x: 2.192, y: 1.4049997, z: 2.3880002}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

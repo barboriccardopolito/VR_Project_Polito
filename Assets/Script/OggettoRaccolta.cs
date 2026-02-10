@@ -24,32 +24,18 @@ public class OggettoRaccolta : MonoBehaviour
         GestisciEvidenziatore();
     }
 
-    // --- QUESTA È LA FUNZIONE CHE MANCAVA ---
-    public void EseguiRaccolta()
+public void EseguiRaccolta()
     {
         InventarioGiocatore inventario = FindFirstObjectByType<InventarioGiocatore>();
         
         if (inventario != null)
         {
-            // Controlla se abbiamo già le mani piene (opzionale, ma consigliato)
-            if (inventario.haUnOggetto)
-            {
-                Debug.Log("Hai già un oggetto in mano! Posalo o consegnalo prima.");
-                return;
-            }
+            if (inventario.haUnOggetto) return;
 
-            // 1. Passa i dati all'inventario
-            inventario.haUnOggetto = true;
-            inventario.oggettoInMano = nomeOggetto;
-            inventario.categoriaInMano = categoria;
+            // Passa se stesso (gameObject) per essere gestito dall'inventario
+            inventario.RaccogliOggetto(nomeOggetto, categoria, gameObject);
             
-            Debug.Log($"Hai raccolto: {nomeOggetto} ({categoria})");
-
-            // 2. Aggiorna la UI (se hai uno script UI collegato, altrimenti lo ignora)
-            // inventario.AggiornaIconaUI(); 
-
-            // 3. Nascondi questo oggetto dalla scena (perché ora è "in tasca")
-            gameObject.SetActive(false);
+            Debug.Log($"Hai raccolto: {nomeOggetto}");
         }
     }
 
