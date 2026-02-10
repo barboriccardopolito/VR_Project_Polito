@@ -6,6 +6,12 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/MenuPrincipale.unity
+    guid: 2ad4c6a1e8c54b5459b5fcf4f82b9fec
+  - enabled: 1
+    path: Assets/Scenes/Final_Scene.unity
+    guid: f19bfb4c5763ebb4f99294826167a24d
+  - enabled: 0
     path: Assets/Scenes/Riccardo_Logic_MainScene.unity
     guid: 8124e5870f4fd4c779e7a5f994e84ad1
   m_configObjects:
