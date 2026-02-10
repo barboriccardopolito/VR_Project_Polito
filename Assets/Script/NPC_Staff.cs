@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
+using System.Collections;
+using System; // Necessario per le "Action"
 
 public class NPC_Staff : MonoBehaviour
 {
@@ -11,48 +13,71 @@ public class NPC_Staff : MonoBehaviour
     public float tempoAttesaMin = 3f;
     public float tempoAttesaMax = 8f;
 
+    [Header("Audio Dialoghi Generici")]
+    public AudioClip[] clipsIntroduzione;
+    public AudioClip audioTaskCompletata; 
+
+    [Header("Audio Regista (SOLO REGISTA)")] 
+    public AudioClip audioCiak; 
+
+    [Header("Audio Consegna Lente (FOTOGRAFO)")]
+    public AudioClip audioGrandangolo;
+    public AudioClip audioStandard; 
+    public AudioClip audioCinema;   
+
+    [Header("Audio Consegna Luce (ELETTRICISTA)")]
+    public AudioClip audioFresnel;
+    public AudioClip audioSoftbox;
+    public AudioClip audioArtistica;
+
+    [Header("Audio Consegna Microfono (FONICO)")]
+    public AudioClip audioLavalier;
+    public AudioClip audioBoom;
+    public AudioClip audioAmbisonic;
+
+    private AudioSource audioSource;
+    
+    [HideInInspector]
+    public bool haGiaParlato = false; 
+
     private NavMeshAgent agent;
     private float timer;
     private Vector3 puntoIniziale;
-    
-    // Stati
     private bool staParlando = false;
     private Transform targetGiocatore;
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-        puntoIniziale = transform.position; // Il centro della zona è dove lo metti nella scena
+        puntoIniziale = transform.position;
         timer = tempoAttesaMin;
+
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.spatialBlend = 1.0f; 
     }
 
     void Update()
     {
-        // 1. ANIMAZIONE CAMMINATA (Sincronizzata con velocità reale)
-        if (animator != null && agent != null)
-        {
-            animator.SetFloat("Speed", agent.velocity.magnitude);
-        }
+        if (animator != null && agent != null) animator.SetFloat("Speed", agent.velocity.magnitude);
 
-        // 2. LOGICA INTERAZIONE (Priorità assoluta)
         if (staParlando)
         {
-            if (agent.isActiveAndEnabled) agent.isStopped = true; // Fermati
+            if (agent.isActiveAndEnabled) agent.isStopped = true;
             RuotaVersoGiocatore();
-            return; // Non fare calcoli di movimento
+            return;
         }
         else
         {
-            if (agent.isActiveAndEnabled) agent.isStopped = false; // Riprendi a camminare
+            if (agent.isActiveAndEnabled) agent.isStopped = false;
         }
 
-        // 3. LOGICA VAGABONDAGGIO (Wander)
         timer += Time.deltaTime;
         if (timer >= tempoAttesaMax)
         {
             MuoviNPC();
             timer = 0;
-            tempoAttesaMax = Random.Range(tempoAttesaMin, tempoAttesaMax + 2f);
+            tempoAttesaMax = UnityEngine.Random.Range(tempoAttesaMin, tempoAttesaMax + 2f);
         }
     }
 
@@ -65,20 +90,145 @@ public class NPC_Staff : MonoBehaviour
         }
     }
 
-    // --- INTERAZIONE ---
-    
-    // Questa funzione viene chiamata da InteragibileNPC
     public void AttivaInterazione(Transform player)
     {
         staParlando = true;
         targetGiocatore = player;
-
-        // Attiva animazione gesticolare
         if (animator != null) animator.SetBool("IsTalking", true);
-
-        // Imposta un timer per smettere di gesticolare dopo 4 secondi (o durata dialogo)
         CancelInvoke("FineInterazione");
         Invoke("FineInterazione", 4.0f);
+    }
+
+    // --- 1. AUDIO INTRODUZIONE ---
+    public void AvviaDialogoIniziale()
+    {
+        if (haGiaParlato) return;
+        haGiaParlato = true; 
+        staParlando = true;  
+        CancelInvoke("FineInterazione");
+        StartCoroutine(SequenzaDialogo());
+    }
+
+    IEnumerator SequenzaDialogo()
+    {
+        if (animator != null) animator.SetBool("IsTalking", true);
+        if (clipsIntroduzione != null)
+        {
+            foreach (AudioClip clip in clipsIntroduzione)
+            {
+                if (clip != null)
+                {
+                    audioSource.Stop();
+                    audioSource.clip = clip;
+                    audioSource.Play();
+                    yield return new WaitForSeconds(clip.length + 0.2f);
+                }
+            }
+        }
+        FineInterazione();
+    }
+
+    // --- 2. REAZIONI CONSEGNA OGGETTI ---
+    public void ReazioneConsegnaLente(string nomeOggetto)
+    {
+        AudioClip clip = null;
+        if (nomeOggetto.IndexOf("Grandangolo", StringComparison.OrdinalIgnoreCase) >= 0) clip = audioGrandangolo;
+        else if (nomeOggetto.IndexOf("Cinematografica", StringComparison.OrdinalIgnoreCase) >= 0) clip = audioCinema;
+        else clip = audioStandard;
+        SuonaAudioReazione(clip);
+    }
+
+    public void ReazioneConsegnaLuce(string nomeOggetto)
+    {
+        AudioClip clip = null;
+        if (nomeOggetto.IndexOf("Fresnel", StringComparison.OrdinalIgnoreCase) >= 0) clip = audioFresnel;
+        else if (nomeOggetto.IndexOf("Softbox", StringComparison.OrdinalIgnoreCase) >= 0) clip = audioSoftbox;
+        else clip = audioArtistica;
+        SuonaAudioReazione(clip);
+    }
+
+    public void ReazioneConsegnaMicrofono(string nomeOggetto)
+    {
+        AudioClip clip = null;
+        if (nomeOggetto.IndexOf("Lavalier", StringComparison.OrdinalIgnoreCase) >= 0) clip = audioLavalier;
+        else if (nomeOggetto.IndexOf("Boom", StringComparison.OrdinalIgnoreCase) >= 0) clip = audioBoom;
+        else if (nomeOggetto.IndexOf("Ambisonic", StringComparison.OrdinalIgnoreCase) >= 0) clip = audioAmbisonic;
+        SuonaAudioReazione(clip);
+    }
+
+    // --- 3. REAZIONE CIAK (REGISTA) ---
+    public void ReazioneCiak(Action azioneDopoCiak)
+    {
+        if (audioCiak != null)
+        {
+            StartCoroutine(SequenzaCiak(azioneDopoCiak));
+        }
+        else
+        {
+            azioneDopoCiak?.Invoke();
+        }
+    }
+
+    IEnumerator SequenzaCiak(Action azioneDopoCiak)
+    {
+        staParlando = true;
+        CancelInvoke("FineInterazione");
+        if (animator != null) animator.SetBool("IsTalking", true);
+
+        audioSource.Stop();
+        audioSource.clip = audioCiak;
+        audioSource.Play();
+
+        yield return new WaitForSeconds(audioCiak.length + 0.1f);
+
+        azioneDopoCiak?.Invoke();
+
+        FineInterazione();
+    }
+
+    void SuonaAudioReazione(AudioClip clip)
+    {
+        if (clip != null)
+        {
+            StopAllCoroutines(); 
+            CancelInvoke("FineInterazione");
+            staParlando = true; 
+            if (animator != null) animator.SetBool("IsTalking", true);
+
+            audioSource.Stop();
+            audioSource.clip = clip;
+            audioSource.Play();
+            Invoke("FineInterazione", clip.length + 0.5f);
+        }
+    }
+
+    // --- 4. AUDIO FINE TASK GENERICO ---
+    public void ReazioneFineTask(Action azioneAlTermine)
+    {
+        if (audioTaskCompletata != null)
+        {
+            StartCoroutine(SequenzaFineTask(azioneAlTermine));
+        }
+        else
+        {
+            azioneAlTermine?.Invoke();
+        }
+    }
+
+    IEnumerator SequenzaFineTask(Action azioneAlTermine)
+    {
+        staParlando = true;
+        CancelInvoke("FineInterazione");
+        if (animator != null) animator.SetBool("IsTalking", true);
+
+        audioSource.Stop();
+        audioSource.clip = audioTaskCompletata;
+        audioSource.Play();
+
+        yield return new WaitForSeconds(audioTaskCompletata.length + 0.2f);
+
+        azioneAlTermine?.Invoke();
+        FineInterazione();
     }
 
     void FineInterazione()
@@ -88,11 +238,9 @@ public class NPC_Staff : MonoBehaviour
         if (animator != null) animator.SetBool("IsTalking", false);
     }
 
-    // --- UTILITÀ ---
-
     public static Vector3 RandomNavSphere(Vector3 origin, float dist, int layermask)
     {
-        Vector3 randDirection = Random.insideUnitSphere * dist;
+        Vector3 randDirection = UnityEngine.Random.insideUnitSphere * dist;
         randDirection += origin;
         NavMeshHit navHit;
         if (NavMesh.SamplePosition(randDirection, out navHit, dist, layermask))
@@ -105,11 +253,9 @@ public class NPC_Staff : MonoBehaviour
         if (targetGiocatore != null)
         {
             Vector3 direzione = (targetGiocatore.position - transform.position).normalized;
-            direzione.y = 0; // Mantieni la rotazione solo sull'asse Y (orizzontale)
+            direzione.y = 0; 
             if (direzione != Vector3.zero)
-            {
                 transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direzione), Time.deltaTime * 5f);
-            }
         }
     }
 }

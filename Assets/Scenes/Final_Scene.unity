@@ -5267,7 +5267,7 @@ PrefabInstance:
       addedObject: {fileID: 231873741}
     - targetCorrespondingSourceObject: {fileID: 7632886891723049378, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 231873740}
+      addedObject: {fileID: 231873749}
   m_SourcePrefab: {fileID: 100100000, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
 --- !u!1 &231873734 stripped
 GameObject:
@@ -5294,26 +5294,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5766871148682481652, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
   m_PrefabInstance: {fileID: 231873733}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &231873740
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 231873734}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 93eb231721d075f498e8f674c3153593, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NPCWander
-  animator: {fileID: 0}
-  oggettoRadioFisico: {fileID: 0}
-  puntoDiUscitaSedia: {fileID: 0}
-  raggioMovimento: 3
-  tempoAttesaMin: 2
-  tempoAttesaMax: 5
-  clipsIntroduzione: []
-  clipConsegnaRadio: {fileID: 0}
 --- !u!195 &231873741
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -5353,6 +5333,41 @@ MonoBehaviour:
   dimensioneMin: 0.8
   dimensioneMax: 1.2
   anelloGrafico: {fileID: 0}
+--- !u!114 &231873749
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 231873734}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5b390728bec2234b965b8e41ecd7de7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NPC_Staff
+  animator: {fileID: 0}
+  raggioMovimento: 5
+  tempoAttesaMin: 3
+  tempoAttesaMax: 8
+  clipsIntroduzione:
+  - {fileID: 8300000, guid: 03a97f31a65299f4f8842b7f17e68e31, type: 3}
+  - {fileID: 8300000, guid: 3a9af45ee5e4c7a47b1892c9e11b5219, type: 3}
+  - {fileID: 8300000, guid: dce7351c5bb3ec04f9e9e9319a00a57c, type: 3}
+  - {fileID: 8300000, guid: 4d8f98981cc61b94789603cbd3d89f68, type: 3}
+  - {fileID: 8300000, guid: fed0b16222458c943a6e6dfc4319442f, type: 3}
+  - {fileID: 8300000, guid: 2380b0fbc1e249d469dcc5ba57fab0cb, type: 3}
+  audioTaskCompletata: {fileID: 8300000, guid: ece7e451feff0014fb985ffd56f4a477, type: 3}
+  audioCiak: {fileID: 8300000, guid: 7b711c5386415824e98c906087df6dbf, type: 3}
+  audioGrandangolo: {fileID: 0}
+  audioStandard: {fileID: 0}
+  audioCinema: {fileID: 0}
+  audioFresnel: {fileID: 0}
+  audioSoftbox: {fileID: 0}
+  audioArtistica: {fileID: 0}
+  audioLavalier: {fileID: 0}
+  audioBoom: {fileID: 0}
+  audioAmbisonic: {fileID: 0}
+  haGiaParlato: 0
 --- !u!1 &231890569
 GameObject:
   m_ObjectHideFlags: 0
@@ -16547,6 +16562,24 @@ MonoBehaviour:
   raggioMovimento: 5
   tempoAttesaMin: 3
   tempoAttesaMax: 8
+  clipsIntroduzione:
+  - {fileID: 8300000, guid: 1491e69b1ec3ec64eb9f4a081fc0199e, type: 3}
+  - {fileID: 8300000, guid: 750db696dba7fbb40b60d00a015f2a37, type: 3}
+  - {fileID: 8300000, guid: cd38402d33caf8c46addbd51305cd2d6, type: 3}
+  - {fileID: 8300000, guid: b0e3f81c43e6c44468ec65c3d38853d7, type: 3}
+  - {fileID: 8300000, guid: ce39717412a6d8f4e952e47d4b56b2dd, type: 3}
+  audioTaskCompletata: {fileID: 8300000, guid: 67e1c0065a6d4534dbb48198999198df, type: 3}
+  audioCiak: {fileID: 0}
+  audioGrandangolo: {fileID: 0}
+  audioStandard: {fileID: 0}
+  audioCinema: {fileID: 0}
+  audioFresnel: {fileID: 0}
+  audioSoftbox: {fileID: 0}
+  audioArtistica: {fileID: 0}
+  audioLavalier: {fileID: 0}
+  audioBoom: {fileID: 0}
+  audioAmbisonic: {fileID: 0}
+  haGiaParlato: 0
 --- !u!114 &684401565
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24227,6 +24260,25 @@ MonoBehaviour:
   raggioMovimento: 5
   tempoAttesaMin: 3
   tempoAttesaMax: 8
+  clipsIntroduzione:
+  - {fileID: 8300000, guid: c2654e975e487574ca59c7c46d809459, type: 3}
+  - {fileID: 8300000, guid: c28933b76b262854ca0629f5d999ac23, type: 3}
+  - {fileID: 8300000, guid: 189b2daf4a203e84fbac8fe8ca9c99f2, type: 3}
+  - {fileID: 8300000, guid: 0332404abc4399d4db867e62e56813fc, type: 3}
+  - {fileID: 8300000, guid: 1a75d5cb35417174b95c19e29d2fbe2f, type: 3}
+  - {fileID: 8300000, guid: ab0c59b1eeda1344185667dc497cf1af, type: 3}
+  audioTaskCompletata: {fileID: 0}
+  audioCiak: {fileID: 0}
+  audioGrandangolo: {fileID: 8300000, guid: 0cb5d355594cffe48b409843e7dd3892, type: 3}
+  audioStandard: {fileID: 8300000, guid: ce8d066708dc26741a7c57ebebac68dd, type: 3}
+  audioCinema: {fileID: 8300000, guid: df940b8585ce7064ea0747b2a09acf21, type: 3}
+  audioFresnel: {fileID: 0}
+  audioSoftbox: {fileID: 0}
+  audioArtistica: {fileID: 0}
+  audioLavalier: {fileID: 0}
+  audioBoom: {fileID: 0}
+  audioAmbisonic: {fileID: 0}
+  haGiaParlato: 0
 --- !u!114 &1104776641
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -30299,6 +30351,28 @@ MonoBehaviour:
   raggioMovimento: 5
   tempoAttesaMin: 3
   tempoAttesaMax: 8
+  clipsIntroduzione:
+  - {fileID: 8300000, guid: 2b6319abfba2d6945acb1a02ccf47e2c, type: 3}
+  - {fileID: 8300000, guid: 604b875e314be3147a72d6879e0736ad, type: 3}
+  - {fileID: 8300000, guid: 72f0b17c566b2aa4489a4fec2e81085a, type: 3}
+  - {fileID: 8300000, guid: cb71550efec7dcd498e4edc2333303b2, type: 3}
+  - {fileID: 8300000, guid: f3644450dee5a884aaaf410bd1a0f0d6, type: 3}
+  - {fileID: 8300000, guid: 1202ea5be9b104041965e45e23d4a738, type: 3}
+  - {fileID: 8300000, guid: cd6cde3b140354a44959ea369400c4d2, type: 3}
+  - {fileID: 8300000, guid: caad6db8a91c08c43917556ff3f96cb2, type: 3}
+  - {fileID: 8300000, guid: c515f187f82fe0d4c9203d3cb66ac6a7, type: 3}
+  audioTaskCompletata: {fileID: 8300000, guid: 245072c092e1b494b8865807129a2ede, type: 3}
+  audioCiak: {fileID: 0}
+  audioGrandangolo: {fileID: 0}
+  audioStandard: {fileID: 0}
+  audioCinema: {fileID: 0}
+  audioFresnel: {fileID: 0}
+  audioSoftbox: {fileID: 0}
+  audioArtistica: {fileID: 0}
+  audioLavalier: {fileID: 8300000, guid: f47c9dbe14366394bb7d0d84b642ea84, type: 3}
+  audioBoom: {fileID: 8300000, guid: 734a3118f402c354c912ad49b5c14bc4, type: 3}
+  audioAmbisonic: {fileID: 8300000, guid: 734a3118f402c354c912ad49b5c14bc4, type: 3}
+  haGiaParlato: 0
 --- !u!114 &1409844413
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -47934,8 +48008,12 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5106647370095081277, guid: 4210609dc2c41884688847057e819d88, type: 3}
+      propertyPath: MaxDistance
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 5106647370095081277, guid: 4210609dc2c41884688847057e819d88, type: 3}
       propertyPath: MinDistance
-      value: 5.438634
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 6257425427388222813, guid: 4210609dc2c41884688847057e819d88, type: 3}
       propertyPath: m_StaticEditorFlags
