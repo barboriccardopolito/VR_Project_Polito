@@ -76,7 +76,7 @@ public class GameManager : MonoBehaviour
 
     void Start() 
     {
-        // 1. Setup Dizionario Posizioni (Salva dove sono gli oggetti all'inizio)
+        // 1. Setup Dizionario Posizioni
         foreach (GameObject obj in tuttiGliOggettiRaccoglibili)
         {
             if (obj != null)
@@ -97,7 +97,6 @@ public class GameManager : MonoBehaviour
         if (gestoreSchermi != null) gestoreSchermi.CambiaStato(true); 
 
         // 4. STATO INIZIALE ATTORI
-        // All'inizio del gioco: Attori in sala SI, Attori sul set NO.
         if (gruppoAttoriSala != null) gruppoAttoriSala.SetActive(true);
         if (gruppoAttoriSet != null) gruppoAttoriSet.SetActive(false);
     }
@@ -155,7 +154,23 @@ public class GameManager : MonoBehaviour
         {
             if (taskAttuale == Reparto.Fotografia) ResetEffettoLente();
 
+            // --- AUDIO AUTOMATICO (MODIFICATO PER PRE/POST TASK) ---
+            
+            // 1. Memorizza la task vecchia (quella che stiamo chiudendo)
+            Reparto vecchiaTask = taskAttuale;
+
+            // 2. Passa alla task nuova
             taskAttuale++;
+
+            // 3. Chiama la Radio passando ENTRAMBE le fasi per gestire la transizione audio
+            RadioSistema radio = FindFirstObjectByType<RadioSistema>();
+            if (radio != null)
+            {
+                // Usa la NUOVA funzione creata nello step precedente
+                radio.GestisciCambioTask(vecchiaTask, taskAttuale);
+            }
+            // -------------------------------------------------------
+
             Debug.Log($"<color=orange>--- BIP! Nuova comunicazione Radio: Task Aggiornata a {taskAttuale} ---</color>");
 
             if (gestoreSchermi != null)
@@ -197,19 +212,17 @@ public class GameManager : MonoBehaviour
         {
             if (supporto != null)
             {
-                // 1. RESET VISIVO (Spegne i modelli 3D figli: Fresnel, Softbox, ecc.)
+                // 1. RESET VISIVO
                 foreach (Transform figlio in supporto.transform)
                 {
                     string nome = figlio.name.ToLower();
-                    // Evita di spegnere l'AnelloDiSelezione, spegne solo le mesh delle luci
                     if ((nome.Contains("fresnel") || nome.Contains("softbox") || nome.Contains("artistica")) && !nome.Contains("anello"))
                     {
                         figlio.gameObject.SetActive(false);
                     }
                 }
 
-                // 2. RESET LOGICO (Chiama lo script del supporto per dirgli "sei libero")
-                // Nota: Assicurati di avere uno script SupportoLuce simile a SupportoMicrofono
+                // 2. RESET LOGICO
                 var scriptSupporto = supporto.GetComponent<SupportoLuce>(); 
                 if (scriptSupporto != null)
                 {
