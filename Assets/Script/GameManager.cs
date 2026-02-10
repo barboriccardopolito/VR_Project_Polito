@@ -29,7 +29,7 @@ public class GameManager : MonoBehaviour
     [Header("Sottotask Audio")]
     public string micDaInstallare = ""; 
     public bool supportoPiazzato = false; 
-    public int attoriDaMicrofonare = 3;
+    public int attoriDaMicrofonare = 2;
     public int attoriMicrofonatiAttuali = 0;
 
     [Header("Parametri Lenti HDRP")]
