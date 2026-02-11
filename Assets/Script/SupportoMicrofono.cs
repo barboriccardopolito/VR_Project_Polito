@@ -2,80 +2,95 @@ using UnityEngine;
 
 public class SupportoMicrofono : MonoBehaviour
 {
-    [Tooltip("Scrivi qui 'Boom' o 'Ambisonic' (Esattamente come nello script OggettoRaccolta)")]
-    public string tipoSupporto; 
-    
-    [Tooltip("Trascina qui l'oggetto visivo del microfono (quello che appare quando lo monti)")]
-    public GameObject meshMicrofono; 
+    [Header("Visuali Microfoni")]
+    public GameObject modelloBoom;      // Il modello 3D del Boom sul supporto
+    public GameObject modelloAmbisonic; // Il modello 3D dell'Ambisonic sul supporto
 
-    // Riferimento all'anello luminoso
-    private Evidenziatore evidenziatore;
+    [Header("Audio")]
+    public AudioClip suonoPiazzamento; // TRASCINA QUI IL TUO SFX (Click/Avvitamento)
+    private AudioSource audioSource;
 
     private bool giaPiazzato = false;
 
     void Start()
     {
-        // 1. Cerca l'evidenziatore (se l'hai messo come figlio o sull'oggetto stesso)
-        evidenziatore = GetComponent<Evidenziatore>();
-        if (evidenziatore == null) evidenziatore = GetComponentInChildren<Evidenziatore>();
+        // Setup Componente Audio
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.spatialBlend = 1.0f; // Audio 3D localizzato
 
-        // 2. Nascondi la mesh del microfono all'inizio (il supporto è vuoto)
-        if (meshMicrofono != null) meshMicrofono.SetActive(false);
-    }
-
-    void Update()
-    {
-        // --- LOGICA LUCE GUIDA ---
-        if (evidenziatore != null)
-        {
-            // Si illumina SOLO se:
-            // A. Il GameManager dice che dobbiamo installare PROPRIO questo tipo di microfono
-            // B. E non l'abbiamo ancora piazzato (altrimenti resterebbe acceso per sempre)
-            bool devoIlluminarmi = (GameManager.instance.micDaInstallare == tipoSupporto) && !giaPiazzato;
-
-            if (devoIlluminarmi) evidenziatore.Accendi();
-            else evidenziatore.Spegni();
-        }
+        // Assicuriamoci che i microfoni siano spenti all'inizio
+        NascondiTutto();
     }
 
     public void PiazzaMicrofono()
     {
-        // Controlla se è il supporto giusto
-        if (GameManager.instance.micDaInstallare == tipoSupporto)
+        // Se c'è già qualcosa, fermati
+        if (giaPiazzato) return;
+
+        // Recuperiamo cosa ha in mano il giocatore dal GameManager
+        string micInMano = GameManager.instance.micScelto;
+
+        if (string.IsNullOrEmpty(micInMano))
         {
-            if (!giaPiazzato)
-            {
-                // Controllo extra per il rumore ambientale (solo per Ambisonic)
-                if (tipoSupporto == "Ambisonic" && GameManager.instance.rumoreCaffeAttivo)
-                {
-                    Debug.Log("<color=orange>[Attenzione]:</color> Stai piazzando l'Ambisonic con la macchinetta accesa! Questo rumore finirà nella registrazione.");
-                }
+            Debug.Log("Non hai selezionato nessun microfono da piazzare!");
+            return;
+        }
 
-                giaPiazzato = true;
-                
-                // Mostra il microfono montato
-                if (meshMicrofono != null) meshMicrofono.SetActive(true);
-                
-                // Aggiorna il GameManager
-                GameManager.instance.supportoPiazzato = true;
-                
-                Debug.Log($"<color=green>{tipoSupporto} posizionato!</color>");
+        bool successo = false;
 
-                // Nota: L'Update al prossimo frame vedrà che 'giaPiazzato' è true 
-                // e spegnerà automaticamente l'anello. Magia! ✨
+        // LOGICA DI PIAZZAMENTO
+        // Usiamo Contains per essere sicuri (es. "Boom" trova "Microfono Boom")
+        if (micInMano.Contains("Boom"))
+        {
+            if (modelloBoom != null) 
+            { 
+                modelloBoom.SetActive(true); 
+                successo = true; 
             }
-            else
+        }
+        else if (micInMano.Contains("Ambisonic"))
+        {
+            if (modelloAmbisonic != null) 
+            { 
+                modelloAmbisonic.SetActive(true); 
+                successo = true; 
+            }
+        }
+
+        // SE ABBIAMO PIAZZATO CORRETTAMENTE...
+        if (successo)
+        {
+            giaPiazzato = true;
+
+            // --- SUONO (La parte nuova) ---
+            if (suonoPiazzamento != null)
             {
-                Debug.Log("Hai già piazzato questo microfono.");
+                audioSource.PlayOneShot(suonoPiazzamento);
             }
+
+            Debug.Log($"<color=green>Piazzato {micInMano} con successo!</color>");
+
+            // Completa la Task del Fonico
+            GameManager.instance.CompletaTask(GameManager.Reparto.Fonico);
         }
         else
         {
-            // Feedback se sbagli supporto
-            if (GameManager.instance.micDaInstallare != "")
-                Debug.Log($"Qui va il {tipoSupporto}, ma tu devi montare il {GameManager.instance.micDaInstallare}!");
-            else
-                Debug.Log("Non hai nessun microfono da installare. Parla prima col Fonico.");
+            Debug.LogWarning("Questo supporto non è adatto al microfono che hai in mano (" + micInMano + ").");
         }
+    }
+
+    // Funzione di utilità
+    void NascondiTutto()
+    {
+        if (modelloBoom) modelloBoom.SetActive(false);
+        if (modelloAmbisonic) modelloAmbisonic.SetActive(false);
+    }
+    
+    // Chiamata se devi resettare la scena
+    public void ResettaSupporto()
+    {
+        NascondiTutto();
+        giaPiazzato = false;
     }
 }

@@ -6,7 +6,8 @@ public class RegiaManager : MonoBehaviour
     public static RegiaManager instance;
 
     [Header("Collegamenti Esterni")]
-    public GestoreFinale gestoreFinale; // <--- FONDAMENTALE: Trascina qui lo script dei titoli!
+    public GestoreFinale gestoreFinale; // <--- Trascina qui lo script dei Titoli (Pannello Nero)
+    public GestoreRecitazione gestoreRecitazione; // <--- Trascina qui il GestoreAttori (Nuovo)
 
     [Header("Setup Player")]
     public Camera mainCameraPlayer;   // La telecamera del giocatore
@@ -35,8 +36,7 @@ public class RegiaManager : MonoBehaviour
         }
     }
 
-    // --- FASE 1: PREVIEW (Monitor Piccolo) ---
-    // Funziona finché non avvii il Ciak
+    // --- FASE 1: PREVIEW (Monitor Piccolo + Loop Attori) ---
     public void AttivaPreview()
     {
         if (camereSet == null || camereSet.Length == 0) return;
@@ -45,6 +45,9 @@ public class RegiaManager : MonoBehaviour
         previewInCorso = true;
         if (monitorSchermo) monitorSchermo.SetActive(true);
         
+        // AVVIA GLI ATTORI IN LOOP
+        if (gestoreRecitazione != null) gestoreRecitazione.AvviaLoopRecitazione();
+
         StartCoroutine(CicloPreviewMonitor());
     }
 
@@ -70,7 +73,7 @@ public class RegiaManager : MonoBehaviour
         }
     }
 
-    // --- FASE 2: CIAK E TITOLI DI CODA ---
+    // --- FASE 2: CIAK, REGISTRAZIONE E TITOLI ---
     public void AvviaCiak()
     {
         if (registrazioneInCorso) return;
@@ -86,6 +89,9 @@ public class RegiaManager : MonoBehaviour
     {
         Debug.Log("<color=red>--- REC: INIZIO REGISTRAZIONE ---</color>");
         
+        // RESETTA GLI ATTORI E FALLI PARTIRE DA ZERO (Sincronizzazione Ciak)
+        if (gestoreRecitazione != null) gestoreRecitazione.AvviaCiakUnico();
+
         // Disattiviamo il giocatore per vedere a tutto schermo dalle camere
         if (mainCameraPlayer) mainCameraPlayer.enabled = false; 
 
@@ -105,31 +111,32 @@ public class RegiaManager : MonoBehaviour
             yield return new WaitForSeconds(4f); 
         }
 
-// ... codice precedente dentro SequenzaRegistrazione ...
+        Debug.Log("<color=green>--- STOP! ---</color>");
+        
+        // Ferma gli attori
+        if (gestoreRecitazione != null) gestoreRecitazione.FermaTutto();
 
-    Debug.Log("<color=green>--- STOP! ---</color>");
-    
-    // 1. Spegni le camere del set
-    foreach (var cam in camereSet) cam.gameObject.SetActive(false);
-    
-    // 2. RIACCENDI LA CAMERA DEL GIOCATORE (Fix per "No cameras rendering")
-    if (mainCameraPlayer) mainCameraPlayer.enabled = true;
+        // 1. Spegni le camere del set
+        foreach (var cam in camereSet) cam.gameObject.SetActive(false);
+        
+        // 2. RIACCENDI LA CAMERA DEL GIOCATORE (Fondamentale per i titoli)
+        if (mainCameraPlayer) mainCameraPlayer.enabled = true;
 
-    // Segna la task come completata
-    if (GameManager.instance != null) 
-        GameManager.instance.CompletaTask(GameManager.Reparto.Regia);
+        // Segna la task come completata
+        if (GameManager.instance != null) 
+            GameManager.instance.CompletaTask(GameManager.Reparto.Regia);
 
-    // --- QUI PARTE IL FINALE ---
-    Debug.Log("Avvio titoli di coda immediati.");
-    
-    if (gestoreFinale != null)
-    {
-        gestoreFinale.AvviaTitoliDiCoda();
-    }
-    else
-    {
-        Debug.LogError("ERRORE: Non hai collegato il 'GestoreFinale' nell'Inspector!");
-    }
+        // --- QUI PARTE IL FINALE ---
+        Debug.Log("Avvio titoli di coda immediati.");
+        
+        if (gestoreFinale != null)
+        {
+            gestoreFinale.AvviaTitoliDiCoda();
+        }
+        else
+        {
+            Debug.LogError("ERRORE: Non hai collegato il 'GestoreFinale' nell'Inspector!");
+        }
     }
 
     void ApplicaEffettiScelti(Camera camDestinazione)
