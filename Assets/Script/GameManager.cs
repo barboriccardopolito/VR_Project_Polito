@@ -19,12 +19,13 @@ public class GameManager : MonoBehaviour
 
     [Header("Salvataggio Scelte")]
     public string lenteSceltaFinale;
-    public string luceScelta;
+    public string LuceScelta;
     public string micScelto;
+    public bool LucePosizionataCorrettamente = false; 
 
     [Header("Puzzle Ambientale")]
     public bool rumoreCaffeAttivo = true;
-    public AudioSource audioMacchinetta;
+    public AudioSource audioMacchinetta; 
 
     [Header("Sottotask Audio")]
     public string micDaInstallare = ""; 
@@ -40,19 +41,14 @@ public class GameManager : MonoBehaviour
     private LensDistortion distortion;
     public bool cameraPosizionata = false;
 
-    [Header("Parametri Audio")]
-    public AudioSource sorgenteAttori; 
-    private AudioLowPassFilter lowPass;
-    private AudioHighPassFilter highPass;
-
-    [Header("Stato Task Luci")]
-    public string LuceScelta = ""; 
-    public bool LucePosizionataCorrettamente = false; 
-
+    [Header("Parametri Audio Avanzati")]
+    // MODIFICA: Ora è un array per gestire Uomo e Donna insieme
+    public AudioSource[] sorgentiAttori; 
+    
     // --- SISTEMA DI RESTITUZIONE E PULIZIA ---
     [Header("Registro Oggetti Scena")]
     public GameObject[] tuttiGliOggettiRaccoglibili; 
-    public GameObject[] supportiLuciFisici; // I treppiedi delle luci nella scena
+    public GameObject[] supportiLuciFisici; 
 
     private class PosizioneOggetto
     {
@@ -63,8 +59,8 @@ public class GameManager : MonoBehaviour
     private Dictionary<string, PosizioneOggetto> registroPosizioni = new Dictionary<string, PosizioneOggetto>();
 
     [Header("Gestione Attori")]
-    public GameObject gruppoAttoriSala; // Trascina qui il padre degli attori in sala
-    public GameObject gruppoAttoriSet;  // Trascina qui il padre degli attori sul set
+    public GameObject gruppoAttoriSala; 
+    public GameObject gruppoAttoriSet; 
 
     void Awake() 
     { 
@@ -111,16 +107,13 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // --- NUOVA FUNZIONE PER ATTORI ---
     public void MandaAttoriInScena()
     {
-        if (gruppoAttoriSala != null) gruppoAttoriSala.SetActive(false); // Nascondi sala
-        if (gruppoAttoriSet != null) gruppoAttoriSet.SetActive(true);    // Mostra set
-        
+        if (gruppoAttoriSala != null) gruppoAttoriSala.SetActive(false);
+        if (gruppoAttoriSet != null) gruppoAttoriSet.SetActive(true);
         Debug.Log("[GameManager]: Attori chiamati sul set!");
     }
 
-    // --- LOGICA RADIO ---
     public string OttieniSuggerimentoRadio()
     {
         switch (taskAttuale)
@@ -141,7 +134,6 @@ public class GameManager : MonoBehaviour
 
     public void CompletaTask(Reparto repartoInteragito)
     {
-        // CASO 1: REVISIONE
         if (taskAttuale == Reparto.Regia && repartoInteragito != Reparto.Regia)
         {
             Debug.Log($"<color=cyan>[Revisione]: Modifiche a {repartoInteragito}. Torna dal Regista.</color>");
@@ -149,27 +141,18 @@ public class GameManager : MonoBehaviour
             return; 
         }
 
-        // CASO 2: FLUSSO NORMALE
         if (repartoInteragito == taskAttuale)
         {
             if (taskAttuale == Reparto.Fotografia) ResetEffettoLente();
 
-            // --- AUDIO AUTOMATICO (MODIFICATO PER PRE/POST TASK) ---
-            
-            // 1. Memorizza la task vecchia (quella che stiamo chiudendo)
             Reparto vecchiaTask = taskAttuale;
-
-            // 2. Passa alla task nuova
             taskAttuale++;
 
-            // 3. Chiama la Radio passando ENTRAMBE le fasi per gestire la transizione audio
             RadioSistema radio = FindFirstObjectByType<RadioSistema>();
             if (radio != null)
             {
-                // Usa la NUOVA funzione creata nello step precedente
                 radio.GestisciCambioTask(vecchiaTask, taskAttuale);
             }
-            // -------------------------------------------------------
 
             Debug.Log($"<color=orange>--- BIP! Nuova comunicazione Radio: Task Aggiornata a {taskAttuale} ---</color>");
 
@@ -192,7 +175,7 @@ public class GameManager : MonoBehaviour
         {
             if (obj != null && obj.name == nomeOggetto)
             {
-                obj.SetActive(true); // Riaccende l'oggetto
+                obj.SetActive(true);
                 if (registroPosizioni.ContainsKey(nomeOggetto))
                 {
                     obj.transform.position = registroPosizioni[nomeOggetto].posizione;
@@ -212,7 +195,6 @@ public class GameManager : MonoBehaviour
         {
             if (supporto != null)
             {
-                // 1. RESET VISIVO
                 foreach (Transform figlio in supporto.transform)
                 {
                     string nome = figlio.name.ToLower();
@@ -222,7 +204,6 @@ public class GameManager : MonoBehaviour
                     }
                 }
 
-                // 2. RESET LOGICO
                 var scriptSupporto = supporto.GetComponent<SupportoLuce>(); 
                 if (scriptSupporto != null)
                 {
@@ -239,7 +220,7 @@ public class GameManager : MonoBehaviour
         LucePosizionataCorrettamente = false; 
     }
 
-    // --- EFFETTI AUDIO/VIDEO ---
+    // --- EFFETTI VIDEO (LENTI) ---
     public void ApplicaEffettoLente(string nomeLente) 
     {
         Camera cam = Camera.main;
@@ -258,57 +239,121 @@ public class GameManager : MonoBehaviour
         if (distortion != null) distortion.intensity.value = 0f;
     }
 
+    // --- EFFETTI AUDIO AVANZATI (Microfoni) ---
     public void ApplicaEffettoMicrofono(string nomeMic) 
     {
-        if (sorgenteAttori == null) return;
-        if (lowPass == null || highPass == null) SetupFiltriAudio();
-        float volumeRumoreFondo = 0f;
+        if (sorgentiAttori == null) return;
+        
+        ResetEffettoAudio(); // Pulizia iniziale
+        Debug.Log($"Applico profilo audio MULTIPLO per: {nomeMic}");
 
-        switch (nomeMic) 
+        foreach (AudioSource sorgente in sorgentiAttori)
         {
-            case "Boom": 
-                if (lowPass) lowPass.enabled = false; 
-                if (highPass) highPass.enabled = false; 
-                sorgenteAttori.spatialBlend = 0.5f; 
-                volumeRumoreFondo = 0.1f; 
-                break;
-            case "Lavalier": 
-                if (lowPass) { lowPass.enabled = true; lowPass.cutoffFrequency = 4000f; }
-                if (highPass) { highPass.enabled = true; highPass.cutoffFrequency = 300f; }
-                sorgenteAttori.spatialBlend = 0.2f; 
-                volumeRumoreFondo = 0.05f; 
-                break;
-            case "Ambisonic": 
-                if (lowPass) lowPass.enabled = false; 
-                if (highPass) { highPass.enabled = true; highPass.cutoffFrequency = 100f; }
-                sorgenteAttori.spatialBlend = 1.0f; 
-                volumeRumoreFondo = 1.0f; 
-                break;
-        }
+            if (sorgente == null) continue;
 
-        if (audioMacchinetta != null)
-        {
-            if (rumoreCaffeAttivo) audioMacchinetta.volume = volumeRumoreFondo;
-            else audioMacchinetta.volume = 0f;
+            // Recupera o aggiungi i componenti al volo per ogni attore
+            var highPass = AssicuraComponente<AudioHighPassFilter>(sorgente.gameObject);
+            var lowPass = AssicuraComponente<AudioLowPassFilter>(sorgente.gameObject);
+            var reverb = AssicuraComponente<AudioReverbFilter>(sorgente.gameObject);
+
+            switch (nomeMic) 
+            {
+                case "Boom": 
+                    highPass.enabled = true; 
+                    highPass.cutoffFrequency = 450f;
+                    
+                    sorgente.spatialBlend = 0.65f;
+                    
+                    reverb.enabled = true;
+                    reverb.reverbPreset = AudioReverbPreset.Room;
+                    reverb.room = -1000f;
+                    
+                    ImpostaVolumeMacchinetta(0.2f);
+                    break;
+
+                case "Lavalier": 
+                    highPass.enabled = false;
+                    lowPass.enabled = false;
+                    reverb.enabled = false;
+                    
+                    sorgente.spatialBlend = 0.2f; 
+                    sorgente.volume = 1.0f; 
+
+                    ImpostaVolumeMacchinetta(0.05f);
+                    break;
+
+                case "Ambisonic": 
+                    highPass.enabled = false; 
+                    lowPass.enabled = false;
+                    
+                    // BINAURALE 360: SpatialBlend al massimo
+                    sorgente.spatialBlend = 1.0f; 
+                    
+                    reverb.enabled = true;
+                    reverb.reverbPreset = AudioReverbPreset.Hallway; 
+                    reverb.room = -400f; 
+                    
+                    ImpostaVolumeMacchinetta(1.0f); 
+                    break;
+            }
         }
     }
 
     public void ResetEffettoAudio() 
     {
-        if (lowPass) lowPass.enabled = false;
-        if (highPass) highPass.enabled = false;
-        if (sorgenteAttori) sorgenteAttori.spatialBlend = 1f;
-        if (audioMacchinetta != null && rumoreCaffeAttivo) audioMacchinetta.volume = 0.5f; 
+        if (sorgentiAttori == null) return;
+
+        foreach (AudioSource sorgente in sorgentiAttori)
+        {
+            if (sorgente == null) continue;
+
+            var lp = sorgente.GetComponent<AudioLowPassFilter>();
+            if (lp) lp.enabled = false;
+
+            var hp = sorgente.GetComponent<AudioHighPassFilter>();
+            if (hp) hp.enabled = false;
+
+            var rv = sorgente.GetComponent<AudioReverbFilter>();
+            if (rv) rv.enabled = false;
+            
+            sorgente.spatialBlend = 1f;
+            sorgente.volume = 1f;
+        }
+        
+        ImpostaVolumeMacchinetta(0.3f); 
     }
     
+    // Funzione helper per evitare codice ripetuto
+    T AssicuraComponente<T>(GameObject obj) where T : Component
+    {
+        T comp = obj.GetComponent<T>();
+        if (comp == null) comp = obj.AddComponent<T>();
+        return comp;
+    }
+
+    void ImpostaVolumeMacchinetta(float volumeTarget)
+    {
+        if (audioMacchinetta != null)
+        {
+            if (rumoreCaffeAttivo) audioMacchinetta.volume = volumeTarget;
+            else audioMacchinetta.volume = 0f;
+        }
+    }
+
     void SetupFiltriAudio()
     {
-         if (sorgenteAttori != null) 
+        // Inizializza filtri all'avvio per tutti gli attori
+        if (sorgentiAttori != null) 
         {
-            lowPass = sorgenteAttori.gameObject.GetComponent<AudioLowPassFilter>();
-            if (lowPass == null) lowPass = sorgenteAttori.gameObject.AddComponent<AudioLowPassFilter>();
-            highPass = sorgenteAttori.gameObject.GetComponent<AudioHighPassFilter>();
-            if (highPass == null) highPass = sorgenteAttori.gameObject.AddComponent<AudioHighPassFilter>();
+            foreach (AudioSource s in sorgentiAttori)
+            {
+                if (s != null)
+                {
+                    AssicuraComponente<AudioLowPassFilter>(s.gameObject);
+                    AssicuraComponente<AudioHighPassFilter>(s.gameObject);
+                    AssicuraComponente<AudioReverbFilter>(s.gameObject);
+                }
+            }
             ResetEffettoAudio();
         }
     }

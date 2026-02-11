@@ -15119,6 +15119,7 @@ MonoBehaviour:
   animatoreAttrice: {fileID: 1979385598}
   audioAttore: {fileID: 2055142297}
   audioAttrice: {fileID: 1979385599}
+  animatoreTappo: {fileID: 408794760}
   copione:
   - chi: 0
     clipAudio: {fileID: 8300000, guid: df1bbb8f73bd5064bbdc92a71dc1a0cd, type: 3}
@@ -15133,6 +15134,7 @@ MonoBehaviour:
     clipAudio: {fileID: 8300000, guid: ac2cc75168476974bb43b4bb53669f9f, type: 3}
     pausaDopo: 0
   nomeStatoAnimazione: Scene
+  nomeStatoTappo: Take 001
 --- !u!4 &609831960
 Transform:
   m_ObjectHideFlags: 0
@@ -19154,8 +19156,9 @@ MonoBehaviour:
   visualizzatoreObiettivo: {fileID: 1412070064}
   gestoreSchermi: {fileID: 1776337951}
   lenteSceltaFinale: 
-  luceScelta: 
+  LuceScelta: 
   micScelto: 
+  LucePosizionataCorrettamente: 0
   rumoreCaffeAttivo: 1
   audioMacchinetta: {fileID: 354467284}
   micDaInstallare: 
@@ -19167,9 +19170,9 @@ MonoBehaviour:
   fovCinematic: 20
   globalVolume: {fileID: 603563470}
   cameraPosizionata: 0
-  sorgenteAttori: {fileID: 0}
-  LuceScelta: 
-  LucePosizionataCorrettamente: 0
+  sorgentiAttori:
+  - {fileID: 2055142297}
+  - {fileID: 1979385599}
   tuttiGliOggettiRaccoglibili:
   - {fileID: 699858030}
   - {fileID: 607215851}
@@ -28155,7 +28158,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3856029132072831693, guid: 347e596d6265340c7916c054f34514e8, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.8864
+      value: 0.978
       objectReference: {fileID: 0}
     - target: {fileID: 3856029132072831693, guid: 347e596d6265340c7916c054f34514e8, type: 3}
       propertyPath: m_LocalPosition.z
@@ -46786,7 +46789,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6311032725306705496, guid: 6ee21961739450e41a13fd1520b7bb05, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6311032725306705496, guid: 6ee21961739450e41a13fd1520b7bb05, type: 3}
       propertyPath: m_TagString
@@ -47422,8 +47425,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 8.251636, y: 4.026448, z: 4.070824}
-  m_Center: {x: 0.0000028751547, y: 2.0262477, z: -0.026937842}
+  m_Size: {x: 13.993403, y: 4.026448, z: 4.070824}
+  m_Center: {x: 2.8708746, y: 2.0262477, z: -0.026937842}
 --- !u!1001 &2060293119
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -48592,7 +48595,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9093236918443377106, guid: 7f7a34b4ef4b0440e9ee98735fa640cc, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.97040004
+      value: 0.9748
       objectReference: {fileID: 0}
     - target: {fileID: 9093236918443377106, guid: 7f7a34b4ef4b0440e9ee98735fa640cc, type: 3}
       propertyPath: m_LocalPosition.z
@@ -50870,7 +50873,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8261816059648076734, guid: bff0ee3f232104ed7a06e7c86eaef32a, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.97040004
+      value: 0.97540003
       objectReference: {fileID: 0}
     - target: {fileID: 8261816059648076734, guid: bff0ee3f232104ed7a06e7c86eaef32a, type: 3}
       propertyPath: m_LocalPosition.z

@@ -7,15 +7,25 @@ public class MacchinettaCaffe : MonoBehaviour
     // Riferimento all'anello luminoso
     private Evidenziatore evidenziatore;
 
+    // --- VARIABILI PER GESTIONE DISTANZA ---
+    private float distanzaOriginale; // Memorizza il valore dell'Inspector (es. 2)
+    public float distanzaPerBoom = 30f; // Raggio esteso per il Boom (copre tutto l'ufficio)
+
     void Start()
     {
         audioSourceLocale = GetComponent<AudioSource>();
         
-        // 1. Cerca l'evidenziatore (se l'hai messo come figlio o sull'oggetto stesso)
+        // 1. Memorizziamo la distanza originale impostata nell'Inspector
+        if (audioSourceLocale != null)
+        {
+            distanzaOriginale = audioSourceLocale.maxDistance;
+        }
+
+        // 2. Cerca l'evidenziatore
         evidenziatore = GetComponent<Evidenziatore>();
         if (evidenziatore == null) evidenziatore = GetComponentInChildren<Evidenziatore>();
 
-        // 2. Sincronizza l'audio iniziale
+        // 3. Sincronizza l'audio iniziale
         if (GameManager.instance.rumoreCaffeAttivo)
         {
             if (audioSourceLocale != null && !audioSourceLocale.isPlaying) audioSourceLocale.Play();
@@ -28,15 +38,39 @@ public class MacchinettaCaffe : MonoBehaviour
 
     void Update()
     {
-        // --- LOGICA LUCE DI AVVERTIMENTO ---
+        // Gestione Luce
+        GestisciLuce();
+
+        // Gestione Raggio Audio (NUOVO)
+        GestisciRaggioAudio();
+    }
+
+    void GestisciRaggioAudio()
+    {
+        if (audioSourceLocale == null) return;
+
+        // Recupera il microfono attualmente scelto dal GameManager
+        string micAttuale = GameManager.instance.micScelto;
+
+        // Se abbiamo scelto il BOOM, aumentiamo il raggio per coprire il set
+        if (!string.IsNullOrEmpty(micAttuale) && micAttuale.Contains("Boom"))
+        {
+            // Espandi il raggio (es. 30 metri)
+            audioSourceLocale.maxDistance = distanzaPerBoom;
+        }
+        else
+        {
+            // Per Lavalier, Ambisonic o Nessuno, torna al valore originale (es. 2 metri)
+            audioSourceLocale.maxDistance = distanzaOriginale;
+        }
+    }
+
+    void GestisciLuce()
+    {
         if (evidenziatore != null)
         {
-            // La macchinetta si illumina se:
-            // A. È il turno del Fonico (deve bonificare l'audio) OPPURE siamo in Revisione (Regia)
             bool faseAudio = (GameManager.instance.taskAttuale == GameManager.Reparto.Fonico);
             bool faseRevisione = (GameManager.instance.taskAttuale == GameManager.Reparto.Regia);
-
-            // B. E la macchinetta è effettivamente ACCESA (se è spenta, non è un problema)
             bool isAccesa = GameManager.instance.rumoreCaffeAttivo;
 
             if ((faseAudio || faseRevisione) && isAccesa)
@@ -52,7 +86,6 @@ public class MacchinettaCaffe : MonoBehaviour
 
     public void SpegniMacchinetta()
     {
-        // Se è accesa, la spegniamo
         if (GameManager.instance.rumoreCaffeAttivo)
         {
             GameManager.instance.rumoreCaffeAttivo = false;
@@ -60,9 +93,6 @@ public class MacchinettaCaffe : MonoBehaviour
             if (audioSourceLocale != null) audioSourceLocale.Stop();
             
             Debug.Log("<color=cyan>[Ambiente]:</color> Click. Hai spento la macchinetta del caffè.");
-            
-            // Nota: L'Update al prossimo frame vedrà che 'rumoreCaffeAttivo' è false 
-            // e spegnerà automaticamente l'anello.
         }
         else
         {
