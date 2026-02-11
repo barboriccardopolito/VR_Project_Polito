@@ -23,52 +23,69 @@ public class SupportoLuce : MonoBehaviour
     }
     // -----------------------------------------------------------------
 
-    public void PiazzaLuce()
+public void PiazzaLuce()
     {
-        Debug.Log("1. Tentativo di piazzare luce..."); 
-
-        // Se c'è già una luce, non facciamo nulla (a meno che non venga resettato prima)
-        if (luceGiaPosizionata) return;
-
         // Recuperiamo il GameManager
         GameManager gm = FindFirstObjectByType<GameManager>();
         if (gm == null) return;
 
-        string luceScelta = gm.LuceScelta;
+        // Se c'è già una luce piazzata su QUESTO supporto, fermati
+        if (luceGiaPosizionata) 
+        {
+            Debug.Log("Questo supporto ha già una luce.");
+            return;
+        }
 
-        Debug.Log("2. Luce trovata nel GameManager: '" + luceScelta + "'"); 
+        // Se il giocatore non ha scelto nessuna luce (stringa vuota), fermati
+        if (string.IsNullOrEmpty(gm.LuceScelta))
+        {
+            Debug.Log("Non hai ancora scelto nessuna luce da piazzare!");
+            return;
+        }
 
-        NascondiTutto(); // Spegni tutto prima di accendere quella giusta
+        string nomeLuce = gm.LuceScelta;
+        Debug.Log($"[Supporto] Tento di piazzare: '{nomeLuce}'");
+
+        // Spegni tutto prima di accendere quella giusta
+        NascondiTutto(); 
 
         bool luceTrovata = false;
 
-        // Logica di accensione
-        if (luceScelta == "Softbox")
+        // --- CONTROLLO FLESSIBILE (Case Insensitive) ---
+        // Usiamo .Contains e ignoriamo maiuscole/minuscole
+        
+        if (IsNameMatch(nomeLuce, "Softbox"))
         {
             if (modelloSoftbox != null) { modelloSoftbox.SetActive(true); luceTrovata = true; }
-            else Debug.LogError("ERRORE: Manca il collegamento al Modello Softbox nell'Inspector!");
         }
-        else if (luceScelta == "Fresnel")
+        else if (IsNameMatch(nomeLuce, "Fresnel"))
         {
             if (modelloFresnel != null) { modelloFresnel.SetActive(true); luceTrovata = true; }
-            else Debug.LogError("ERRORE: Manca il collegamento al Modello Fresnel nell'Inspector!");
         }
-        else if (luceScelta == "Artistica")
+        else if (IsNameMatch(nomeLuce, "Artistica")) // O "Ring", o "LuceArtistica"
         {
             if (modelloArtistica != null) { modelloArtistica.SetActive(true); luceTrovata = true; }
-            else Debug.LogError("ERRORE: Manca il collegamento al Modello Artistica nell'Inspector!");
         }
 
         if (luceTrovata)
         {
-            luceGiaPosizionata = true; // Blocchiamo il supporto finché non viene resettato
-            gm.LucePosizionataCorrettamente = true;
-            Debug.Log("3. SUCCESSO: Luce attivata!");
+            luceGiaPosizionata = true;
+            
+            // Diciamo al GameManager che ALMENO UNA luce è stata piazzata
+            gm.LucePosizionataCorrettamente = true; 
+            
+            Debug.Log($"<color=green>SUCCESSO:</color> Piazzata {nomeLuce}!");
         }
         else
         {
-            Debug.LogWarning("4. FALLITO: Nessuna corrispondenza trovata per il nome: '" + luceScelta + "'");
+            Debug.LogWarning($"<color=red>FALLITO:</color> Il nome '{nomeLuce}' non corrisponde a Softbox, Fresnel o Artistica.");
         }
+    }
+
+    // Funzione helper per pulire il controllo
+    private bool IsNameMatch(string input, string target)
+    {
+        return input.IndexOf(target, System.StringComparison.OrdinalIgnoreCase) >= 0;
     }
 
     void NascondiTutto()
