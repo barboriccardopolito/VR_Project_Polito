@@ -27,19 +27,33 @@ public class DissolvenzaIniziale : MonoBehaviour
 
     IEnumerator FaiDissolvenza()
     {
-        // Piccola pausa di mezzo secondo al buio per stabilizzare la scena
+        // (Opzionale) Aspetta mezzo secondo al buio per stabilizzare la scena
         yield return new WaitForSeconds(0.5f);
 
         float timer = 0f;
-        Color c = pannelloNero.color;
+        Color c = pannelloNero.color; // Prendiamo il colore attuale (nero)
 
+        // 2. CICLO DI DISSOLVENZA (La parte che mancava)
         while (timer < durata)
         {
             timer += Time.deltaTime;
-            c.a = Mathf.Lerp(1f, 0f, timer / durata); // Scala l'Alpha da 1 a 0
+            
+            // Calcola l'Alpha: va da 1 (nero) a 0 (trasparente) man mano che il tempo passa
+            float nuovoAlpha = Mathf.Lerp(1f, 0f, timer / durata);
+            
+            c.a = nuovoAlpha;
             pannelloNero.color = c;
-            yield return null;
+            
+            yield return null; // Aspetta il frame successivo
         }
-    pannelloNero.gameObject.SetActive(false);
+
+        // 3. SPEGNIMENTO FINALE
+        // Assicuriamoci che sia trasparente al 100%
+        c.a = 0f;
+        pannelloNero.color = c;
+        
+        // Disattiva l'oggetto per liberare i click del mouse
+        pannelloNero.gameObject.SetActive(false); 
+        Debug.Log("Pannello Nero SPENTO"); 
     }
 }
