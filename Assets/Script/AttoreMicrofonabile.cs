@@ -2,59 +2,62 @@ using UnityEngine;
 
 public class AttoreMicrofonabile : MonoBehaviour
 {
-    private bool giaMicrofonato = false;
-    private Evidenziatore evidenziatore;
+    [Header("Componenti")]
+    public GameObject modelloLavalierAddosso; // Il modello 3D del microfono sul petto (spento all'inizio)
+    
+    [Header("Audio")]
+    public AudioClip suonoMontaggioLavalier; // TRASCINA QUI IL TUO EFFETTO AUDIO!
+    private AudioSource audioSource;
+
+    private bool isMicrofonato = false;
 
     void Start()
     {
-        evidenziatore = GetComponent<Evidenziatore>();
-        if (evidenziatore == null) evidenziatore = GetComponentInChildren<Evidenziatore>();
+        // Setup Audio
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.spatialBlend = 1.0f; // Audio 3D (lo senti provenire dall'attore)
+
+        // Assicuriamoci che il microfono visivo sia spento all'inizio
+        if (modelloLavalierAddosso != null) 
+            modelloLavalierAddosso.SetActive(false);
     }
 
-    void Update()
-    {
-        // Illuminalo SOLO se:
-        // 1. Dobbiamo mettere i Lavalier
-        // 2. Non è ancora stato microfonato
-        if (evidenziatore != null)
-        {
-            if (GameManager.instance.micDaInstallare == "Lavalier" && !giaMicrofonato)
-            {
-                evidenziatore.Accendi();
-            }
-            else
-            {
-                evidenziatore.Spegni();
-            }
-        }
-    }
-
+    // Questa funzione viene chiamata da InterazioneGiocatore quando premi E
     public void ProvaAMicrofonare()
     {
-        // Controllo di sicurezza: Posso microfonare solo se ho scelto i Lavalier
-        if (GameManager.instance.micDaInstallare == "Lavalier")
+        // 1. Controllo: Dobbiamo mettere i Lavalier?
+        if (GameManager.instance.micDaInstallare != "Lavalier") 
         {
-            if (!giaMicrofonato)
-            {
-                giaMicrofonato = true;
-                GameManager.instance.attoriMicrofonatiAttuali++;
-                
-                Debug.Log($"<color=green>[Audio]</color> Attore microfonato! ({GameManager.instance.attoriMicrofonatiAttuali}/{GameManager.instance.attoriDaMicrofonare})");
-                
-                // Feedback audio (opzionale: suono di "zip" o "click")
-                // AudioSource.PlayClipAtPoint(suonoInstallazione, transform.position);
-
-                if (GameManager.instance.attoriMicrofonatiAttuali >= GameManager.instance.attoriDaMicrofonare)
-                    Debug.Log("<color=yellow>[Task]</color> Tutti gli attori sono pronti! Torna dal Fonico.");
-            }
-            else
-            {
-                Debug.Log("Questo attore ha già il microfono.");
-            }
+            Debug.Log("Non serve il Lavalier ora!");
+            return;
         }
-        else
+
+        // 2. Controllo: L'abbiamo già messo a questo attore?
+        if (isMicrofonato) return;
+
+        // --- ESECUZIONE ---
+        isMicrofonato = true;
+
+        // Accendi la grafica del microfono
+        if (modelloLavalierAddosso != null) 
+            modelloLavalierAddosso.SetActive(true);
+
+        // RIPRODUCI L'EFFETTO SONORO (La novità)
+        if (suonoMontaggioLavalier != null)
         {
-            Debug.Log("Non serve microfonare i singoli attori con questo setup (Boom/Ambisonic).");
+            audioSource.PlayOneShot(suonoMontaggioLavalier);
+        }
+
+        // Avvisa il GameManager
+        GameManager.instance.attoriMicrofonatiAttuali++;
+        Debug.Log($"Attore microfonato! ({GameManager.instance.attoriMicrofonatiAttuali}/{GameManager.instance.attoriDaMicrofonare})");
+
+        // Se abbiamo finito tutti gli attori, completiamo la task
+        if (GameManager.instance.attoriMicrofonatiAttuali >= GameManager.instance.attoriDaMicrofonare)
+        {
+            Debug.Log("Tutti gli attori sono pronti!");
+            GameManager.instance.CompletaTask(GameManager.Reparto.Fonico);
         }
     }
 }
