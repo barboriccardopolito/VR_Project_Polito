@@ -14,18 +14,24 @@ public class InventarioGiocatore : MonoBehaviour
 
     void Start()
     {
-        // FIX: Invece di spegnere i figli diretti (che sono le cartelle Lenti/Luci e bloccano tutto),
-        // cerchiamo tutti gli oggetti "foglia" e spegniamo solo loro.
+        // --- FIX VISIBILITÀ ---
+        // Invece di spegnere i MeshRenderer (che rompe gli oggetti complessi),
+        // spegniamo direttamente gli oggetti "figli" delle categorie (Luci, Lenti, Microfoni).
+        
         if (manoContainer != null)
         {
-            // Prende tutti i componenti, anche quelli nascosti
-            Transform[] tutti = manoContainer.GetComponentsInChildren<Transform>(true);
-            foreach (Transform t in tutti)
+            // Cicla attraverso le cartelle principali (Luci, Lenti, Microfoni)
+            foreach (Transform categoria in manoContainer.transform)
             {
-                // Se ha un MeshRenderer, è un oggetto vero (non una cartella), quindi lo nascondiamo
-                if (t.GetComponent<MeshRenderer>() != null)
+                // Assicuriamoci che la cartella categoria sia ACCESA, altrimenti non possiamo cercare dentro
+                categoria.gameObject.SetActive(true);
+
+                // Cicla attraverso gli oggetti veri e propri (Ambisonic, Fresnel, ecc.)
+                foreach (Transform oggetto in categoria)
                 {
-                    t.gameObject.SetActive(false);
+                    // Spegni l'oggetto radice. I suoi figli (mesh) rimarranno attivi RELATIVAMENTE al padre.
+                    // Quando riaccenderemo il padre, si vedrà tutto.
+                    oggetto.gameObject.SetActive(false);
                 }
             }
         }
@@ -86,13 +92,12 @@ public class InventarioGiocatore : MonoBehaviour
         
         foreach (Transform t in tuttiIFigli)
         {
-            // Confronto nomi esatto
+            // Confronto nomi esatto (ignora maiuscole/minuscole)
             if (t.name.Equals(nomeModello, System.StringComparison.OrdinalIgnoreCase))
             {
                 t.gameObject.SetActive(attiva);
                 
-                // --- FIX CRUCIALE ---
-                // Se stiamo attivando l'oggetto, assicuriamoci che anche il PADRE (la cartella Lenti/Luci) sia attivo!
+                // Se stiamo attivando, assicuriamoci che anche la cartella padre (es. Microfoni) sia visibile
                 if (attiva && t.parent != manoContainer.transform)
                 {
                     t.parent.gameObject.SetActive(true);
@@ -101,6 +106,6 @@ public class InventarioGiocatore : MonoBehaviour
             }
         }
         
-        if (attiva) Debug.LogError($"[Inventario] Non trovo l'oggetto '{nomeModello}' dentro la mano!");
+        if (attiva) Debug.LogError($"[Inventario] Non trovo l'oggetto '{nomeModello}' dentro la mano! Controlla i nomi nella Gerarchia.");
     }
 }

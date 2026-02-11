@@ -15120,26 +15120,17 @@ MonoBehaviour:
   audioAttore: {fileID: 2055142297}
   audioAttrice: {fileID: 1979385599}
   copione:
-  - chi: 1
-    clipAudio: {fileID: 8300000, guid: e5f813b7679138d4892412b4082d56bb, type: 3}
-    pausaDopo: 0
   - chi: 0
     clipAudio: {fileID: 8300000, guid: df1bbb8f73bd5064bbdc92a71dc1a0cd, type: 3}
     pausaDopo: 0
   - chi: 1
-    clipAudio: {fileID: 8300000, guid: 9593357de4001634aa7be7dd5b943001, type: 3}
+    clipAudio: {fileID: 8300000, guid: e5f813b7679138d4892412b4082d56bb, type: 3}
     pausaDopo: 0
   - chi: 0
     clipAudio: {fileID: 8300000, guid: 099739868896161418fcb37a43af3174, type: 3}
     pausaDopo: 0
   - chi: 1
     clipAudio: {fileID: 8300000, guid: ac2cc75168476974bb43b4bb53669f9f, type: 3}
-    pausaDopo: 0
-  - chi: 0
-    clipAudio: {fileID: 8300000, guid: f8ab78474476fda438ee63c7a5739c6f, type: 3}
-    pausaDopo: 0
-  - chi: 1
-    clipAudio: {fileID: 8300000, guid: 297a0c0a86d2ce0498380e74b3d11e96, type: 3}
     pausaDopo: 0
   nomeStatoAnimazione: Scene
 --- !u!4 &609831960
