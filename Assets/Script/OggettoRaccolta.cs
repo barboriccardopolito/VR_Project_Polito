@@ -5,8 +5,10 @@ public class OggettoRaccolta : MonoBehaviour
     public enum TipoOggetto { Lente, Luce, Microfono }
 
     [Header("Dati Oggetto")]
-    public TipoOggetto categoria; // Che tipo è?
-    public string nomeOggetto;    // Es. "50mm", "Gelatina Blu", "Boom"
+    public TipoOggetto categoria; // Che tipo è? (Lente, Luce...)
+    
+    [Tooltip("Scrivi qui il nome esatto che vuoi vedere a schermo (es. 'Grandangolo', 'Fresnel')")]
+    public string nomeOggetto;    // Es. "Grandangolo", "Cinematografica", "Boom"
 
     // Riferimento all'evidenziatore
     private Evidenziatore evidenziatore;
@@ -16,6 +18,13 @@ public class OggettoRaccolta : MonoBehaviour
         // Cerca lo script Evidenziatore su questo oggetto o nei figli
         evidenziatore = GetComponent<Evidenziatore>();
         if (evidenziatore == null) evidenziatore = GetComponentInChildren<Evidenziatore>();
+
+        // --- AGGIUNTA DI SICUREZZA ---
+        // Se nell'Inspector lasci il campo vuoto, usa il nome del file 3D come fallback
+        if (string.IsNullOrEmpty(nomeOggetto))
+        {
+            nomeOggetto = gameObject.name;
+        }
     }
 
     void Update()
@@ -24,13 +33,18 @@ public class OggettoRaccolta : MonoBehaviour
         GestisciEvidenziatore();
     }
 
-public void EseguiRaccolta()
+    public void EseguiRaccolta()
     {
         InventarioGiocatore inventario = FindFirstObjectByType<InventarioGiocatore>();
         
         if (inventario != null)
         {
-            if (inventario.haUnOggetto) return;
+            // Se l'inventario è pieno, non raccogliere
+            if (inventario.haUnOggetto) 
+            {
+                Debug.Log("Inventario pieno!");
+                return;
+            }
 
             // Passa se stesso (gameObject) per essere gestito dall'inventario
             inventario.RaccogliOggetto(nomeOggetto, categoria, gameObject);
@@ -43,9 +57,12 @@ public void EseguiRaccolta()
     void GestisciEvidenziatore()
     {
         if (evidenziatore == null) return;
+        
+        // Se il GameManager non esiste (es. test isolato), esci
+        if (GameManager.instance == null) return;
 
         GameManager.Reparto taskAttuale = GameManager.instance.taskAttuale;
-        bool faseRevisione = (taskAttuale == GameManager.Reparto.Regia);
+        bool faseRevisione = (taskAttuale == GameManager.Reparto.Regia); // O fase finale
         bool devoIlluminarmi = false;
 
         switch (categoria)

@@ -1,12 +1,12 @@
 using UnityEngine;
-using UnityEngine.UI; // NECESSARIO per l'Image del mirino
-using TMPro; // Se usi TextMeshPro nel widget 3D
+using UnityEngine.UI; // Per l'Image del mirino
+using TMPro; // NECESSARIO per cambiare il testo nel widget
 
 public class InterazioneGiocatore : MonoBehaviour
 {
     [Header("Collegamenti")]
     public Transform cameraGiocatore;
-    public GameObject widgetInterazione; // L'etichetta 3D (Canvas World Space) o Testo UI
+    public GameObject widgetInterazione; // L'oggetto Canvas World Space con dentro il testo
     
     [Header("Mirino Dinamico")]
     public Image mirinoUI;               // Trascina qui l'Image del mirino (Canvas 2D)
@@ -23,10 +23,17 @@ public class InterazioneGiocatore : MonoBehaviour
 
     // Variabile privata per sapere se stiamo puntando qualcosa
     private bool bersaglioAgganciato = false;
+    
+    // Riferimento al componente di testo (lo cerchiamo all'avvio)
+    private TextMeshProUGUI testoWidget;
 
     void Start()
     {
-        if (widgetInterazione != null) widgetInterazione.SetActive(false);
+        if (widgetInterazione != null)
+        {
+            testoWidget = widgetInterazione.GetComponentInChildren<TextMeshProUGUI>();
+            widgetInterazione.SetActive(false);
+        }
     }
 
     void Update()
@@ -40,7 +47,7 @@ public class InterazioneGiocatore : MonoBehaviour
         }
     }
 
-    // --- RILEVAMENTO VISIVO (Per accendere il mirino) ---
+    // --- RILEVAMENTO VISIVO (Per accendere il mirino e mostrare testo) ---
     void ControlloRaggio()
     {
         if (cameraGiocatore == null) return;
@@ -52,35 +59,62 @@ public class InterazioneGiocatore : MonoBehaviour
         // Se il raggio colpisce qualcosa
         if (Physics.Raycast(raggio, out hit, distanzaInterazione, layerDaColpire))
         {
-            // Controlliamo se l'oggetto ha uno script interagibile
             bool trovatoQualcosa = false;
+            string messaggioDaMostrare = "[E] INTERAGISCI"; // Messaggio di default
 
-            // 1. NPC e Staff
-            if (hit.collider.GetComponent<InteragibileNPC>() != null) trovatoQualcosa = true;
+            // 1. OGGETTI DA RACCOGLIERE (Lenti, Luci, Mic) - PRIORITÀ ALTA
+            OggettoRaccolta oggetto = hit.collider.GetComponent<OggettoRaccolta>();
+            if (oggetto != null)
+            {
+                trovatoQualcosa = true;
+                // --- QUI LEGGIAMO IL NOME SPECIFICO ---
+                messaggioDaMostrare = "[E] RACCOGLI " + oggetto.nomeOggetto.ToUpper();
+            }
+
+            // 2. NPC e Staff
+            else if (hit.collider.GetComponent<InteragibileNPC>() != null) 
+            {
+                trovatoQualcosa = true;
+                messaggioDaMostrare = "[E] PARLA";
+            }
             
-            // 2. Oggetti da raccogliere (Lenti, Luci, Mic)
-            if (hit.collider.GetComponent<OggettoRaccolta>() != null) trovatoQualcosa = true;
-
             // 3. Supporti (Luci e Audio Boom/Ambisonic)
-            if (hit.collider.GetComponent<SupportoMicrofono>() != null) trovatoQualcosa = true;
-            if (hit.collider.GetComponent<SupportoLuce>() != null) trovatoQualcosa = true;
+            else if (hit.collider.GetComponent<SupportoLuce>() != null) 
+            {
+                trovatoQualcosa = true;
+                messaggioDaMostrare = "[E] PIAZZA LUCE";
+            }
+            else if (hit.collider.GetComponent<SupportoMicrofono>() != null)
+            {
+                trovatoQualcosa = true;
+                messaggioDaMostrare = "[E] PIAZZA MICROFONO";
+            }
 
             // 4. Videocamera (Spostamento)
-            if (hit.collider.GetComponent<SpostamentoCamera>() != null || hit.collider.CompareTag("Videocamera")) trovatoQualcosa = true;
+            else if (hit.collider.GetComponent<SpostamentoCamera>() != null || hit.collider.CompareTag("Videocamera")) 
+            {
+                trovatoQualcosa = true;
+                messaggioDaMostrare = "[E] SPOSTA CAMERA";
+            }
 
             // 5. ATTORE (Solo se dobbiamo mettere i Lavalier)
-            if (GameManager.instance.micDaInstallare == "Lavalier")
+            else if (GameManager.instance.micDaInstallare == "Lavalier" && hit.collider.GetComponent<AttoreMicrofonabile>() != null)
             {
-                if (hit.collider.GetComponent<AttoreMicrofonabile>() != null) trovatoQualcosa = true;
+                trovatoQualcosa = true;
+                messaggioDaMostrare = "[E] MICROFONA ATTORE";
             }
 
             // 6. Macchinetta Caffè
-            if (hit.collider.GetComponent<MacchinettaCaffe>() != null) trovatoQualcosa = true;
+            else if (hit.collider.GetComponent<MacchinettaCaffe>() != null) 
+            {
+                trovatoQualcosa = true;
+                messaggioDaMostrare = "[E] SPEGNI";
+            }
 
-            // --- RISULTATO ---
+            // --- GESTIONE WIDGET ---
             if (trovatoQualcosa)
             {
-                MostraWidget(hit);
+                MostraWidget(hit, messaggioDaMostrare);
                 bersaglioAgganciato = true;
             }
             else
@@ -111,15 +145,20 @@ public class InterazioneGiocatore : MonoBehaviour
         mirinoUI.transform.localScale = nuovaScala;
     }
 
-    void MostraWidget(RaycastHit hit)
+    void MostraWidget(RaycastHit hit, string testo)
     {
         if (widgetInterazione == null) return;
 
         widgetInterazione.SetActive(true);
+        
+        // Aggiorna il testo se abbiamo il componente
+        if (testoWidget != null) testoWidget.text = testo;
+
         // Posizionamento leggermente spostato verso la camera per non entrare nell'oggetto
         Vector3 direzione = (cameraGiocatore.position - hit.point).normalized;
         widgetInterazione.transform.position = hit.point + offsetGrafico + (direzione * 0.2f);
         
+        // Fai guardare il widget verso il giocatore
         widgetInterazione.transform.LookAt(cameraGiocatore);
         widgetInterazione.transform.Rotate(0, 180, 0); // Correzione rotazione per UI World Space
     }
@@ -135,7 +174,11 @@ public class InterazioneGiocatore : MonoBehaviour
         {
             // --- ORDINE DI CONTROLLO ---
 
-            // 1. ATTORE (Nuova logica Lavalier)
+            // 1. OGGETTI (Lenti, Luci, Mic)
+            OggettoRaccolta obj = hit.collider.GetComponent<OggettoRaccolta>();
+            if (obj != null) { obj.EseguiRaccolta(); return; }
+
+            // 2. ATTORE (Nuova logica Lavalier)
             AttoreMicrofonabile attore = hit.collider.GetComponent<AttoreMicrofonabile>();
             if (attore != null)
             {
@@ -143,19 +186,15 @@ public class InterazioneGiocatore : MonoBehaviour
                 return;
             }
 
-            // 2. NPC (Staff, Regista)
+            // 3. NPC (Staff, Regista)
             InteragibileNPC npc = hit.collider.GetComponent<InteragibileNPC>();
             if (npc != null) { npc.Interagisci(); return; }
 
-            // 3. OGGETTI (Lenti, Luci, Mic)
-            OggettoRaccolta obj = hit.collider.GetComponent<OggettoRaccolta>();
-            if (obj != null) { obj.EseguiRaccolta(); return; }
-
             // 4. VIDEOCAMERA
             SpostamentoCamera spostaCam = hit.collider.GetComponent<SpostamentoCamera>();
-            if (spostaCam == null) spostaCam = hit.collider.GetComponentInParent<SpostamentoCamera>(); // Cerca nel padre se colpisci la lente
+            if (spostaCam == null) spostaCam = hit.collider.GetComponentInParent<SpostamentoCamera>(); 
             if (spostaCam != null) { spostaCam.Interagisci(); return; }
-            if (hit.collider.CompareTag("Videocamera")) // Fallback Tag
+            if (hit.collider.CompareTag("Videocamera")) 
             {
                 GameManager.instance.cameraPosizionata = true;
                 Debug.Log("Camera posizionata via Tag.");

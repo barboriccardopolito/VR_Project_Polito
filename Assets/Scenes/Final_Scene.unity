@@ -9290,7 +9290,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 15
+  field of view: 20
   orthographic: 0
   orthographic size: 5
   m_Depth: 0
@@ -11195,7 +11195,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 28.4
+  field of view: 20
   orthographic: 0
   orthographic size: 5
   m_Depth: 0
@@ -18521,7 +18521,7 @@ MonoBehaviour:
   attoriMicrofonatiAttuali: 0
   fovStandard: 60
   fovGrandangolo: 90
-  fovCinematic: 40
+  fovCinematic: 20
   globalVolume: {fileID: 603563470}
   cameraPosizionata: 0
   sorgenteAttori: {fileID: 0}
@@ -22406,7 +22406,7 @@ NavMeshObstacle:
   m_Enabled: 1
   serializedVersion: 3
   m_Shape: 1
-  m_Extents: {x: 0.5, y: 0.5, z: 0.5}
+  m_Extents: {x: 1.25, y: 1, z: 0.5}
   m_MoveThreshold: 0.1
   m_Carve: 0
   m_CarveOnlyStationary: 1
@@ -43433,7 +43433,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 33.5
+  field of view: 20
   orthographic: 0
   orthographic size: 5
   m_Depth: 0
@@ -48654,6 +48654,22 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.2907076, y: 1.1477909, z: 1.1705421}
   m_Center: {x: -0.007239554, y: 0.5533148, z: -0.18486126}
+--- !u!208 &6313738137038858570
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1460451802}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 1, y: 1, z: 0.5}
+  m_MoveThreshold: 0.1
+  m_Carve: 0
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 0, z: 0}
+  m_TimeToStationary: 0.5
 --- !u!1001 &6474743086991813474
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -49042,6 +49058,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5349728110602879853, guid: 8abe95208baa745faa38c3b76b2f6296, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6313738137038858569}
+    - targetCorrespondingSourceObject: {fileID: 5349728110602879853, guid: 8abe95208baa745faa38c3b76b2f6296, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6313738137038858570}
   m_SourcePrefab: {fileID: 100100000, guid: 8abe95208baa745faa38c3b76b2f6296, type: 3}
 --- !u!1001 &7934265015720049326
 PrefabInstance:
