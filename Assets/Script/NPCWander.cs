@@ -17,10 +17,13 @@ public class NPCWander : MonoBehaviour
     public float tempoAttesaMax = 5f;
 
     [Header("Audio Dialoghi")]
-    public AudioClip[] clipsIntroduzione; // Trascina qui Intro_01 a Intro_06
-    public AudioClip clipConsegnaRadio;   // Trascina qui Consegna_radio
-    private AudioSource audioSource;
+    public AudioClip[] clipsIntroduzione; // Intro_01 a Intro_06 (PRIMA di premere R)
+    
+    [Header("--- TUTORIAL RADIO ---")]
+    public GameObject promptTastoR;       // Trascina qui la scritta "Premi R"
+    public AudioClip clipConsegnaRadio;   // La frase "Ottimo, ecco a te..." (DOPO aver premuto R)
 
+    private AudioSource audioSource;
     private NavMeshAgent agent;
     private RadioSistema radioSistema;
     private float timer;
@@ -46,6 +49,9 @@ public class NPCWander : MonoBehaviour
         timer = tempoAttesaMin;
         radioSistema = FindObjectOfType<RadioSistema>();
 
+        // Assicuriamoci che la scritta tutorial sia spenta all'inizio
+        if (promptTastoR != null) promptTastoR.SetActive(false);
+
         // Se il giocatore ha già la radio, l'NPC parte già in piedi che cammina
         if (radioSistema != null && radioSistema.haLaRadio)
             StartInPiedi();
@@ -56,7 +62,6 @@ public class NPCWander : MonoBehaviour
     void StartSeduto()
     {
         isSeduto = true;
-        // CORRETTO: Uso "IsSeduto"
         if (animator != null) animator.SetBool("IsSeduto", true); 
         if (agent != null) agent.enabled = false;
     }
@@ -64,7 +69,6 @@ public class NPCWander : MonoBehaviour
     void StartInPiedi()
     {
         isSeduto = false;
-        // CORRETTO: Uso "IsSeduto"
         if (animator != null) animator.SetBool("IsSeduto", false);
 
         if (oggettoRadioFisico != null) oggettoRadioFisico.SetActive(false);
@@ -132,13 +136,14 @@ public class NPCWander : MonoBehaviour
 
     IEnumerator SequenzaDialogo()
     {
-        // 1. Riproduci le 6 frasi di introduzione
+        // 1. Riproduci le frasi di introduzione (Bla bla bla...)
         if (clipsIntroduzione != null)
         {
             foreach (AudioClip clip in clipsIntroduzione)
             {
                 if (clip != null)
                 {
+                    audioSource.Stop();
                     audioSource.clip = clip;
                     audioSource.Play();
                     // Aspetta la durata della clip + piccola pausa
@@ -147,9 +152,26 @@ public class NPCWander : MonoBehaviour
             }
         }
 
-        // 2. Riproduci la frase di consegna
+        // --- PAUSA TUTORIAL ---
+        if (promptTastoR != null)
+        {
+            // Mostra scritta "PREMI R"
+            promptTastoR.SetActive(true);
+
+            // Aspetta finché non premi R
+            yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.R));
+
+            // Nascondi scritta
+            promptTastoR.SetActive(false);
+            
+            // Pausa scenica per far sembrare che ascolti la radio
+            yield return new WaitForSeconds(0.5f);
+        }
+
+        // 2. Riproduci la frase finale ("Ottimo, ecco a te...")
         if (clipConsegnaRadio != null)
         {
+            audioSource.Stop();
             audioSource.clip = clipConsegnaRadio;
             audioSource.Play();
             yield return new WaitForSeconds(clipConsegnaRadio.length);
@@ -159,9 +181,9 @@ public class NPCWander : MonoBehaviour
         Debug.Log("NPC: 'Ecco a te.'");
         
         // Consegna Logica
-        if (radioSistema != null) radioSistema.RiceviRadio();
+        if (radioSistema != null) radioSistema.RiceviRadio(); // ATTENZIONE: Assicurati che RiceviRadio() setti haLaRadio = true
         
-        // Nascondi Radio Fisica
+        // Nascondi Radio Fisica sul tavolo
         if (oggettoRadioFisico != null) oggettoRadioFisico.SetActive(false);
 
         // Completa Task nel GameManager
@@ -178,7 +200,6 @@ public class NPCWander : MonoBehaviour
     void Alzati()
     {
         isSeduto = false;
-        // CORRETTO: Uso "IsSeduto"
         if (animator != null) animator.SetBool("IsSeduto", false); 
 
         if (agent != null)
@@ -209,8 +230,15 @@ public class NPCWander : MonoBehaviour
     {
         if (targetGiocatore == null)
         {
-            InterazioneGiocatore player = FindObjectOfType<InterazioneGiocatore>();
-            if (player != null) targetGiocatore = player.transform;
+            // Cerchiamo il player in modo sicuro
+            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+            if (playerObj != null) targetGiocatore = playerObj.transform;
+            else 
+            {
+                 // Fallback: cerca l'oggetto che ha lo script interazione
+                 InterazioneGiocatore scriptPlayer = FindObjectOfType<InterazioneGiocatore>();
+                 if(scriptPlayer != null) targetGiocatore = scriptPlayer.transform;
+            }
         }
 
         if (targetGiocatore != null)
