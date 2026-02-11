@@ -10,6 +10,13 @@ public class SpostamentoCamera : MonoBehaviour
     [Header("Movimento")]
     public float velocitaSpostamento = 3.0f;
     
+    [Header("LIMITI STANZA (Confini)")]
+    public bool usaLimiti = true;
+    public float minX = -10f; // Sinistra
+    public float maxX = 10f;  // Destra
+    public float minZ = -10f; // Dietro
+    public float maxZ = 10f;  // Avanti
+
     [Header("Riferimenti Player")]
     public GameObject giocatore; 
 
@@ -42,7 +49,23 @@ public class SpostamentoCamera : MonoBehaviour
     void Update()
     {
         // --- LOGICA ANELLO LUMINOSO ---
-        GestisciEvidenziatore();
+        if (evidenziatore != null)
+        {
+            if (inModalitaSpostamento)
+            {
+                evidenziatore.Spegni();
+            }
+            else
+            {
+                // Accendi solo se è il momento giusto (Fotografia o Revisione)
+                bool faseFotografia = (GameManager.instance != null && GameManager.instance.taskAttuale == GameManager.Reparto.Fotografia);
+                bool faseRevisione = (GameManager.instance != null && GameManager.instance.taskAttuale == GameManager.Reparto.Regia);
+                bool hoLaLente = (GameManager.instance != null && !string.IsNullOrEmpty(GameManager.instance.lenteSceltaFinale));
+
+                if ((faseFotografia || faseRevisione) && hoLaLente) evidenziatore.Accendi();
+                else evidenziatore.Spegni();
+            }
+        }
 
         // --- LOGICA MOVIMENTO ---
         if (inModalitaSpostamento)
@@ -50,47 +73,10 @@ public class SpostamentoCamera : MonoBehaviour
             GestisciMovimento();
 
             // Uscita con tasto E (SOLO SE il cooldown è finito)
-            if (Input.GetKeyDown(KeyCode.E))
+            if (Input.GetKeyDown(KeyCode.E) && possoUscire)
             {
-                if (possoUscire)
-                {
-                    EsciDaModalitaSpostamento();
-                }
-                else
-                {
-                    Debug.Log("⏳ Aspetta... sto inizializzando la camera.");
-                }
+                EsciDaModalitaSpostamento();
             }
-        }
-    }
-
-    void GestisciEvidenziatore()
-    {
-        if (evidenziatore == null) return;
-
-        // Se sono DENTRO la camera, spengo l'anello (altrimenti mi dà fastidio alla vista)
-        if (inModalitaSpostamento)
-        {
-            evidenziatore.Spegni();
-            return;
-        }
-
-        // Logica di accensione:
-        // 1. Siamo nel reparto Fotografia O in Revisione (Regia)
-        bool faseFotografia = (GameManager.instance.taskAttuale == GameManager.Reparto.Fotografia);
-        bool faseRevisione = (GameManager.instance.taskAttuale == GameManager.Reparto.Regia);
-        
-        // 2. Abbiamo consegnato la lente al fotografo? (Solo se ho la lente posso muovere la camera)
-        bool hoLaLente = (GameManager.instance.lenteSceltaFinale != "");
-
-        // ACCENDITI SE: (È il momento giusto) E (Ho la lente installata)
-        if ((faseFotografia || faseRevisione) && hoLaLente)
-        {
-            evidenziatore.Accendi();
-        }
-        else
-        {
-            evidenziatore.Spegni();
         }
     }
 
@@ -104,7 +90,7 @@ public class SpostamentoCamera : MonoBehaviour
         if (cameraGiocatore != null) cameraGiocatore.enabled = false;
         if (cameraDallAlto != null) cameraDallAlto.gameObject.SetActive(true);
 
-        Debug.Log("[Camera] Spostamento ATTIVO. Usa WASD. (Premi E tra 1 secondo per uscire)");
+        Debug.Log("[Camera] Spostamento ATTIVO. Usa WASD/Frecce. (Premi E per uscire)");
         
         StartCoroutine(AbilitaUscitaRoutine());
     }
@@ -113,7 +99,6 @@ public class SpostamentoCamera : MonoBehaviour
     {
         yield return new WaitForSeconds(1.0f);
         possoUscire = true;
-        Debug.Log("✅ Ora puoi premere E per uscire.");
     }
 
     void EsciDaModalitaSpostamento()
@@ -138,8 +123,9 @@ public class SpostamentoCamera : MonoBehaviour
         float x = Input.GetAxis("Horizontal"); 
         float z = Input.GetAxis("Vertical");   
 
+        // Calcolo direzione basata sulla rotazione della camera
         Vector3 camRight = cameraDallAlto.transform.right;
-        Vector3 camForward = cameraDallAlto.transform.up; 
+        Vector3 camForward = cameraDallAlto.transform.up; // O transform.forward a seconda di come è ruotata la tua cam dall'alto
 
         camRight.y = 0;
         camForward.y = 0;
@@ -147,24 +133,74 @@ public class SpostamentoCamera : MonoBehaviour
         camForward.Normalize();
 
         Vector3 move = (camRight * x + camForward * z) * velocitaSpostamento * Time.deltaTime;
+        
+        // Applica movimento
         transform.Translate(move, Space.World);
+
+        // --- BLOCCO LIMITI (Nuova parte) ---
+        if (usaLimiti)
+        {
+            Vector3 pos = transform.position;
+            
+            // Blocca la X e la Z dentro i valori minimi e massimi
+            pos.x = Mathf.Clamp(pos.x, minX, maxX);
+            pos.z = Mathf.Clamp(pos.z, minZ, maxZ);
+            
+            transform.position = pos;
+        }
     }
 
     void BloccaGiocatore(bool blocca)
     {
         if (giocatore == null) return;
-        foreach (string nomeScript in nomiScriptDaDisabilitare)
+
+        // Blocca script movimento (MouseLook, PlayerMovement)
+        if (nomiScriptDaDisabilitare != null)
         {
-            MonoBehaviour scriptTrovato = giocatore.GetComponent(nomeScript) as MonoBehaviour;
-            if (scriptTrovato != null) scriptTrovato.enabled = !blocca;
-            else if (cameraGiocatore != null) {
-                scriptTrovato = cameraGiocatore.GetComponent(nomeScript) as MonoBehaviour;
-                if (scriptTrovato != null) scriptTrovato.enabled = !blocca;
+            foreach (string nomeScript in nomiScriptDaDisabilitare)
+            {
+                MonoBehaviour scriptPlayer = giocatore.GetComponent(nomeScript) as MonoBehaviour;
+                if (scriptPlayer != null) scriptPlayer.enabled = !blocca;
+                
+                // Cerca anche nella camera figlia (spesso MouseLook è lì)
+                if (cameraGiocatore != null)
+                {
+                    MonoBehaviour scriptCam = cameraGiocatore.GetComponent(nomeScript) as MonoBehaviour;
+                    if (scriptCam != null) scriptCam.enabled = !blocca;
+                }
             }
         }
+
+        // Blocca CharacterController (fisica)
         CharacterController cc = giocatore.GetComponent<CharacterController>();
         if (cc != null) cc.enabled = !blocca;
         
-        if (blocca) { Cursor.lockState = CursorLockMode.Locked; Cursor.visible = false; }
+        // Nascondi cursore
+        if (blocca) 
+        { 
+            Cursor.lockState = CursorLockMode.Locked; 
+            Cursor.visible = false; 
+        }
+    }
+
+    // --- AIUTO VISIVO (Disegna l'area rossa nell'Editor) ---
+    void OnDrawGizmosSelected()
+    {
+        if (usaLimiti)
+        {
+            Gizmos.color = new Color(1, 0, 0, 0.3f); // Rosso semi-trasparente
+            
+            float centroX = (minX + maxX) / 2;
+            float centroZ = (minZ + maxZ) / 2;
+            float larghezza = maxX - minX;
+            float profondita = maxZ - minZ;
+
+            // Disegna cubo che rappresenta l'area consentita
+            Vector3 centro = new Vector3(centroX, transform.position.y, centroZ);
+            Vector3 dimensione = new Vector3(larghezza, 1f, profondita);
+
+            Gizmos.DrawCube(centro, dimensione);
+            Gizmos.DrawWireCube(centro, dimensione);
+        }
     }
 }

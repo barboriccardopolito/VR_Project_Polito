@@ -21990,6 +21990,11 @@ MonoBehaviour:
   cameraDallAlto: {fileID: 368937900}
   cameraGiocatore: {fileID: 1823688466}
   velocitaSpostamento: 3
+  usaLimiti: 1
+  minX: 5
+  maxX: 8
+  minZ: 6
+  maxZ: 8.6
   giocatore: {fileID: 858305082}
   nomiScriptDaDisabilitare:
   - PlayerMovement
@@ -29489,6 +29494,11 @@ MonoBehaviour:
   cameraDallAlto: {fileID: 1566441513}
   cameraGiocatore: {fileID: 1823688466}
   velocitaSpostamento: 3
+  usaLimiti: 1
+  minX: 5.5
+  maxX: 9
+  minZ: 1.83
+  maxZ: 6
   giocatore: {fileID: 858305082}
   nomiScriptDaDisabilitare:
   - PlayerMovement
@@ -49066,6 +49076,11 @@ MonoBehaviour:
   cameraDallAlto: {fileID: 1864836943}
   cameraGiocatore: {fileID: 1823688466}
   velocitaSpostamento: 3
+  usaLimiti: 1
+  minX: 5.2
+  maxX: 9
+  minZ: 9.6
+  maxZ: 11.7
   giocatore: {fileID: 858305082}
   nomiScriptDaDisabilitare:
   - PlayerMovement
