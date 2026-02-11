@@ -105,29 +105,31 @@ public class RegiaManager : MonoBehaviour
             yield return new WaitForSeconds(4f); 
         }
 
-        Debug.Log("<color=green>--- STOP! ---</color>");
-        
-        // Spegni l'ultima camera rimasta accesa
-        foreach (var cam in camereSet) cam.gameObject.SetActive(false);
-        
-        // Segna la task come completata (opzionale, visto che il gioco finisce)
-        if (GameManager.instance != null) 
-            GameManager.instance.CompletaTask(GameManager.Reparto.Regia);
+// ... codice precedente dentro SequenzaRegistrazione ...
 
-        // --- QUI PARTE IL FINALE ---
-        // Non riattivo il player, vado dritto ai titoli
-        Debug.Log("Avvio titoli di coda immediati.");
-        
-        if (gestoreFinale != null)
-        {
-            gestoreFinale.AvviaTitoliDiCoda();
-        }
-        else
-        {
-            Debug.LogError("ERRORE: Non hai collegato il 'GestoreFinale' nell'Inspector!");
-            // Se fallisce, riattiva il player per non bloccare il gioco
-            if (mainCameraPlayer) mainCameraPlayer.enabled = true;
-        }
+    Debug.Log("<color=green>--- STOP! ---</color>");
+    
+    // 1. Spegni le camere del set
+    foreach (var cam in camereSet) cam.gameObject.SetActive(false);
+    
+    // 2. RIACCENDI LA CAMERA DEL GIOCATORE (Fix per "No cameras rendering")
+    if (mainCameraPlayer) mainCameraPlayer.enabled = true;
+
+    // Segna la task come completata
+    if (GameManager.instance != null) 
+        GameManager.instance.CompletaTask(GameManager.Reparto.Regia);
+
+    // --- QUI PARTE IL FINALE ---
+    Debug.Log("Avvio titoli di coda immediati.");
+    
+    if (gestoreFinale != null)
+    {
+        gestoreFinale.AvviaTitoliDiCoda();
+    }
+    else
+    {
+        Debug.LogError("ERRORE: Non hai collegato il 'GestoreFinale' nell'Inspector!");
+    }
     }
 
     void ApplicaEffettiScelti(Camera camDestinazione)
