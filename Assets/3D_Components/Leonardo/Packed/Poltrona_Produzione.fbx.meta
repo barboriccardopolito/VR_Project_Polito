@@ -1,14 +1,9 @@
 fileFormatVersion: 2
-guid: 3a61b24ed07e242f482df2fecff4cad0
+guid: c4908c33880894577a049a3fe32ce0e1
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects:
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: ArmchairLeyaWingbackReplica001
-    second: {fileID: 2100000, guid: aa76df5a6be7841c484b29c5864b5ebb, type: 2}
+  externalObjects: {}
   materials:
     materialImportMode: 2
     materialName: 0
