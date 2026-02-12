@@ -14757,42 +14757,6 @@ PrefabInstance:
       value: 0.5302715
       objectReference: {fileID: 0}
     - target: {fileID: 488129969811646323, guid: 3db16407369e3044e9e872df411a27f4, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.84782785
-      objectReference: {fileID: 0}
-    - target: {fileID: 488129969811646323, guid: 3db16407369e3044e9e872df411a27f4, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 115.952
-      objectReference: {fileID: 0}
-    - target: {fileID: 1008836192796056386, guid: 3db16407369e3044e9e872df411a27f4, type: 3}
-      propertyPath: m_Name
-      value: FIX vaso salotto Variant
-      objectReference: {fileID: 0}
-    - target: {fileID: 1008836192796056386, guid: 3db16407369e3044e9e872df411a27f4, type: 3}
-      propertyPath: m_StaticEditorFlags
-      value: 2147483647
-      objectReference: {fileID: 0}
-    - target: {fileID: 4272930517576632322, guid: 3db16407369e3044e9e872df411a27f4, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: a3bdf7c6a22b2f44a8025327056108a3, type: 2}
-    - target: {fileID: 488129969811646323, guid: 3db16407369e3044e9e872df411a27f4, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 29.726444
-      objectReference: {fileID: 0}
-    - target: {fileID: 488129969811646323, guid: 3db16407369e3044e9e872df411a27f4, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1.175
-      objectReference: {fileID: 0}
-    - target: {fileID: 488129969811646323, guid: 3db16407369e3044e9e872df411a27f4, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 7.7272663
-      objectReference: {fileID: 0}
-    - target: {fileID: 488129969811646323, guid: 3db16407369e3044e9e872df411a27f4, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.5302715
-      objectReference: {fileID: 0}
-    - target: {fileID: 488129969811646323, guid: 3db16407369e3044e9e872df411a27f4, type: 3}
       propertyPath: m_LocalRotation.x
       value: -0
       objectReference: {fileID: 0}
@@ -14816,6 +14780,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1008836192796056386, guid: 3db16407369e3044e9e872df411a27f4, type: 3}
+      propertyPath: m_Name
+      value: FIX vaso salotto Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 1008836192796056386, guid: 3db16407369e3044e9e872df411a27f4, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 4272930517576632322, guid: 3db16407369e3044e9e872df411a27f4, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: a3bdf7c6a22b2f44a8025327056108a3, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -26583,9 +26559,9 @@ MonoBehaviour:
   - {fileID: 8300000, guid: ab0c59b1eeda1344185667dc497cf1af, type: 3}
   audioTaskCompletata: {fileID: 8300000, guid: 9d0abbb8108a68e42b22a9550a005774, type: 3}
   audioCiak: {fileID: 0}
-  audioGrandangolo: {fileID: 8300000, guid: 0cb5d355594cffe48b409843e7dd3892, type: 3}
-  audioStandard: {fileID: 8300000, guid: ce8d066708dc26741a7c57ebebac68dd, type: 3}
-  audioCinema: {fileID: 8300000, guid: df940b8585ce7064ea0747b2a09acf21, type: 3}
+  audioGrandangolo: {fileID: 8300000, guid: ce8d066708dc26741a7c57ebebac68dd, type: 3}
+  audioStandard: {fileID: 8300000, guid: df940b8585ce7064ea0747b2a09acf21, type: 3}
+  audioCinema: {fileID: 8300000, guid: 0cb5d355594cffe48b409843e7dd3892, type: 3}
   audioFresnel: {fileID: 0}
   audioSoftbox: {fileID: 0}
   audioArtistica: {fileID: 0}
