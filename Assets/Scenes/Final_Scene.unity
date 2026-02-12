@@ -17486,9 +17486,9 @@ MonoBehaviour:
   audioGrandangolo: {fileID: 0}
   audioStandard: {fileID: 0}
   audioCinema: {fileID: 0}
-  audioFresnel: {fileID: 0}
-  audioSoftbox: {fileID: 0}
-  audioArtistica: {fileID: 0}
+  audioFresnel: {fileID: 8300000, guid: 764d59c7fcf2a8846843801a0669e1fc, type: 3}
+  audioSoftbox: {fileID: 8300000, guid: f17b3b34777bd6a478eaae4ae9f13ab5, type: 3}
+  audioArtistica: {fileID: 8300000, guid: 7d69b333bc3a5674283e393d3e252e94, type: 3}
   audioLavalier: {fileID: 0}
   audioBoom: {fileID: 0}
   audioAmbisonic: {fileID: 0}
@@ -17803,7 +17803,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7703512518693552971, guid: 193f34330cbe6ae40981439b7c38f5ff, type: 3}
       propertyPath: m_TagString
-      value: Raccoglibile
+      value: Untagged
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -25999,7 +25999,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 0332404abc4399d4db867e62e56813fc, type: 3}
   - {fileID: 8300000, guid: 1a75d5cb35417174b95c19e29d2fbe2f, type: 3}
   - {fileID: 8300000, guid: ab0c59b1eeda1344185667dc497cf1af, type: 3}
-  audioTaskCompletata: {fileID: 0}
+  audioTaskCompletata: {fileID: 8300000, guid: 9d0abbb8108a68e42b22a9550a005774, type: 3}
   audioCiak: {fileID: 0}
   audioGrandangolo: {fileID: 8300000, guid: 0cb5d355594cffe48b409843e7dd3892, type: 3}
   audioStandard: {fileID: 8300000, guid: ce8d066708dc26741a7c57ebebac68dd, type: 3}
@@ -46789,11 +46789,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6311032725306705496, guid: 6ee21961739450e41a13fd1520b7bb05, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6311032725306705496, guid: 6ee21961739450e41a13fd1520b7bb05, type: 3}
       propertyPath: m_TagString
-      value: Raccoglibile
+      value: Untagged
       objectReference: {fileID: 0}
     - target: {fileID: 7939788083720464655, guid: 6ee21961739450e41a13fd1520b7bb05, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
@@ -51257,8 +51257,12 @@ PrefabInstance:
       value: 2147483647
       objectReference: {fileID: 0}
     - target: {fileID: 5106647370095081277, guid: 4210609dc2c41884688847057e819d88, type: 3}
+      propertyPath: Priority
+      value: 126
+      objectReference: {fileID: 0}
+    - target: {fileID: 5106647370095081277, guid: 4210609dc2c41884688847057e819d88, type: 3}
       propertyPath: m_Volume
-      value: 0.175
+      value: 0.266
       objectReference: {fileID: 0}
     - target: {fileID: 5106647370095081277, guid: 4210609dc2c41884688847057e819d88, type: 3}
       propertyPath: m_Enabled
