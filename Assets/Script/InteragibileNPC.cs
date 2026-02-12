@@ -57,14 +57,35 @@ public class InteragibileNPC : MonoBehaviour
         bool faseRevisione = (GameManager.instance.taskAttuale == GameManager.Reparto.Regia);
         bool èIlMioTurno = (GameManager.instance.taskAttuale == tipoReparto);
 
+        // --- BLOCCO INTERAZIONE GENERALE ---
+        // Logica: Posso interagire se è il mio turno, se siamo in revisione (Regia), 
+        // oppure se sto completando una sottotask (es. ho la luce in mano ma non è più il turno Luci).
+        bool possoInteragire = èIlMioTurno || faseRevisione; 
+        
+        bool installazioneLuciInCorso = (GameManager.instance.LuceScelta != "");
+        bool installazioneAudioInCorso = (GameManager.instance.micDaInstallare != "");
+        
+        if (tipoReparto == GameManager.Reparto.Luci && installazioneLuciInCorso) possoInteragire = true;
+        if (tipoReparto == GameManager.Reparto.Fonico && installazioneAudioInCorso) possoInteragire = true;
+
+        // SE NON POSSO INTERAGIRE -> FERMATI QUI.
+        if (!possoInteragire)
+        {
+            Debug.Log($"<color=yellow>[{tipoReparto}]:</color> Non disturbare ora. Non è il mio turno.");
+            if (staffScript != null && staffScript.audioNonEIlMioTurno != null)
+            {
+                 staffScript.GetComponent<AudioSource>().PlayOneShot(staffScript.audioNonEIlMioTurno);
+            }
+            return;
+        }
+
+        // --- GESTIONE BRIEFING INIZIALE ---
         if (staffScript != null)
         {
             InterazioneGiocatore player = FindFirstObjectByType<InterazioneGiocatore>();
             if (player != null) staffScript.AttivaInterazione(player.transform);
 
-            // --- FIX BRIEFING REGISTA ---
-            // Il problema era "!faseRevisione". Il Regista lavora PROPRIO in fase revisione.
-            // Ora diciamo: "Se non siamo in revisione OPPURE se sono il Regista".
+            // Ascolta briefing solo se è il turno giusto
             if (èIlMioTurno && !staffScript.haGiaParlato && (!faseRevisione || tipoReparto == GameManager.Reparto.Regia))
             {
                 staffScript.AvviaDialogoIniziale();
@@ -74,17 +95,7 @@ public class InteragibileNPC : MonoBehaviour
         }
 
         InventarioGiocatore inv = FindFirstObjectByType<InventarioGiocatore>();
-
         bool fotografiaInCorso = (GameManager.instance.taskAttuale == GameManager.Reparto.Fotografia) || (faseRevisione && tipoReparto == GameManager.Reparto.Fotografia);
-        bool installazioneLuciInCorso = (GameManager.instance.LuceScelta != "");
-        bool installazioneAudioInCorso = (GameManager.instance.micDaInstallare != "");
-        bool possoInteragire = èIlMioTurno || installazioneAudioInCorso || installazioneLuciInCorso || faseRevisione;
-
-        if (!possoInteragire && tipoReparto != GameManager.Reparto.Regia)
-        {
-            Debug.Log($"[{tipoReparto}]: Non disturbare ora. Non è il mio turno.");
-            return;
-        }
 
         // --- 1. LOGICA FOTOGRAFIA ---
         if (tipoReparto == GameManager.Reparto.Fotografia && (!inv || !inv.haUnOggetto) && fotografiaInCorso)
@@ -133,21 +144,21 @@ public class InteragibileNPC : MonoBehaviour
              if (taskCompletata) {
                  if (staffScript != null)
                  {
-                     Debug.Log("<color=green>[Fonico]:</color> Controllo setup audio...");
-                     staffScript.ReazioneFineTask(() => 
-                     {
-                         GameManager.instance.ApplicaEffettoMicrofono(GameManager.instance.micDaInstallare);
-                         GameManager.instance.micDaInstallare = "";
-                         GameManager.instance.supportoPiazzato = false; 
-                         GameManager.instance.CompletaTask(tipoReparto);
-                     });
+                      Debug.Log("<color=green>[Fonico]:</color> Controllo setup audio...");
+                      staffScript.ReazioneFineTask(() => 
+                      {
+                          GameManager.instance.ApplicaEffettoMicrofono(GameManager.instance.micDaInstallare);
+                          GameManager.instance.micDaInstallare = "";
+                          GameManager.instance.supportoPiazzato = false; 
+                          GameManager.instance.CompletaTask(tipoReparto);
+                      });
                  }
                  else 
                  {
-                     GameManager.instance.ApplicaEffettoMicrofono(GameManager.instance.micDaInstallare);
-                     GameManager.instance.micDaInstallare = "";
-                     GameManager.instance.supportoPiazzato = false; 
-                     GameManager.instance.CompletaTask(tipoReparto);
+                      GameManager.instance.ApplicaEffettoMicrofono(GameManager.instance.micDaInstallare);
+                      GameManager.instance.micDaInstallare = "";
+                      GameManager.instance.supportoPiazzato = false; 
+                      GameManager.instance.CompletaTask(tipoReparto);
                  }
              } 
              else Debug.Log($"[Fonico]: Finisci di installare il {GameManager.instance.micDaInstallare}.");
@@ -162,8 +173,9 @@ public class InteragibileNPC : MonoBehaviour
             return;
         }
         
-        // --- 5. REGIA ---
-        if (tipoReparto == GameManager.Reparto.Regia) { 
+        // --- 5. REGIA (CORRETTO) ---
+        // QUI C'ERA L'ERRORE: Ora controlliamo che sia effettivamente il turno del Regista.
+        if (tipoReparto == GameManager.Reparto.Regia && èIlMioTurno) { 
             if (!RegiaManager.instance.previewInCorso && !RegiaManager.instance.registrazioneInCorso) {
                 RegiaManager.instance.AttivaPreview();
                 GameManager.instance.MandaAttoriInScena();
@@ -190,6 +202,7 @@ public class InteragibileNPC : MonoBehaviour
         // --- 6. CONSEGNA OGGETTI ---
         if (inv != null && inv.haUnOggetto)
         {
+            // (Logica consegna uguale a prima)
             bool oggettoCorretto = false;
             if (tipoReparto == GameManager.Reparto.Fotografia && inv.categoriaInMano == OggettoRaccolta.TipoOggetto.Lente) oggettoCorretto = true;
             if (tipoReparto == GameManager.Reparto.Luci && inv.categoriaInMano == OggettoRaccolta.TipoOggetto.Luce) oggettoCorretto = true;
@@ -197,7 +210,6 @@ public class InteragibileNPC : MonoBehaviour
 
             if (oggettoCorretto)
             {
-                // FOTOGRAFIA
                 if (tipoReparto == GameManager.Reparto.Fotografia)
                 {
                     if (GameManager.instance.lenteSceltaFinale != "") GameManager.instance.RestituisciOggettoAlTavolo(GameManager.instance.lenteSceltaFinale);
@@ -208,7 +220,6 @@ public class InteragibileNPC : MonoBehaviour
                     if (staffScript != null) staffScript.ReazioneConsegnaLente(inv.oggettoInMano);
                     inv.ConsegnaOggetto();
                 }
-                // LUCI
                 else if (tipoReparto == GameManager.Reparto.Luci)
                 {
                     if (GameManager.instance.LuceScelta != "") GameManager.instance.RestituisciOggettoAlTavolo(GameManager.instance.LuceScelta);
@@ -219,7 +230,6 @@ public class InteragibileNPC : MonoBehaviour
                     if (staffScript != null) staffScript.ReazioneConsegnaLuce(inv.oggettoInMano);
                     inv.ConsegnaOggetto();
                 }
-                // FONICO
                 else if (tipoReparto == GameManager.Reparto.Fonico)
                 {
                     if (GameManager.instance.micScelto != "") GameManager.instance.RestituisciOggettoAlTavolo(GameManager.instance.micScelto);
@@ -236,6 +246,7 @@ public class InteragibileNPC : MonoBehaviour
         }
         else
         {
+            // Solo messaggi di cortesia
             if (faseRevisione && tipoReparto != GameManager.Reparto.Regia) Debug.Log($"[{tipoReparto}]: Se vuoi cambiare qualcosa, portami l'attrezzatura nuova.");
             else if (staffScript == null || staffScript.haGiaParlato) Debug.Log($"[Info]: {messaggioTask}");
         }

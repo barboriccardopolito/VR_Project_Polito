@@ -42,13 +42,13 @@ public class GameManager : MonoBehaviour
     public bool cameraPosizionata = false;
 
     [Header("Parametri Audio Avanzati")]
-    // MODIFICA: Ora è un array per gestire Uomo e Donna insieme
-    public AudioSource[] sorgentiAttori; 
+    public AudioSource[] sorgentiAttori; // Array per gestire Uomo e Donna insieme
     
     // --- SISTEMA DI RESTITUZIONE E PULIZIA ---
     [Header("Registro Oggetti Scena")]
     public GameObject[] tuttiGliOggettiRaccoglibili; 
     public GameObject[] supportiLuciFisici; 
+    public GameObject[] supportiMicrofoniFisici; // <--- NUOVO: Trascina qui le aste/treppiedi dei mic
 
     private class PosizioneOggetto
     {
@@ -187,6 +187,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // --- PULIZIA VISUALE SUPPORTI LUCI ---
     public void ResettaVisualeSupportiLuci()
     {
         if (supportiLuciFisici == null) return;
@@ -214,6 +215,26 @@ public class GameManager : MonoBehaviour
         Debug.Log("[Luci] Supporti puliti visivamente e logicamente.");
     }
 
+    // --- PULIZIA VISUALE SUPPORTI MICROFONI ---
+    public void ResettaVisualeSupportiMicrofoni()
+    {
+        if (supportiMicrofoniFisici == null) return;
+
+        foreach (GameObject supporto in supportiMicrofoniFisici)
+        {
+            if (supporto != null)
+            {
+                // Spegni tutto quello che c'è sopra
+                var scriptMic = supporto.GetComponent<SupportoMicrofono>();
+                if (scriptMic != null)
+                {
+                    scriptMic.ResettaSupporto();
+                }
+            }
+        }
+        Debug.Log("[Audio] Tutti i supporti microfono sono stati puliti.");
+    }
+
     public void ScegliLuce(string nomeLuce) 
     {
         LuceScelta = nomeLuce;
@@ -239,7 +260,7 @@ public class GameManager : MonoBehaviour
         if (distortion != null) distortion.intensity.value = 0f;
     }
 
-    // --- EFFETTI AUDIO AVANZATI (Microfoni) ---
+    // --- EFFETTI AUDIO AVANZATI (Microfoni Multipli) ---
     public void ApplicaEffettoMicrofono(string nomeMic) 
     {
         if (sorgentiAttori == null) return;

@@ -1,10 +1,14 @@
 using UnityEngine;
 using UnityEngine.AI;
 using System.Collections;
-using System; // Necessario per le "Action"
+using System; 
 
 public class NPC_Staff : MonoBehaviour
 {
+    [Header("Identità NPC")]
+    // IMPORTANTE: Imposta questo valore nell'Inspector per ogni NPC!
+    public GameManager.Reparto ruoloNPC; 
+
     [Header("Animazioni")]
     public Animator animator;
 
@@ -16,6 +20,7 @@ public class NPC_Staff : MonoBehaviour
     [Header("Audio Dialoghi Generici")]
     public AudioClip[] clipsIntroduzione;
     public AudioClip audioTaskCompletata; 
+    public AudioClip audioNonEIlMioTurno; // (Opzionale) Audio per "Non ho tempo ora"
 
     [Header("Audio Regista (SOLO REGISTA)")] 
     public AudioClip audioCiak; 
@@ -92,6 +97,7 @@ public class NPC_Staff : MonoBehaviour
 
     public void AttivaInterazione(Transform player)
     {
+        // Questo metodo serve solo per bloccare l'NPC visivamente
         staParlando = true;
         targetGiocatore = player;
         if (animator != null) animator.SetBool("IsTalking", true);
@@ -99,9 +105,24 @@ public class NPC_Staff : MonoBehaviour
         Invoke("FineInterazione", 4.0f);
     }
 
-    // --- 1. AUDIO INTRODUZIONE ---
+    // --- 1. AUDIO INTRODUZIONE (MODIFICATO CON CONTROLLO) ---
     public void AvviaDialogoIniziale()
     {
+        // --- BLOCCO DI SICUREZZA ---
+        // Se la task globale non corrisponde al ruolo di questo NPC, IGNORA.
+        // Esempio: Se sono il Regista ma siamo alla fase "Luci", non ti parlo.
+        if (GameManager.instance.taskAttuale != ruoloNPC)
+        {
+            Debug.Log($"<color=yellow>[NPC]: Sono {ruoloNPC}, ma ora devi fare {GameManager.instance.taskAttuale}. Non ti parlo.</color>");
+            
+            // Opzionale: Se vuoi che dica "Sono occupato"
+            if (audioNonEIlMioTurno != null && !audioSource.isPlaying)
+            {
+                 audioSource.PlayOneShot(audioNonEIlMioTurno);
+            }
+            return; 
+        }
+
         if (haGiaParlato) return;
         haGiaParlato = true; 
         staParlando = true;  
@@ -128,44 +149,29 @@ public class NPC_Staff : MonoBehaviour
         FineInterazione();
     }
 
-    // --- 2. REAZIONI CONSEGNA OGGETTI ---
-    public void ReazioneConsegnaLente(string nomeOggetto)
+    // --- ALTRI METODI RIMANGONO INVARIATI ---
+    // (Sono chiamati specificamente quando consegni oggetti, quindi lì il controllo turno è implicito)
+
+    public void ReazioneConsegnaLente(string nomeOggetto) { /* Logica uguale... */ GestisciReazione(nomeOggetto, "Grandangolo", "Cinematografica", audioGrandangolo, audioCinema, audioStandard); }
+    public void ReazioneConsegnaLuce(string nomeOggetto) { /* Logica uguale... */ GestisciReazione(nomeOggetto, "Fresnel", "Softbox", audioFresnel, audioSoftbox, audioArtistica); }
+    public void ReazioneConsegnaMicrofono(string nomeOggetto) { /* Logica uguale... */ GestisciReazione(nomeOggetto, "Lavalier", "Boom", audioLavalier, audioBoom, audioAmbisonic); }
+
+    // Helper per pulire il codice sopra
+    void GestisciReazione(string nome, string key1, string key2, AudioClip clip1, AudioClip clip2, AudioClip clipDef)
     {
-        AudioClip clip = null;
-        if (nomeOggetto.IndexOf("Grandangolo", StringComparison.OrdinalIgnoreCase) >= 0) clip = audioGrandangolo;
-        else if (nomeOggetto.IndexOf("Cinematografica", StringComparison.OrdinalIgnoreCase) >= 0) clip = audioCinema;
-        else clip = audioStandard;
+        AudioClip clip = clipDef;
+        if (nome.IndexOf(key1, StringComparison.OrdinalIgnoreCase) >= 0) clip = clip1;
+        else if (nome.IndexOf(key2, StringComparison.OrdinalIgnoreCase) >= 0) clip = clip2;
         SuonaAudioReazione(clip);
     }
 
-    public void ReazioneConsegnaLuce(string nomeOggetto)
-    {
-        AudioClip clip = null;
-        if (nomeOggetto.IndexOf("Fresnel", StringComparison.OrdinalIgnoreCase) >= 0) clip = audioFresnel;
-        else if (nomeOggetto.IndexOf("Softbox", StringComparison.OrdinalIgnoreCase) >= 0) clip = audioSoftbox;
-        else clip = audioArtistica;
-        SuonaAudioReazione(clip);
-    }
-
-    public void ReazioneConsegnaMicrofono(string nomeOggetto)
-    {
-        AudioClip clip = null;
-        if (nomeOggetto.IndexOf("Lavalier", StringComparison.OrdinalIgnoreCase) >= 0) clip = audioLavalier;
-        else if (nomeOggetto.IndexOf("Boom", StringComparison.OrdinalIgnoreCase) >= 0) clip = audioBoom;
-        else if (nomeOggetto.IndexOf("Ambisonic", StringComparison.OrdinalIgnoreCase) >= 0) clip = audioAmbisonic;
-        SuonaAudioReazione(clip);
-    }
-
-    // --- 3. REAZIONE CIAK (REGISTA) ---
     public void ReazioneCiak(Action azioneDopoCiak)
     {
-        if (audioCiak != null)
+        // Anche qui per sicurezza
+        if (ruoloNPC == GameManager.Reparto.Regia) 
         {
-            StartCoroutine(SequenzaCiak(azioneDopoCiak));
-        }
-        else
-        {
-            azioneDopoCiak?.Invoke();
+             if (audioCiak != null) StartCoroutine(SequenzaCiak(azioneDopoCiak));
+             else azioneDopoCiak?.Invoke();
         }
     }
 
@@ -182,7 +188,6 @@ public class NPC_Staff : MonoBehaviour
         yield return new WaitForSeconds(audioCiak.length + 0.1f);
 
         azioneDopoCiak?.Invoke();
-
         FineInterazione();
     }
 
@@ -202,17 +207,10 @@ public class NPC_Staff : MonoBehaviour
         }
     }
 
-    // --- 4. AUDIO FINE TASK GENERICO ---
     public void ReazioneFineTask(Action azioneAlTermine)
     {
-        if (audioTaskCompletata != null)
-        {
-            StartCoroutine(SequenzaFineTask(azioneAlTermine));
-        }
-        else
-        {
-            azioneAlTermine?.Invoke();
-        }
+        if (audioTaskCompletata != null) StartCoroutine(SequenzaFineTask(azioneAlTermine));
+        else azioneAlTermine?.Invoke();
     }
 
     IEnumerator SequenzaFineTask(Action azioneAlTermine)
