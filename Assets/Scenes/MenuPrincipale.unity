@@ -374,7 +374,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MainMenuManager
   nomeScenaGioco: Final_Scene
   pannelloDissolvenza: {fileID: 1880952129}
-  durataDissolvenza: 5
+  durataDissolvenza: 2
 --- !u!4 &855088150
 Transform:
   m_ObjectHideFlags: 0

@@ -341,7 +341,7 @@ public class GameManager : MonoBehaviour
             sorgente.volume = 1f;
         }
         
-        ImpostaVolumeMacchinetta(0.3f); 
+        ImpostaVolumeMacchinetta(0.08f); 
     }
     
     // Funzione helper per evitare codice ripetuto
