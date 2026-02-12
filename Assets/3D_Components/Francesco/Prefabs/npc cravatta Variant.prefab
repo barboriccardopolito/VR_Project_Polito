@@ -8,6 +8,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 216123488595168231, guid: 53ee25251db8c164e9a60fdb5ecfb822, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 3adc552b6dd0b8c4593a25bf9935777d, type: 2}
+    - target: {fileID: 1730965607881572925, guid: 53ee25251db8c164e9a60fdb5ecfb822, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 10f5b771541e53c4cb2082385d784764, type: 2}
     - target: {fileID: 2296515959526249472, guid: 53ee25251db8c164e9a60fdb5ecfb822, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -48,10 +56,38 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2966153726959988737, guid: 53ee25251db8c164e9a60fdb5ecfb822, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 3adc552b6dd0b8c4593a25bf9935777d, type: 2}
+    - target: {fileID: 3893035755355313574, guid: 53ee25251db8c164e9a60fdb5ecfb822, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 3adc552b6dd0b8c4593a25bf9935777d, type: 2}
+    - target: {fileID: 5248582280610652312, guid: 53ee25251db8c164e9a60fdb5ecfb822, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 3adc552b6dd0b8c4593a25bf9935777d, type: 2}
+    - target: {fileID: 5469223138780905092, guid: 53ee25251db8c164e9a60fdb5ecfb822, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 3adc552b6dd0b8c4593a25bf9935777d, type: 2}
+    - target: {fileID: 6488239910980999115, guid: 53ee25251db8c164e9a60fdb5ecfb822, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 3adc552b6dd0b8c4593a25bf9935777d, type: 2}
     - target: {fileID: 6600153080912794196, guid: 53ee25251db8c164e9a60fdb5ecfb822, type: 3}
       propertyPath: m_Name
-      value: npc cravatta
+      value: npc cravatta Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 7302547987536825255, guid: 53ee25251db8c164e9a60fdb5ecfb822, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 10f5b771541e53c4cb2082385d784764, type: 2}
+    - target: {fileID: 8801707351261332155, guid: 53ee25251db8c164e9a60fdb5ecfb822, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 3adc552b6dd0b8c4593a25bf9935777d, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

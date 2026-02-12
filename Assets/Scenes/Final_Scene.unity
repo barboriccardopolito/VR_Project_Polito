@@ -21802,6 +21802,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: npc fotografia Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 299478458134768380, guid: b8f71536351d17844a1ca71f12678c25, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5679351136230943328, guid: b8f71536351d17844a1ca71f12678c25, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
