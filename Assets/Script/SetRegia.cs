@@ -67,17 +67,17 @@ public class GestoreRecitazione : MonoBehaviour
         // Attori
         if (animatoreAttore) {
             animatoreAttore.speed = 1; 
-            animatoreAttore.Play(nomeStatoAnimazione, -1, 0f);
+            animatoreAttore.Play(nomeStatoAnimazione, 0, 0f);
         }
         if (animatoreAttrice) {
             animatoreAttrice.speed = 1;
-            animatoreAttrice.Play(nomeStatoAnimazione, -1, 0f);
+            animatoreAttrice.Play(nomeStatoAnimazione, 0, 0f);
         }
 
         // --- TAPPO (NUOVO) ---
         if (animatoreTappo) {
             animatoreTappo.speed = 1; // Assicuriamoci che si muova
-            animatoreTappo.Play(nomeStatoTappo, -1, 0f); // Reset a 0
+            animatoreTappo.Play(nomeStatoTappo, 0, 0f); // Reset a 0
         }
 
         // 3. Riavvia la sequenza audio

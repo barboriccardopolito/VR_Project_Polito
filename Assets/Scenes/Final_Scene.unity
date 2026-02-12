@@ -440,7 +440,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 18395753}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -534,6 +534,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2452088328731375334, guid: c43b175f8d6cd48ce9d5158b1ecd6f37, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8188949337065630684, guid: c43b175f8d6cd48ce9d5158b1ecd6f37, type: 3}
+      propertyPath: m_CastShadows
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8456012269353699648, guid: c43b175f8d6cd48ce9d5158b1ecd6f37, type: 3}
@@ -2750,6 +2754,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8401695278224134387, guid: 72a34eb1aeed5464dae0eddf403bee89, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2969,7 +2977,7 @@ MonoBehaviour:
   m_ShadowFadeDistance: 10000
   m_UseContactShadow:
     m_Override: 0
-    m_UseOverride: 1
+    m_UseOverride: 0
     m_Level: 0
   m_RayTracedContactShadow: 0
   m_ShadowTint: {r: 0, g: 0, b: 0, a: 1}
@@ -3058,7 +3066,7 @@ Light:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingLayerMask: 1
-  m_Lightmapping: 4
+  m_Lightmapping: 1
   m_LightShadowCasterMode: 2
   m_AreaSize: {x: 0.5, y: 0.5}
   m_BounceIntensity: 1
@@ -6373,7 +6381,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 284189298}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -6454,7 +6462,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 2147483647
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &293395659
 Transform:
   m_ObjectHideFlags: 0
@@ -6964,6 +6972,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 912385230}
     m_Modifications:
+    - target: {fileID: 578933955044489514, guid: b5cf8a2caf6154f49b740ac59ab210b6, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2697653060001013501, guid: b5cf8a2caf6154f49b740ac59ab210b6, type: 3}
       propertyPath: m_Name
       value: NEW salotto luci Variant (3)
@@ -7080,7 +7092,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 338089336}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -8492,6 +8504,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6688a230b039c4503b85bed092dddd05, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 6688a230b039c4503b85bed092dddd05, type: 3}
+      propertyPath: m_CastShadows
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 6688a230b039c4503b85bed092dddd05, type: 3}
@@ -10299,7 +10315,7 @@ MonoBehaviour:
   m_ShadowFadeDistance: 10000
   m_UseContactShadow:
     m_Override: 0
-    m_UseOverride: 1
+    m_UseOverride: 0
     m_Level: 0
   m_RayTracedContactShadow: 0
   m_ShadowTint: {r: 0, g: 0, b: 0, a: 1}
@@ -10388,7 +10404,7 @@ Light:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingLayerMask: 1
-  m_Lightmapping: 4
+  m_Lightmapping: 1
   m_LightShadowCasterMode: 2
   m_AreaSize: {x: 0.5, y: 0.5}
   m_BounceIntensity: 1
@@ -10814,7 +10830,7 @@ MonoBehaviour:
   m_ShadowFadeDistance: 10000
   m_UseContactShadow:
     m_Override: 0
-    m_UseOverride: 1
+    m_UseOverride: 0
     m_Level: 0
   m_RayTracedContactShadow: 0
   m_ShadowTint: {r: 0, g: 0, b: 0, a: 1}
@@ -10903,7 +10919,7 @@ Light:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingLayerMask: 1
-  m_Lightmapping: 4
+  m_Lightmapping: 1
   m_LightShadowCasterMode: 2
   m_AreaSize: {x: 0.5, y: 0.5}
   m_BounceIntensity: 1
@@ -12334,6 +12350,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2113714901}
     m_Modifications:
+    - target: {fileID: 246721962799900322, guid: 2a00655f6f84f9a459c374fb1ab412ed, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2504359412842638906, guid: 2a00655f6f84f9a459c374fb1ab412ed, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2707430338101333061, guid: 2a00655f6f84f9a459c374fb1ab412ed, type: 3}
       propertyPath: m_Name
       value: Attore_1
@@ -12341,6 +12365,22 @@ PrefabInstance:
     - target: {fileID: 2707430338101333061, guid: 2a00655f6f84f9a459c374fb1ab412ed, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3040680446953757221, guid: 2a00655f6f84f9a459c374fb1ab412ed, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3445206440248304827, guid: 2a00655f6f84f9a459c374fb1ab412ed, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4299822187307853124, guid: 2a00655f6f84f9a459c374fb1ab412ed, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4309714266386040647, guid: 2a00655f6f84f9a459c374fb1ab412ed, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5431078298488151712, guid: 2a00655f6f84f9a459c374fb1ab412ed, type: 3}
       propertyPath: m_Controller
@@ -12384,6 +12424,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5806974381411708682, guid: 2a00655f6f84f9a459c374fb1ab412ed, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6480020310868202476, guid: 2a00655f6f84f9a459c374fb1ab412ed, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6845798417970501277, guid: 2a00655f6f84f9a459c374fb1ab412ed, type: 3}
+      propertyPath: m_CastShadows
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -16906,6 +16954,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3209274771826406414, guid: 61fb6d65229fb5345902266f0fc99f36, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3209274771826406414, guid: 61fb6d65229fb5345902266f0fc99f36, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: d84da8fb9fdbc2945b18b7c8fafcf4f9, type: 2}
@@ -18674,10 +18726,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2113714901}
     m_Modifications:
+    - target: {fileID: 59929585030241990, guid: cf0003b782c496c4e9bc3d8fc7e85125, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 139232491234805834, guid: cf0003b782c496c4e9bc3d8fc7e85125, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 209252969986366491, guid: cf0003b782c496c4e9bc3d8fc7e85125, type: 3}
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 31260db25403f35488f78da1f7f0d7c3, type: 2}
+    - target: {fileID: 678738795225324915, guid: cf0003b782c496c4e9bc3d8fc7e85125, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1527597046737090737, guid: cf0003b782c496c4e9bc3d8fc7e85125, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3056064178707113932, guid: cf0003b782c496c4e9bc3d8fc7e85125, type: 3}
       propertyPath: m_LocalPosition.x
       value: 30.029
@@ -18716,6 +18784,42 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3056064178707113932, guid: cf0003b782c496c4e9bc3d8fc7e85125, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3500781259797047832, guid: cf0003b782c496c4e9bc3d8fc7e85125, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4217157935266659792, guid: cf0003b782c496c4e9bc3d8fc7e85125, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4973002424873532242, guid: cf0003b782c496c4e9bc3d8fc7e85125, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5249065555701342817, guid: cf0003b782c496c4e9bc3d8fc7e85125, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5630600937643814861, guid: cf0003b782c496c4e9bc3d8fc7e85125, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5760979183122821565, guid: cf0003b782c496c4e9bc3d8fc7e85125, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5909983753948227350, guid: cf0003b782c496c4e9bc3d8fc7e85125, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6365228663817793453, guid: cf0003b782c496c4e9bc3d8fc7e85125, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6536062665677825511, guid: cf0003b782c496c4e9bc3d8fc7e85125, type: 3}
+      propertyPath: m_CastShadows
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7004692508204537994, guid: cf0003b782c496c4e9bc3d8fc7e85125, type: 3}
@@ -19659,7 +19763,7 @@ MonoBehaviour:
   m_ShadowFadeDistance: 10000
   m_UseContactShadow:
     m_Override: 0
-    m_UseOverride: 1
+    m_UseOverride: 0
     m_Level: 0
   m_RayTracedContactShadow: 0
   m_ShadowTint: {r: 0, g: 0, b: 0, a: 1}
@@ -19748,7 +19852,7 @@ Light:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingLayerMask: 1
-  m_Lightmapping: 4
+  m_Lightmapping: 1
   m_LightShadowCasterMode: 2
   m_AreaSize: {x: 0.5, y: 0.5}
   m_BounceIntensity: 1
@@ -20027,7 +20131,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1002932604}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -20098,6 +20202,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 912385230}
     m_Modifications:
+    - target: {fileID: 578933955044489514, guid: b5cf8a2caf6154f49b740ac59ab210b6, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2697653060001013501, guid: b5cf8a2caf6154f49b740ac59ab210b6, type: 3}
       propertyPath: m_Name
       value: NEW salotto luci Variant (1)
@@ -23847,6 +23955,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 912385230}
     m_Modifications:
+    - target: {fileID: 1707296653955578094, guid: 327e4df583d264b27b3909705e2335aa, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5185321612443236500, guid: 327e4df583d264b27b3909705e2335aa, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
@@ -24241,6 +24353,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8401695278224134387, guid: 72a34eb1aeed5464dae0eddf403bee89, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -24259,6 +24375,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 912385230}
     m_Modifications:
+    - target: {fileID: 1196166305285871126, guid: 347e596d6265340c7916c054f34514e8, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3856029132072831693, guid: 347e596d6265340c7916c054f34514e8, type: 3}
       propertyPath: m_LocalPosition.x
       value: 29.93
@@ -24879,7 +24999,7 @@ MonoBehaviour:
   m_ShadowFadeDistance: 10000
   m_UseContactShadow:
     m_Override: 0
-    m_UseOverride: 1
+    m_UseOverride: 0
     m_Level: 0
   m_RayTracedContactShadow: 0
   m_ShadowTint: {r: 0, g: 0, b: 0, a: 1}
@@ -24968,7 +25088,7 @@ Light:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingLayerMask: 1
-  m_Lightmapping: 4
+  m_Lightmapping: 1
   m_LightShadowCasterMode: 2
   m_AreaSize: {x: 0.5, y: 0.5}
   m_BounceIntensity: 1
@@ -25140,6 +25260,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 912385230}
     m_Modifications:
+    - target: {fileID: 578933955044489514, guid: b5cf8a2caf6154f49b740ac59ab210b6, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2697653060001013501, guid: b5cf8a2caf6154f49b740ac59ab210b6, type: 3}
       propertyPath: m_Name
       value: NEW salotto luci Variant
@@ -28157,6 +28281,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1783388904685172941, guid: 61fb6d65229fb5345902266f0fc99f36, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3209274771826406414, guid: 61fb6d65229fb5345902266f0fc99f36, type: 3}
+      propertyPath: m_CastShadows
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3209274771826406414, guid: 61fb6d65229fb5345902266f0fc99f36, type: 3}
@@ -36209,6 +36337,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 912385230}
     m_Modifications:
+    - target: {fileID: 578933955044489514, guid: b5cf8a2caf6154f49b740ac59ab210b6, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2697653060001013501, guid: b5cf8a2caf6154f49b740ac59ab210b6, type: 3}
       propertyPath: m_Name
       value: NEW salotto luci Variant (2)
@@ -36403,7 +36535,7 @@ MonoBehaviour:
   m_ShadowFadeDistance: 10000
   m_UseContactShadow:
     m_Override: 0
-    m_UseOverride: 1
+    m_UseOverride: 0
     m_Level: 0
   m_RayTracedContactShadow: 0
   m_ShadowTint: {r: 0, g: 0, b: 0, a: 1}
@@ -36492,7 +36624,7 @@ Light:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingLayerMask: 1
-  m_Lightmapping: 4
+  m_Lightmapping: 1
   m_LightShadowCasterMode: 2
   m_AreaSize: {x: 0.5, y: 0.5}
   m_BounceIntensity: 1
@@ -39606,7 +39738,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1954108841}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -43538,6 +43670,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 912385230}
     m_Modifications:
+    - target: {fileID: 1144979088891105387, guid: 82c1085af5253451986565b5515d24ef, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3883658969240511406, guid: 82c1085af5253451986565b5515d24ef, type: 3}
       propertyPath: m_LocalPosition.x
       value: 29.305
@@ -43604,6 +43740,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 912385230}
     m_Modifications:
+    - target: {fileID: 2017101644922088062, guid: 7f7a34b4ef4b0440e9ee98735fa640cc, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3011258373295941459, guid: 7f7a34b4ef4b0440e9ee98735fa640cc, type: 3}
       propertyPath: m_Name
       value: piatto
@@ -43869,6 +44009,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1341358359061896014, guid: 84435a0a6301240eca017df4c91d44b5, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4025917448140008392, guid: 84435a0a6301240eca017df4c91d44b5, type: 3}
+      propertyPath: m_CastShadows
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6292289344434732715, guid: 84435a0a6301240eca017df4c91d44b5, type: 3}
@@ -44253,6 +44397,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3192264026507261023, guid: e2fcd27ba4d034fd79a85a304f91f97c, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7246927206242255533, guid: e2fcd27ba4d034fd79a85a304f91f97c, type: 3}
       propertyPath: m_Name
       value: coltello
@@ -44487,6 +44635,7 @@ GameObject:
   - component: {fileID: 1466496772433080332}
   - component: {fileID: 2591206538570792873}
   - component: {fileID: 293059258839108451}
+  - component: {fileID: 2591206538570792874}
   m_Layer: 0
   m_Name: Ufficio_produzione_new
   m_TagString: Untagged
@@ -44635,6 +44784,28 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2238812004038027958}
+  m_Mesh: {fileID: 1152517339334255817, guid: f1accd8abb4134447b45dfd58ad43225, type: 3}
+--- !u!64 &2591206538570792874
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2238812004038027958}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
   m_Mesh: {fileID: 1152517339334255817, guid: f1accd8abb4134447b45dfd58ad43225, type: 3}
 --- !u!1001 &2993008998990923301
 PrefabInstance:
@@ -45679,6 +45850,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3462060200079548917, guid: 7a135907631b74f89a2682563e9b7a06, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5371574616595089566, guid: 7a135907631b74f89a2682563e9b7a06, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
@@ -45809,6 +45984,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2452088328731375334, guid: c43b175f8d6cd48ce9d5158b1ecd6f37, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8188949337065630684, guid: c43b175f8d6cd48ce9d5158b1ecd6f37, type: 3}
+      propertyPath: m_CastShadows
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8456012269353699648, guid: c43b175f8d6cd48ce9d5158b1ecd6f37, type: 3}
@@ -46528,6 +46707,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 912385230}
     m_Modifications:
+    - target: {fileID: 6094834339476246461, guid: bff0ee3f232104ed7a06e7c86eaef32a, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6877533292583469017, guid: bff0ee3f232104ed7a06e7c86eaef32a, type: 3}
       propertyPath: m_Name
       value: bowl
@@ -46594,6 +46777,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 912385230}
     m_Modifications:
+    - target: {fileID: 1196166305285871126, guid: 347e596d6265340c7916c054f34514e8, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3856029132072831693, guid: 347e596d6265340c7916c054f34514e8, type: 3}
       propertyPath: m_LocalPosition.x
       value: 29.485
