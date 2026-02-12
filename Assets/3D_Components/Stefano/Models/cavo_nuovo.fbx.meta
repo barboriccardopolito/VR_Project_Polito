@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 4073870367a0be84e9a15973abecf8c2
+guid: 515af81111b606b4ebfc950002431eef
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
@@ -7,13 +7,8 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Metallo Nero
-    second: {fileID: 2100000, guid: 91f11e8fd1de0a245a3b2b37464a8ee5, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Plastica grigia
-    second: {fileID: 2100000, guid: 735d23473c5cc6848a4db8057e336772, type: 2}
+      name: Gomma Nera
+    second: {fileID: 2100000, guid: 6a451b78942ace84e931907b7f55607e, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
