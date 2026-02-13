@@ -11,14 +11,14 @@ public class GestoreRecitazione : MonoBehaviour
     public AudioSource audioAttrice;
 
     [Header("Oggetti Scenici")]
-    public Animator animatoreTappo; // <--- NUOVO: Trascina qui il tappo
+    public Animator animatoreTappo;
 
     [Header("Configurazione Dialogo")]
     public List<Battuta> copione; 
     
     [Header("Nomi Animazioni (Case Sensitive)")]
-    public string nomeStatoAnimazione = "Talking"; // Nome stato attori
-    public string nomeStatoTappo = "Take 001";     // Nome stato tappo (Controlla nell'Animator!)
+    public string nomeStatoAnimazione = "Talking";
+    public string nomeStatoTappo = "Take 001";
 
     private Coroutine coroutineDialogo;
     private bool inLoop = false;
@@ -51,18 +51,14 @@ public class GestoreRecitazione : MonoBehaviour
         if (audioAttore) audioAttore.Stop();
         if (audioAttrice) audioAttrice.Stop();
         
-        // Opzionale: Se vuoi che il tappo si blocchi alla fine del Ciak
         if (animatoreTappo) animatoreTappo.speed = 0; 
     }
 
     private void RiavviaTutto()
     {
-        // 1. Ferma eventuali audio vecchi
         if (coroutineDialogo != null) StopCoroutine(coroutineDialogo);
         if (audioAttore) audioAttore.Stop();
         if (audioAttrice) audioAttrice.Stop();
-
-        // 2. RESET ANIMAZIONI A FRAME 0 (Sincronizzazione Totale)
         
         // Attori
         if (animatoreAttore) {
@@ -74,13 +70,11 @@ public class GestoreRecitazione : MonoBehaviour
             animatoreAttrice.Play(nomeStatoAnimazione, 0, 0f);
         }
 
-        // --- TAPPO (NUOVO) ---
         if (animatoreTappo) {
             animatoreTappo.speed = 1; // Assicuriamoci che si muova
             animatoreTappo.Play(nomeStatoTappo, 0, 0f); // Reset a 0
         }
 
-        // 3. Riavvia la sequenza audio
         if (RegiaManager.instance.previewInCorso) inLoop = true; 
         
         coroutineDialogo = StartCoroutine(EseguiCopione());

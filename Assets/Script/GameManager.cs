@@ -42,13 +42,12 @@ public class GameManager : MonoBehaviour
     public bool cameraPosizionata = false;
 
     [Header("Parametri Audio Avanzati")]
-    public AudioSource[] sorgentiAttori; // Array per gestire Uomo e Donna insieme
+    public AudioSource[] sorgentiAttori;
     
-    // --- SISTEMA DI RESTITUZIONE E PULIZIA ---
     [Header("Registro Oggetti Scena")]
     public GameObject[] tuttiGliOggettiRaccoglibili; 
     public GameObject[] supportiLuciFisici; 
-    public GameObject[] supportiMicrofoniFisici; // <--- NUOVO: Trascina qui le aste/treppiedi dei mic
+    public GameObject[] supportiMicrofoniFisici;
 
     private class PosizioneOggetto
     {
@@ -72,7 +71,6 @@ public class GameManager : MonoBehaviour
 
     void Start() 
     {
-        // 1. Setup Dizionario Posizioni
         foreach (GameObject obj in tuttiGliOggettiRaccoglibili)
         {
             if (obj != null)
@@ -85,14 +83,11 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        // 2. Setup HDRP
         if (globalVolume != null && globalVolume.profile.TryGet(out distortion))
             Debug.Log("Effetti Lente HDRP pronti.");
 
-        // 3. Setup Schermi UI
         if (gestoreSchermi != null) gestoreSchermi.CambiaStato(true); 
 
-        // 4. STATO INIZIALE ATTORI
         if (gruppoAttoriSala != null) gruppoAttoriSala.SetActive(true);
         if (gruppoAttoriSet != null) gruppoAttoriSet.SetActive(false);
     }
@@ -166,7 +161,6 @@ public class GameManager : MonoBehaviour
     
     void AttivaAllertaSchermi() { if (gestoreSchermi != null) gestoreSchermi.CambiaStato(true); }
 
-    // --- GESTIONE OGGETTI ---
     public void RestituisciOggettoAlTavolo(string nomeOggetto)
     {
         if (string.IsNullOrEmpty(nomeOggetto)) return;
@@ -187,7 +181,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // --- PULIZIA VISUALE SUPPORTI LUCI ---
     public void ResettaVisualeSupportiLuci()
     {
         if (supportiLuciFisici == null) return;
@@ -215,7 +208,6 @@ public class GameManager : MonoBehaviour
         Debug.Log("[Luci] Supporti puliti visivamente e logicamente.");
     }
 
-    // --- PULIZIA VISUALE SUPPORTI MICROFONI ---
     public void ResettaVisualeSupportiMicrofoni()
     {
         if (supportiMicrofoniFisici == null) return;
@@ -224,7 +216,6 @@ public class GameManager : MonoBehaviour
         {
             if (supporto != null)
             {
-                // Spegni tutto quello che c'è sopra
                 var scriptMic = supporto.GetComponent<SupportoMicrofono>();
                 if (scriptMic != null)
                 {
@@ -241,7 +232,6 @@ public class GameManager : MonoBehaviour
         LucePosizionataCorrettamente = false; 
     }
 
-    // --- EFFETTI VIDEO (LENTI) ---
     public void ApplicaEffettoLente(string nomeLente) 
     {
         Camera cam = Camera.main;
@@ -260,19 +250,17 @@ public class GameManager : MonoBehaviour
         if (distortion != null) distortion.intensity.value = 0f;
     }
 
-    // --- EFFETTI AUDIO AVANZATI (Microfoni Multipli) ---
     public void ApplicaEffettoMicrofono(string nomeMic) 
     {
         if (sorgentiAttori == null) return;
         
-        ResetEffettoAudio(); // Pulizia iniziale
+        ResetEffettoAudio();
         Debug.Log($"Applico profilo audio MULTIPLO per: {nomeMic}");
 
         foreach (AudioSource sorgente in sorgentiAttori)
         {
             if (sorgente == null) continue;
 
-            // Recupera o aggiungi i componenti al volo per ogni attore
             var highPass = AssicuraComponente<AudioHighPassFilter>(sorgente.gameObject);
             var lowPass = AssicuraComponente<AudioLowPassFilter>(sorgente.gameObject);
             var reverb = AssicuraComponente<AudioReverbFilter>(sorgente.gameObject);
@@ -307,7 +295,6 @@ public class GameManager : MonoBehaviour
                     highPass.enabled = false; 
                     lowPass.enabled = false;
                     
-                    // BINAURALE 360: SpatialBlend al massimo
                     sorgente.spatialBlend = 1.0f; 
                     
                     reverb.enabled = true;
@@ -344,7 +331,6 @@ public class GameManager : MonoBehaviour
         ImpostaVolumeMacchinetta(0.08f); 
     }
     
-    // Funzione helper per evitare codice ripetuto
     T AssicuraComponente<T>(GameObject obj) where T : Component
     {
         T comp = obj.GetComponent<T>();
@@ -363,7 +349,6 @@ public class GameManager : MonoBehaviour
 
     void SetupFiltriAudio()
     {
-        // Inizializza filtri all'avvio per tutti gli attori
         if (sorgentiAttori != null) 
         {
             foreach (AudioSource s in sorgentiAttori)

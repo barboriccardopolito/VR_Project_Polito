@@ -82,16 +82,13 @@ public class NPCWander : MonoBehaviour
 
     void Update()
     {
-        // 1. SINCRONIZZA ANIMAZIONE VELOCITÀ
         if (animator != null && agent != null && agent.isActiveAndEnabled)
         {
             animator.SetFloat("Speed", agent.velocity.magnitude);
         }
 
-        // Se è seduto, fermati qui.
         if (isSeduto) return;
 
-        // Se sta parlando (ma è in piedi), ruota verso il giocatore e stai fermo
         if (staParlando)
         {
             RuotaVersoGiocatore();
@@ -103,7 +100,6 @@ public class NPCWander : MonoBehaviour
             if(agent.isActiveAndEnabled) agent.isStopped = false;
         }
 
-        // Logica Vagabondaggio (Solo se è in piedi e ha finito di parlare)
         timer += Time.deltaTime;
         if (timer >= tempoAttesaMax)
         {
@@ -122,21 +118,17 @@ public class NPCWander : MonoBehaviour
         }
     }
 
-    // --- INTERAZIONE ---
     public void InterazioneConPlayer()
     {
-        // Evita doppi click o interazioni se ha già dato la radio
         if (staParlando || (radioSistema != null && radioSistema.haLaRadio)) return;
 
-        staParlando = true; // Blocca eventuali altri input
+        staParlando = true;
 
-        // Avvia la sequenza audio
         StartCoroutine(SequenzaDialogo());
     }
 
     IEnumerator SequenzaDialogo()
     {
-        // 1. Riproduci le frasi di introduzione (Bla bla bla...)
         if (clipsIntroduzione != null)
         {
             foreach (AudioClip clip in clipsIntroduzione)
@@ -146,7 +138,6 @@ public class NPCWander : MonoBehaviour
                     audioSource.Stop();
                     audioSource.clip = clip;
                     audioSource.Play();
-                    // Aspetta la durata della clip + piccola pausa
                     yield return new WaitForSeconds(clip.length + 0.2f);
                 }
             }
@@ -164,11 +155,9 @@ public class NPCWander : MonoBehaviour
             // Nascondi scritta
             promptTastoR.SetActive(false);
             
-            // Pausa scenica per far sembrare che ascolti la radio
             yield return new WaitForSeconds(0.5f);
         }
 
-        // 2. Riproduci la frase finale ("Ottimo, ecco a te...")
         if (clipConsegnaRadio != null)
         {
             audioSource.Stop();
@@ -177,23 +166,17 @@ public class NPCWander : MonoBehaviour
             yield return new WaitForSeconds(clipConsegnaRadio.length);
         }
 
-        // 3. AUDIO FINITO: Consegna e Azione
         Debug.Log("NPC: 'Ecco a te.'");
         
-        // Consegna Logica
-        if (radioSistema != null) radioSistema.RiceviRadio(); // ATTENZIONE: Assicurati che RiceviRadio() setti haLaRadio = true
+        if (radioSistema != null) radioSistema.RiceviRadio();
         
-        // Nascondi Radio Fisica sul tavolo
         if (oggettoRadioFisico != null) oggettoRadioFisico.SetActive(false);
 
-        // Completa Task nel GameManager
         if (GameManager.instance != null) 
             GameManager.instance.CompletaTask(GameManager.Reparto.Produzione);
 
-        // Reset stato parlato
         staParlando = false;
 
-        // 4. ORA MI ALZO
         Alzati();
     }
 
@@ -204,7 +187,6 @@ public class NPCWander : MonoBehaviour
 
         if (agent != null)
         {
-            // Teletrasportiamo l'agent nel punto sicuro
             if (puntoDiUscitaSedia != null)
             {
                 agent.Warp(puntoDiUscitaSedia.position);
@@ -230,12 +212,10 @@ public class NPCWander : MonoBehaviour
     {
         if (targetGiocatore == null)
         {
-            // Cerchiamo il player in modo sicuro
             GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
             if (playerObj != null) targetGiocatore = playerObj.transform;
             else 
             {
-                 // Fallback: cerca l'oggetto che ha lo script interazione
                  InterazioneGiocatore scriptPlayer = FindObjectOfType<InterazioneGiocatore>();
                  if(scriptPlayer != null) targetGiocatore = scriptPlayer.transform;
             }

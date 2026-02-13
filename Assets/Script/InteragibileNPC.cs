@@ -49,7 +49,6 @@ public class InteragibileNPC : MonoBehaviour
 
     public void Interagisci()
     {
-        // --- 0. GESTIONE MOVIMENTO & AUDIO ---
         NPCWander produzioneScript = GetComponent<NPCWander>();
         if (produzioneScript != null) produzioneScript.InterazioneConPlayer();
 
@@ -57,9 +56,7 @@ public class InteragibileNPC : MonoBehaviour
         bool faseRevisione = (GameManager.instance.taskAttuale == GameManager.Reparto.Regia);
         bool èIlMioTurno = (GameManager.instance.taskAttuale == tipoReparto);
 
-        // --- BLOCCO INTERAZIONE GENERALE ---
-        // Logica: Posso interagire se è il mio turno, se siamo in revisione (Regia), 
-        // oppure se sto completando una sottotask (es. ho la luce in mano ma non è più il turno Luci).
+        
         bool possoInteragire = èIlMioTurno || faseRevisione; 
         
         bool installazioneLuciInCorso = (GameManager.instance.LuceScelta != "");
@@ -68,7 +65,6 @@ public class InteragibileNPC : MonoBehaviour
         if (tipoReparto == GameManager.Reparto.Luci && installazioneLuciInCorso) possoInteragire = true;
         if (tipoReparto == GameManager.Reparto.Fonico && installazioneAudioInCorso) possoInteragire = true;
 
-        // SE NON POSSO INTERAGIRE -> FERMATI QUI.
         if (!possoInteragire)
         {
             Debug.Log($"<color=yellow>[{tipoReparto}]:</color> Non disturbare ora. Non è il mio turno.");
@@ -79,13 +75,11 @@ public class InteragibileNPC : MonoBehaviour
             return;
         }
 
-        // --- GESTIONE BRIEFING INIZIALE ---
         if (staffScript != null)
         {
             InterazioneGiocatore player = FindFirstObjectByType<InterazioneGiocatore>();
             if (player != null) staffScript.AttivaInterazione(player.transform);
 
-            // Ascolta briefing solo se è il turno giusto
             if (èIlMioTurno && !staffScript.haGiaParlato && (!faseRevisione || tipoReparto == GameManager.Reparto.Regia))
             {
                 staffScript.AvviaDialogoIniziale();
@@ -97,7 +91,6 @@ public class InteragibileNPC : MonoBehaviour
         InventarioGiocatore inv = FindFirstObjectByType<InventarioGiocatore>();
         bool fotografiaInCorso = (GameManager.instance.taskAttuale == GameManager.Reparto.Fotografia) || (faseRevisione && tipoReparto == GameManager.Reparto.Fotografia);
 
-        // --- 1. LOGICA FOTOGRAFIA ---
         if (tipoReparto == GameManager.Reparto.Fotografia && (!inv || !inv.haUnOggetto) && fotografiaInCorso)
         {
             if (GameManager.instance.lenteSceltaFinale != "" && GameManager.instance.cameraPosizionata)
@@ -116,7 +109,6 @@ public class InteragibileNPC : MonoBehaviour
             return;
         }
 
-        // --- 2. LOGICA LUCI ---
         if (tipoReparto == GameManager.Reparto.Luci && installazioneLuciInCorso && (!inv || !inv.haUnOggetto))
         {
             if (GameManager.instance.LucePosizionataCorrettamente) 
@@ -134,7 +126,6 @@ public class InteragibileNPC : MonoBehaviour
             return;
         }
 
-        // --- 3. LOGICA FONICO ---
         if (tipoReparto == GameManager.Reparto.Fonico && installazioneAudioInCorso && (!inv || !inv.haUnOggetto))
         {
              bool taskCompletata = false;
@@ -165,7 +156,6 @@ public class InteragibileNPC : MonoBehaviour
              return;
         }
 
-        // --- 4. PRODUZIONE ---
         if (tipoReparto == GameManager.Reparto.Produzione) { 
             if (evidenziatore != null) evidenziatore.Spegni();
             if (produzioneScript != null) produzioneScript.InterazioneConPlayer(); 
@@ -173,8 +163,6 @@ public class InteragibileNPC : MonoBehaviour
             return;
         }
         
-        // --- 5. REGIA (CORRETTO) ---
-        // QUI C'ERA L'ERRORE: Ora controlliamo che sia effettivamente il turno del Regista.
         if (tipoReparto == GameManager.Reparto.Regia && èIlMioTurno) { 
             if (!RegiaManager.instance.previewInCorso && !RegiaManager.instance.registrazioneInCorso) {
                 RegiaManager.instance.AttivaPreview();
@@ -199,10 +187,8 @@ public class InteragibileNPC : MonoBehaviour
             }
         }
 
-        // --- 6. CONSEGNA OGGETTI ---
         if (inv != null && inv.haUnOggetto)
         {
-            // (Logica consegna uguale a prima)
             bool oggettoCorretto = false;
             if (tipoReparto == GameManager.Reparto.Fotografia && inv.categoriaInMano == OggettoRaccolta.TipoOggetto.Lente) oggettoCorretto = true;
             if (tipoReparto == GameManager.Reparto.Luci && inv.categoriaInMano == OggettoRaccolta.TipoOggetto.Luce) oggettoCorretto = true;
@@ -246,7 +232,6 @@ public class InteragibileNPC : MonoBehaviour
         }
         else
         {
-            // Solo messaggi di cortesia
             if (faseRevisione && tipoReparto != GameManager.Reparto.Regia) Debug.Log($"[{tipoReparto}]: Se vuoi cambiare qualcosa, portami l'attrezzatura nuova.");
             else if (staffScript == null || staffScript.haGiaParlato) Debug.Log($"[Info]: {messaggioTask}");
         }

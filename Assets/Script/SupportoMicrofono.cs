@@ -3,8 +3,8 @@ using UnityEngine;
 public class SupportoMicrofono : MonoBehaviour
 {
     [Header("Visuali Microfoni")]
-    public GameObject modelloBoom;      // Il modello 3D del Boom sul supporto
-    public GameObject modelloAmbisonic; // Il modello 3D dell'Ambisonic sul supporto
+    public GameObject modelloBoom;
+    public GameObject modelloAmbisonic;
 
     [Header("Audio")]
     public AudioClip suonoPiazzamento; 
@@ -23,9 +23,6 @@ public class SupportoMicrofono : MonoBehaviour
 
     public void PiazzaMicrofono()
     {
-        // Se c'è già qualcosa su QUESTO supporto specifico, fermati
-        // (Opzionale: se vuoi poter cambiare mic sullo stesso supporto, togli questa riga)
-        // if (giaPiazzato) return; 
 
         string micInMano = GameManager.instance.micScelto;
 
@@ -35,14 +32,10 @@ public class SupportoMicrofono : MonoBehaviour
             return;
         }
 
-        // --- FIX: PULIZIA GLOBALE ---
-        // Prima di piazzare questo, diciamo al GameManager di spegnere TUTTI gli altri microfoni
-        // in scena (così se avevi messo il Boom e ora metti l'Ambisonic, il Boom sparisce).
         GameManager.instance.ResettaVisualeSupportiMicrofoni();
 
         bool successo = false;
 
-        // LOGICA DI PIAZZAMENTO
         if (micInMano.Contains("Boom"))
         {
             if (modelloBoom != null) 
@@ -63,7 +56,7 @@ public class SupportoMicrofono : MonoBehaviour
         if (successo)
         {
             giaPiazzato = true;
-            GameManager.instance.supportoPiazzato = true; // Aggiorna stato globale
+            GameManager.instance.supportoPiazzato = true;
 
             if (suonoPiazzamento != null) audioSource.PlayOneShot(suonoPiazzamento);
 
@@ -72,7 +65,6 @@ public class SupportoMicrofono : MonoBehaviour
         }
     }
 
-    // Questa funzione ora viene chiamata anche dal GameManager per resettare tutto
     public void ResettaSupporto()
     {
         NascondiTutto();

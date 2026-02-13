@@ -6,7 +6,6 @@ using System;
 public class NPC_Staff : MonoBehaviour
 {
     [Header("Identità NPC")]
-    // IMPORTANTE: Imposta questo valore nell'Inspector per ogni NPC!
     public GameManager.Reparto ruoloNPC; 
 
     [Header("Animazioni")]
@@ -20,7 +19,7 @@ public class NPC_Staff : MonoBehaviour
     [Header("Audio Dialoghi Generici")]
     public AudioClip[] clipsIntroduzione;
     public AudioClip audioTaskCompletata; 
-    public AudioClip audioNonEIlMioTurno; // (Opzionale) Audio per "Non ho tempo ora"
+    public AudioClip audioNonEIlMioTurno;
 
     [Header("Audio Regista (SOLO REGISTA)")] 
     public AudioClip audioCiak; 
@@ -97,7 +96,6 @@ public class NPC_Staff : MonoBehaviour
 
     public void AttivaInterazione(Transform player)
     {
-        // Questo metodo serve solo per bloccare l'NPC visivamente
         staParlando = true;
         targetGiocatore = player;
         if (animator != null) animator.SetBool("IsTalking", true);
@@ -105,17 +103,12 @@ public class NPC_Staff : MonoBehaviour
         Invoke("FineInterazione", 4.0f);
     }
 
-    // --- 1. AUDIO INTRODUZIONE (MODIFICATO CON CONTROLLO) ---
     public void AvviaDialogoIniziale()
     {
-        // --- BLOCCO DI SICUREZZA ---
-        // Se la task globale non corrisponde al ruolo di questo NPC, IGNORA.
-        // Esempio: Se sono il Regista ma siamo alla fase "Luci", non ti parlo.
         if (GameManager.instance.taskAttuale != ruoloNPC)
         {
             Debug.Log($"<color=yellow>[NPC]: Sono {ruoloNPC}, ma ora devi fare {GameManager.instance.taskAttuale}. Non ti parlo.</color>");
             
-            // Opzionale: Se vuoi che dica "Sono occupato"
             if (audioNonEIlMioTurno != null && !audioSource.isPlaying)
             {
                  audioSource.PlayOneShot(audioNonEIlMioTurno);
@@ -149,14 +142,11 @@ public class NPC_Staff : MonoBehaviour
         FineInterazione();
     }
 
-    // --- ALTRI METODI RIMANGONO INVARIATI ---
-    // (Sono chiamati specificamente quando consegni oggetti, quindi lì il controllo turno è implicito)
 
     public void ReazioneConsegnaLente(string nomeOggetto) { /* Logica uguale... */ GestisciReazione(nomeOggetto, "Grandangolo", "Cinematografica", audioGrandangolo, audioCinema, audioStandard); }
     public void ReazioneConsegnaLuce(string nomeOggetto) { /* Logica uguale... */ GestisciReazione(nomeOggetto, "Fresnel", "Softbox", audioFresnel, audioSoftbox, audioArtistica); }
     public void ReazioneConsegnaMicrofono(string nomeOggetto) { /* Logica uguale... */ GestisciReazione(nomeOggetto, "Lavalier", "Boom", audioLavalier, audioBoom, audioAmbisonic); }
 
-    // Helper per pulire il codice sopra
     void GestisciReazione(string nome, string key1, string key2, AudioClip clip1, AudioClip clip2, AudioClip clipDef)
     {
         AudioClip clip = clipDef;
@@ -167,7 +157,6 @@ public class NPC_Staff : MonoBehaviour
 
     public void ReazioneCiak(Action azioneDopoCiak)
     {
-        // Anche qui per sicurezza
         if (ruoloNPC == GameManager.Reparto.Regia) 
         {
              if (audioCiak != null) StartCoroutine(SequenzaCiak(azioneDopoCiak));

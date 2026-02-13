@@ -9,7 +9,7 @@ public class Evidenziatore : MonoBehaviour
     public float dimensioneMax = 1.2f;
 
     [Header("Visuale")]
-    public SpriteRenderer anelloGrafico; // Trascina qui l'oggetto Sprite che hai creato
+    public SpriteRenderer anelloGrafico;
     
     private bool isAttivo = false;
     private Vector3 scalaIniziale;
@@ -19,7 +19,6 @@ public class Evidenziatore : MonoBehaviour
         if (anelloGrafico == null)
             anelloGrafico = GetComponentInChildren<SpriteRenderer>();
 
-        // Memorizza la scala originale
         if (anelloGrafico != null) scalaIniziale = anelloGrafico.transform.localScale;
 
         if (AccendiAllAvvio) Accendi();
@@ -30,11 +29,9 @@ public class Evidenziatore : MonoBehaviour
     {
         if (isAttivo && anelloGrafico != null)
         {
-            // Effetto Pulsazione (Seno)
             float scala = Mathf.Lerp(dimensioneMin, dimensioneMax, (Mathf.Sin(Time.time * velocitaPulsazione) + 1f) / 2f);
             anelloGrafico.transform.localScale = scalaIniziale * scala;
             
-            // Opzionale: Ruota l'anello lentamente
             anelloGrafico.transform.Rotate(Vector3.forward * 10 * Time.deltaTime);
         }
     }

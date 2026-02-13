@@ -6,16 +6,16 @@ public class RegiaManager : MonoBehaviour
     public static RegiaManager instance;
 
     [Header("Collegamenti Esterni")]
-    public GestoreFinale gestoreFinale; // <--- Trascina qui lo script dei Titoli (Pannello Nero)
-    public GestoreRecitazione gestoreRecitazione; // <--- Trascina qui il GestoreAttori (Nuovo)
+    public GestoreFinale gestoreFinale;
+    public GestoreRecitazione gestoreRecitazione;
 
     [Header("Setup Player")]
-    public Camera mainCameraPlayer;   // La telecamera del giocatore
-    public GameObject monitorSchermo; // Il piccolo monitor per la preview
-    public RenderTexture textureMonitor; // La texture del monitor piccolo
+    public Camera mainCameraPlayer;
+    public GameObject monitorSchermo;
+    public RenderTexture textureMonitor;
 
     [Header("Camere del Set")]
-    public Camera[] camereSet; // Le varie telecamere posizionate nella scena
+    public Camera[] camereSet;
 
     [Header("Stato del Sistema")]
     public bool previewInCorso = false;
@@ -28,7 +28,6 @@ public class RegiaManager : MonoBehaviour
 
     void Start()
     {
-        // Spegniamo tutte le camere del set all'inizio
         foreach (Camera cam in camereSet)
         {
             cam.gameObject.SetActive(false);
@@ -36,7 +35,6 @@ public class RegiaManager : MonoBehaviour
         }
     }
 
-    // --- FASE 1: PREVIEW (Monitor Piccolo + Loop Attori) ---
     public void AttivaPreview()
     {
         if (camereSet == null || camereSet.Length == 0) return;
@@ -45,7 +43,6 @@ public class RegiaManager : MonoBehaviour
         previewInCorso = true;
         if (monitorSchermo) monitorSchermo.SetActive(true);
         
-        // AVVIA GLI ATTORI IN LOOP
         if (gestoreRecitazione != null) gestoreRecitazione.AvviaLoopRecitazione();
 
         StartCoroutine(CicloPreviewMonitor());
@@ -57,10 +54,8 @@ public class RegiaManager : MonoBehaviour
         
         while (!registrazioneInCorso)
         {
-            // Reset: spegni tutte
             foreach (var cam in camereSet) { cam.targetTexture = null; cam.gameObject.SetActive(false); }
 
-            // Accendi solo quella corrente e mandala sul Monitor Piccolo
             camereSet[indiceCam].targetTexture = textureMonitor;
             camereSet[indiceCam].gameObject.SetActive(true);
             
@@ -73,14 +68,13 @@ public class RegiaManager : MonoBehaviour
         }
     }
 
-    // --- FASE 2: CIAK, REGISTRAZIONE E TITOLI ---
     public void AvviaCiak()
     {
         if (registrazioneInCorso) return;
 
         registrazioneInCorso = true;
         previewInCorso = false; 
-        StopAllCoroutines(); // Ferma la preview
+        StopAllCoroutines();
 
         StartCoroutine(SequenzaRegistrazione());
     }
@@ -89,44 +83,33 @@ public class RegiaManager : MonoBehaviour
     {
         Debug.Log("<color=red>--- REC: INIZIO REGISTRAZIONE ---</color>");
         
-        // RESETTA GLI ATTORI E FALLI PARTIRE DA ZERO (Sincronizzazione Ciak)
         if (gestoreRecitazione != null) gestoreRecitazione.AvviaCiakUnico();
 
-        // Disattiviamo il giocatore per vedere a tutto schermo dalle camere
         if (mainCameraPlayer) mainCameraPlayer.enabled = false; 
 
-        // Ciclo di registrazione (vedo le inquadrature una per una)
         for (int i = 0; i < camereSet.Length; i++)
         {
-            // Reset camere
             foreach (var cam in camereSet) { cam.targetTexture = null; cam.gameObject.SetActive(false); }
 
-            // Attiva camera corrente a TUTTO SCHERMO
             camereSet[i].targetTexture = null; 
             camereSet[i].gameObject.SetActive(true);
             
             ApplicaEffettiScelti(camereSet[i]);
 
-            // Mostra questa inquadratura per 4 secondi
             yield return new WaitForSeconds(4f); 
         }
 
         Debug.Log("<color=green>--- STOP! ---</color>");
         
-        // Ferma gli attori
         if (gestoreRecitazione != null) gestoreRecitazione.FermaTutto();
 
-        // 1. Spegni le camere del set
         foreach (var cam in camereSet) cam.gameObject.SetActive(false);
         
-        // 2. RIACCENDI LA CAMERA DEL GIOCATORE (Fondamentale per i titoli)
         if (mainCameraPlayer) mainCameraPlayer.enabled = true;
 
-        // Segna la task come completata
         if (GameManager.instance != null) 
             GameManager.instance.CompletaTask(GameManager.Reparto.Regia);
 
-        // --- QUI PARTE IL FINALE ---
         Debug.Log("Avvio titoli di coda immediati.");
         
         if (gestoreFinale != null)

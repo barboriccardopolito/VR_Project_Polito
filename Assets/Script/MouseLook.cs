@@ -8,7 +8,6 @@ public class MouseLook : MonoBehaviour
 
     void Start()
     {
-        // Blocca il cursore al centro dello schermo e lo nasconde
         Cursor.lockState = CursorLockMode.Locked;
     }
 
@@ -18,11 +17,9 @@ public class MouseLook : MonoBehaviour
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
 
         xRotation -= mouseY;
-        // Impedisce di ruotare la testa troppo indietro o troppo avanti
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
         transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-        // Ruota il corpo del cilindro sull'asse Y
         playerBody.Rotate(Vector3.up * mouseX);
     }
 }

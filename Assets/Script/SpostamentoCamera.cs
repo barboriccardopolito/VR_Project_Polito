@@ -23,9 +23,8 @@ public class SpostamentoCamera : MonoBehaviour
     [Header("Nomi Esatti degli Script da bloccare")]
     public string[] nomiScriptDaDisabilitare; 
 
-    // Riferimento all'anello luminoso
     private Evidenziatore evidenziatore;
-    private Collider mioCollider; // <--- Riferimento al Collider
+    private Collider mioCollider;
 
     private bool inModalitaSpostamento = false;
     private bool possoUscire = false; 
@@ -35,15 +34,12 @@ public class SpostamentoCamera : MonoBehaviour
         if (cameraDallAlto != null) cameraDallAlto.gameObject.SetActive(false);
         if (cameraGiocatore == null) cameraGiocatore = Camera.main;
 
-        // Cerca l'evidenziatore
         evidenziatore = GetComponent<Evidenziatore>();
         if (evidenziatore == null) evidenziatore = GetComponentInChildren<Evidenziatore>();
 
-        // Cerca il collider (per disabilitarlo durante lo spostamento)
         mioCollider = GetComponent<Collider>();
     }
 
-    // Chiamata dallo script InterazioneGiocatore
     public void Interagisci()
     {
         if (inModalitaSpostamento) return;
@@ -52,15 +48,12 @@ public class SpostamentoCamera : MonoBehaviour
 
     void Update()
     {
-        // --- LOGICA ANELLO LUMINOSO ---
         GestisciEvidenziatore();
 
-        // --- LOGICA MOVIMENTO ---
         if (inModalitaSpostamento)
         {
             GestisciMovimento();
 
-            // Uscita con tasto E (SOLO SE il cooldown è finito)
             if (Input.GetKeyDown(KeyCode.E) && possoUscire)
             {
                 EsciDaModalitaSpostamento();
@@ -78,7 +71,6 @@ public class SpostamentoCamera : MonoBehaviour
             }
             else
             {
-                // Accendi solo se è il momento giusto (Fotografia o Revisione)
                 bool faseFotografia = (GameManager.instance != null && GameManager.instance.taskAttuale == GameManager.Reparto.Fotografia);
                 bool faseRevisione = (GameManager.instance != null && GameManager.instance.taskAttuale == GameManager.Reparto.Regia);
                 bool hoLaLente = (GameManager.instance != null && !string.IsNullOrEmpty(GameManager.instance.lenteSceltaFinale));
@@ -92,9 +84,8 @@ public class SpostamentoCamera : MonoBehaviour
     void EntraInModalitaSpostamento()
     {
         inModalitaSpostamento = true;
-        possoUscire = false; // Blocco uscita immediata
+        possoUscire = false;
         
-        // --- DISABILITA COLLIDER (Così il Raycast non la vede più!) ---
         if (mioCollider != null) mioCollider.enabled = false;
 
         BloccaGiocatore(true);
@@ -110,7 +101,6 @@ public class SpostamentoCamera : MonoBehaviour
 
     IEnumerator TimerSbloccoUscita()
     {
-        // Aspetta mezzo secondo per evitare il "doppio click" accidentale
         yield return new WaitForSeconds(0.5f);
         possoUscire = true;
     }
@@ -125,7 +115,6 @@ public class SpostamentoCamera : MonoBehaviour
 
         BloccaGiocatore(false);
         
-        // --- RIABILITA COLLIDER (Ora puoi interagire di nuovo) ---
         if (mioCollider != null) mioCollider.enabled = true;
 
         if (GameManager.instance != null)
@@ -140,9 +129,8 @@ public class SpostamentoCamera : MonoBehaviour
         float x = Input.GetAxis("Horizontal"); 
         float z = Input.GetAxis("Vertical");   
 
-        // Calcolo direzione basata sulla rotazione della camera dall'alto
         Vector3 camRight = cameraDallAlto.transform.right;
-        Vector3 camForward = cameraDallAlto.transform.up; // Per camere top-down spesso è UP
+        Vector3 camForward = cameraDallAlto.transform.up;
 
         camRight.y = 0;
         camForward.y = 0;
@@ -151,10 +139,8 @@ public class SpostamentoCamera : MonoBehaviour
 
         Vector3 move = (camRight * x + camForward * z) * velocitaSpostamento * Time.deltaTime;
         
-        // Applica movimento locale ma rispetto al mondo
         transform.Translate(move, Space.World);
 
-        // --- BLOCCO LIMITI ---
         if (usaLimiti)
         {
             Vector3 pos = transform.position;
@@ -168,7 +154,6 @@ public class SpostamentoCamera : MonoBehaviour
     {
         if (giocatore == null) return;
 
-        // Blocca script movimento
         if (nomiScriptDaDisabilitare != null)
         {
             foreach (string nomeScript in nomiScriptDaDisabilitare)
@@ -184,11 +169,9 @@ public class SpostamentoCamera : MonoBehaviour
             }
         }
 
-        // Blocca CharacterController
         CharacterController cc = giocatore.GetComponent<CharacterController>();
         if (cc != null) cc.enabled = !blocca;
         
-        // Gestione cursore
         if (blocca) 
         { 
             Cursor.lockState = CursorLockMode.Locked; 
