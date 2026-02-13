@@ -7,14 +7,13 @@ public class SelettoreOggetti : MonoBehaviour
     [Header("Setup Visuale")]
     public Camera cameraDallAlto;
     public Camera cameraGiocatore;
-    
-    // NUOVO: Il punto esatto in cui fluttuerà l'oggetto!
     public Transform puntoIspezione; 
 
     [Header("Riferimenti Player")]
     public GameObject giocatore;
     public string[] nomiScriptDaDisabilitare;
     private InterazioneGiocatore scriptInterazione;
+    private CharacterController controllerGiocatore;
 
     [Header("Impostazioni Task")]
     public GameManager.Reparto taskRichiesta;
@@ -23,7 +22,7 @@ public class SelettoreOggetti : MonoBehaviour
     public OggettoRaccolta[] oggetti;
 
     [Header("Impostazioni Ispezione 3D")]
-    public float distanzaSfondo = 0.8f;    
+    public float distanzaSfondo = 3.0f;    
     public float sensibilitaMouse = 8f;    
     public float velocitaAnimazione = 12f; 
     [Range(0f, 1f)] public float opacitaSfondo = 0.85f;
@@ -49,7 +48,12 @@ public class SelettoreOggetti : MonoBehaviour
             if (al != null) al.enabled = false;
         }
         if (cameraGiocatore == null) cameraGiocatore = Camera.main;
-        if (giocatore != null) scriptInterazione = giocatore.GetComponent<InterazioneGiocatore>();
+        
+        if (giocatore != null)
+        {
+            scriptInterazione = giocatore.GetComponent<InterazioneGiocatore>();
+            controllerGiocatore = giocatore.GetComponent<CharacterController>();
+        }
 
         posOriginali = new Vector3[oggetti.Length];
         rotOriginali = new Quaternion[oggetti.Length];
@@ -60,8 +64,6 @@ public class SelettoreOggetti : MonoBehaviour
             {
                 posOriginali[i] = oggetti[i].transform.localPosition;
                 rotOriginali[i] = oggetti[i].transform.localRotation;
-                Evidenziatore ev = oggetti[i].GetComponent<Evidenziatore>();
-                if (ev != null) ev.enabled = false; 
             }
         }
         CreaSfondoScuro();
@@ -91,7 +93,8 @@ public class SelettoreOggetti : MonoBehaviour
     public void EntraInSelezione()
     {
         if (inSelezione) return;
-        inSelezione = true; possoUscire = false;
+        inSelezione = true; 
+        possoUscire = false;
 
         indiceAttuale = 0;
         for (int i = 0; i < oggetti.Length; i++) { if (oggetti[i].gameObject.activeInHierarchy) { indiceAttuale = i; break; } }
@@ -124,7 +127,11 @@ public class SelettoreOggetti : MonoBehaviour
         rotazioneOggettoCorrente.x += mouseY; 
         rotazioneOggettoCorrente.y -= mouseX; 
 
-        if (Input.GetKeyDown(KeyCode.E) && possoUscire) ScegliOggetto();
+        // RITORNO AL PLAYER: Premendo E raccoglie l'oggetto e chiude tutto
+        if (Input.GetKeyDown(KeyCode.E) && possoUscire) 
+        {
+            ScegliOggetto();
+        }
     }
 
     void GestisciAnimazione()
@@ -143,9 +150,7 @@ public class SelettoreOggetti : MonoBehaviour
 
             if (inSelezione && i == indiceAttuale)
             {
-                // USIAMO IL PUNTO DI ISPEZIONE ESATTO!
                 Vector3 targetPos = puntoIspezione != null ? puntoIspezione.position : cameraDallAlto.transform.position + (cameraDallAlto.transform.forward * 0.5f);
-                
                 oggetti[i].transform.position = Vector3.Lerp(oggetti[i].transform.position, targetPos, Time.deltaTime * velocitaAnimazione);
                 
                 Quaternion rotazioneSchermo = cameraDallAlto.transform.rotation;
@@ -174,10 +179,15 @@ public class SelettoreOggetti : MonoBehaviour
 
     void ScegliOggetto()
     {
-        inSelezione = false; possoUscire = false; targetAlphaSfondo = 0f; 
+        inSelezione = false; 
+        possoUscire = false; 
+        targetAlphaSfondo = 0f; 
+
         if (cameraDallAlto != null) cameraDallAlto.gameObject.SetActive(false);
         if (cameraGiocatore != null) cameraGiocatore.enabled = true;
         if (scriptInterazione != null) scriptInterazione.enabled = true;
+        
+        // Ritorno fluido dei parametri
         BloccaGiocatore(false);
 
         if (oggetti[indiceAttuale].gameObject.activeInHierarchy)
@@ -191,21 +201,20 @@ public class SelettoreOggetti : MonoBehaviour
     void BloccaGiocatore(bool blocca)
     {
         if (giocatore == null) return;
+
+        // Disabilita gli script di movimento PRIMA del controller per evitare l'errore in console
         if (nomiScriptDaDisabilitare != null)
         {
             foreach (string nomeScript in nomiScriptDaDisabilitare)
             {
-                MonoBehaviour scriptPlayer = giocatore.GetComponent(nomeScript) as MonoBehaviour;
-                if (scriptPlayer != null) scriptPlayer.enabled = !blocca;
-                if (cameraGiocatore != null)
-                {
-                    MonoBehaviour scriptCam = cameraGiocatore.GetComponent(nomeScript) as MonoBehaviour;
-                    if (scriptCam != null) scriptCam.enabled = !blocca;
-                }
+                MonoBehaviour s = giocatore.GetComponent(nomeScript) as MonoBehaviour;
+                if (s != null) s.enabled = !blocca;
             }
         }
-        CharacterController cc = giocatore.GetComponent<CharacterController>();
-        if (cc != null) cc.enabled = !blocca;
+
+        if (controllerGiocatore != null) controllerGiocatore.enabled = !blocca;
+        
         if (blocca) { Cursor.lockState = CursorLockMode.Locked; Cursor.visible = false; }
+        else { Cursor.lockState = CursorLockMode.Locked; Cursor.visible = false; }
     }
 }
