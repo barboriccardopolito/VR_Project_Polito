@@ -70,6 +70,13 @@ public class InventarioGiocatore : MonoBehaviour
         oggettoInMano = "";
     }
 
+    // --- NUOVA FUNZIONE AGGIUNTA ---
+    // Risolve gli errori CS1061 e svuota la mano del giocatore dopo aver piazzato l'oggetto
+    public void RimuoviOggetto()
+    {
+        ConsegnaOggetto(); // Richiama la tua logica di pulizia esistente
+    }
+
     void AttivaModelloInMano(string nomeModello, bool attiva)
     {
         if (manoContainer == null) return;

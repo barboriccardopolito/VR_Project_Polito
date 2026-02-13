@@ -17,7 +17,7 @@ public class SupportoLuce : MonoBehaviour
     {
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
-        audioSource.spatialBlend = 1.0f; // Audio 3D (senti il click provenire dallo stativo)
+        audioSource.spatialBlend = 1.0f; 
 
         NascondiTutto();
     }
@@ -25,6 +25,8 @@ public class SupportoLuce : MonoBehaviour
     public void PiazzaLuce()
     {
         GameManager gm = FindFirstObjectByType<GameManager>();
+        InventarioGiocatore inventario = FindFirstObjectByType<InventarioGiocatore>(); // Riferimento all'inventario
+        
         if (gm == null) return;
 
         if (luceGiaPosizionata) 
@@ -66,8 +68,17 @@ public class SupportoLuce : MonoBehaviour
             {
                 audioSource.PlayOneShot(suonoPiazzamento);
             }
+
+            // --- NUOVA LOGICA: PULISCI MANO E CHIUDI TASK ---
+            if (inventario != null)
+            {
+                inventario.RimuoviOggetto(); // Rimuove fisicamente la luce dalla mano del player
+            }
             
-            Debug.Log($"<color=green>SUCCESSO: Piazzata {nomeLuce}!</color>");
+            // Completa subito la task delle Luci!
+            gm.CompletaTask(GameManager.Reparto.Luci);
+            
+            Debug.Log($"<color=green>SUCCESSO: Piazzata {nomeLuce} e task Luci completata!</color>");
         }
         else
         {

@@ -1,20 +1,20 @@
 using UnityEngine;
-using UnityEngine.UI; // Per l'Image del mirino
-using TMPro; // NECESSARIO per cambiare il testo nel widget
+using UnityEngine.UI; 
+using TMPro; 
 
 public class InterazioneGiocatore : MonoBehaviour
 {
     [Header("Collegamenti")]
     public Transform cameraGiocatore;
-    public GameObject widgetInterazione; // L'oggetto Canvas World Space con dentro il testo
+    public GameObject widgetInterazione; 
     
     [Header("Mirino Dinamico")]
-    public Image mirinoUI;               // Trascina qui l'Image del mirino (Canvas 2D)
-    public Color coloreRiposo = new Color(1, 1, 1, 0.4f); // Bianco semi-trasparente
-    public Color coloreAttivo = Color.red;                // Rosso quando punti qualcosa
-    public float scalaRiposo = 1f;       // Grandezza normale
-    public float scalaAttiva = 2.5f;     // Grandezza quando punti (si espande)
-    public float velocitaAnimazione = 10f; // Quanto è veloce il cambio
+    public Image mirinoUI;               
+    public Color coloreRiposo = new Color(1, 1, 1, 0.4f); 
+    public Color coloreAttivo = Color.red;                
+    public float scalaRiposo = 1f;       
+    public float scalaAttiva = 2.5f;     
+    public float velocitaAnimazione = 10f; 
 
     [Header("Settaggi Raycast")]
     public float distanzaInterazione = 4f;
@@ -82,11 +82,29 @@ public class InterazioneGiocatore : MonoBehaviour
                 messaggioDaMostrare = "[E] PIAZZA MICROFONO";
             }
 
+            // --- LA MODIFICA È QUI ---
             else if (hit.collider.GetComponent<SpostamentoCamera>() != null || hit.collider.CompareTag("Videocamera")) 
             {
                 trovatoQualcosa = true;
-                messaggioDaMostrare = "[E] SPOSTA CAMERA";
+                
+                // Controlliamo in che fase del gioco ci troviamo
+                if (GameManager.instance != null)
+                {
+                    if (GameManager.instance.taskAttuale == GameManager.Reparto.Fotografia)
+                    {
+                        messaggioDaMostrare = "[E] MONTA LENTE";
+                    }
+                    else if (GameManager.instance.taskAttuale == GameManager.Reparto.Regia)
+                    {
+                        messaggioDaMostrare = "[E] SPOSTA CAMERA";
+                    }
+                    else
+                    {
+                        messaggioDaMostrare = "TELECAMERA"; // Mostra solo il nome se non serve a niente ora
+                    }
+                }
             }
+            // ---------------------------
 
             else if (GameManager.instance.micDaInstallare == "Lavalier" && hit.collider.GetComponent<AttoreMicrofonabile>() != null)
             {

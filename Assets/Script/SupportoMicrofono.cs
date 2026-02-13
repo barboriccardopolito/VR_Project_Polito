@@ -23,7 +23,7 @@ public class SupportoMicrofono : MonoBehaviour
 
     public void PiazzaMicrofono()
     {
-
+        InventarioGiocatore inventario = FindFirstObjectByType<InventarioGiocatore>(); // Riferimento inventario
         string micInMano = GameManager.instance.micScelto;
 
         if (string.IsNullOrEmpty(micInMano))
@@ -60,8 +60,14 @@ public class SupportoMicrofono : MonoBehaviour
 
             if (suonoPiazzamento != null) audioSource.PlayOneShot(suonoPiazzamento);
 
+            // --- NUOVA LOGICA: PULISCI MANO ---
+            if (inventario != null)
+            {
+                inventario.RimuoviOggetto(); // Nasconde l'asta/treppiede dalla mano
+            }
+
             Debug.Log($"<color=green>Piazzato {micInMano} con successo!</color>");
-            GameManager.instance.CompletaTask(GameManager.Reparto.Fonico);
+            GameManager.instance.CompletaTask(GameManager.Reparto.Fonico); // Chiude la task
         }
     }
 
