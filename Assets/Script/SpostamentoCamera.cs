@@ -6,6 +6,9 @@ public class SpostamentoCamera : MonoBehaviour
     [Header("Setup Visuale")]
     public Camera cameraDallAlto; 
     public Camera cameraGiocatore; 
+    
+    [Header("Schermo Mirino")]
+    public Camera cameraMirino;
 
     [Header("Movimento (Solo Regia)")]
     public float velocitaSpostamento = 3.0f;
@@ -27,11 +30,16 @@ public class SpostamentoCamera : MonoBehaviour
     [Header("Audio")]
     public AudioClip suonoMontaggioLente;
 
+    // --- STATI DELLA SINGOLA TELECAMERA ---
+    [HideInInspector] public bool lenteMontata = false;
+    [HideInInspector] public bool schermoControllato = false;
+
     private Evidenziatore evidenziatore;
     private Collider mioCollider;
     private AudioSource audioSource;
 
     private bool inModalitaSpostamento = false;
+    private bool inControlloSchermo = false; 
     private bool possoUscire = false; 
 
     void Start()
@@ -57,16 +65,24 @@ public class SpostamentoCamera : MonoBehaviour
 
         if (GameManager.instance.taskAttuale == GameManager.Reparto.Fotografia)
         {
-            PiazzaLente();
+            if (!lenteMontata)
+            {
+                PiazzaLente();
+            }
+            else if (lenteMontata && !schermoControllato)
+            {
+                if (inControlloSchermo) return;
+                EntraControlloSchermo();
+            }
+            else
+            {
+                Debug.Log("Questa telecamera è già a posto!");
+            }
         }
         else if (GameManager.instance.taskAttuale == GameManager.Reparto.Regia)
         {
             if (inModalitaSpostamento) return;
             EntraInModalitaSpostamento();
-        }
-        else
-        {
-            Debug.Log("La telecamera non ti serve in questo momento.");
         }
     }
 
@@ -78,25 +94,18 @@ public class SpostamentoCamera : MonoBehaviour
         {
             string nomeLente = inventario.oggettoInMano;
             
+            // Salviamo la lente scelta (basta farlo una volta per il GameManager)
             GameManager.instance.lenteSceltaFinale = nomeLente;
 
-            // --- LA MAGIA MULTI-CAMERA ---
-            // Cerchiamo TUTTE le telecamere presenti sulla scena
-            SpostamentoCamera[] tutteLeCamere = FindObjectsByType<SpostamentoCamera>(FindObjectsSortMode.None);
-            
-            // Diciamo a ciascuna telecamera di accendere il modello della lente scelta
-            foreach (SpostamentoCamera cam in tutteLeCamere)
-            {
-                cam.MostraModelloLente(nomeLente);
-            }
+            // Mostra la lente SOLO su questa telecamera
+            MostraModelloLente(nomeLente);
 
             if (suonoMontaggioLente != null) audioSource.PlayOneShot(suonoMontaggioLente);
 
-            inventario.RimuoviOggetto();
-
-            GameManager.instance.CompletaTask(GameManager.Reparto.Fotografia);
+            // Segna QUESTA camera come montata
+            lenteMontata = true;
             
-            Debug.Log($"<color=green>Lente {nomeLente} montata su TUTTE le telecamere con successo!</color>");
+            Debug.Log($"<color=yellow>Lente montata su {gameObject.name}. Ora controlla lo schermo!</color>");
         }
         else
         {
@@ -104,20 +113,111 @@ public class SpostamentoCamera : MonoBehaviour
         }
     }
 
-    // --- NUOVA FUNZIONE PUBBLICA ---
-    // Serve per farsi chiamare dalle altre telecamere per accendere il modello giusto
+    void EntraControlloSchermo()
+    {
+        inControlloSchermo = true;
+        possoUscire = false;
+        
+        if (mioCollider != null) mioCollider.enabled = false;
+        BloccaGiocatore(true);
+
+        if (cameraGiocatore != null) cameraGiocatore.enabled = false;
+        if (cameraDallAlto != null) cameraDallAlto.gameObject.SetActive(true);
+
+        Debug.Log("[Camera] Visuale attivata. Premi E per uscire.");
+        StartCoroutine(TimerSbloccoUscita());
+    }
+
+    void EsciControlloSchermo()
+    {
+        inControlloSchermo = false;
+        possoUscire = false;
+
+        if (cameraDallAlto != null) cameraDallAlto.gameObject.SetActive(false);
+        if (cameraGiocatore != null) cameraGiocatore.enabled = true;
+
+        BloccaGiocatore(false);
+        if (mioCollider != null) mioCollider.enabled = true;
+
+        // Segna QUESTA camera come controllata
+        schermoControllato = true;
+
+        // --- CONTROLLO GLOBALE: Abbiamo finito tutte le telecamere? ---
+        VerificaCompletamentoFotografia();
+    }
+
+    void VerificaCompletamentoFotografia()
+    {
+        SpostamentoCamera[] tutteLeCamere = FindObjectsByType<SpostamentoCamera>(FindObjectsSortMode.None);
+        bool tutteFatte = true;
+
+        foreach (SpostamentoCamera cam in tutteLeCamere)
+        {
+            if (!cam.schermoControllato)
+            {
+                tutteFatte = false;
+                break;
+            }
+        }
+
+        if (tutteFatte)
+        {
+            // Svuota la mano del giocatore SOLO quando l'ultima camera è stata controllata
+            InventarioGiocatore inv = FindFirstObjectByType<InventarioGiocatore>();
+            if (inv != null) inv.RimuoviOggetto();
+
+            // Completa la task!
+            if (GameManager.instance != null) GameManager.instance.CompletaTask(GameManager.Reparto.Fotografia);
+            
+            Debug.Log("<color=green>Tutte le camere sono pronte! Task Fotografia COMPLETATA!</color>");
+        }
+        else
+        {
+            Debug.Log("<color=cyan>Camera verificata. Vai a montare/controllare le altre!</color>");
+        }
+    }
+
     public void MostraModelloLente(string nomeLente)
     {
         NascondiTutteLeLenti();
-        if (nomeLente.Contains("Grandangolo") && modelloGrandangolo) modelloGrandangolo.SetActive(true);
-        else if (nomeLente.Contains("Cinematografica") && modelloCinematografica) modelloCinematografica.SetActive(true);
-        else if (modelloStandard) modelloStandard.SetActive(true);
+        float nuovoFov = 60f; 
+
+        if (GameManager.instance != null)
+        {
+            if (nomeLente.Contains("Grandangolo")) 
+            {
+                if (modelloGrandangolo) modelloGrandangolo.SetActive(true);
+                nuovoFov = GameManager.instance.fovGrandangolo; 
+            }
+            else if (nomeLente.Contains("Cinematografica")) 
+            {
+                if (modelloCinematografica) modelloCinematografica.SetActive(true);
+                nuovoFov = GameManager.instance.fovCinematic;
+            }
+            else 
+            {
+                if (modelloStandard) modelloStandard.SetActive(true);
+                nuovoFov = GameManager.instance.fovStandard;
+            }
+        }
+
+        if (cameraDallAlto != null) cameraDallAlto.fieldOfView = nuovoFov;
+        if (cameraMirino != null) cameraMirino.fieldOfView = nuovoFov;
     }
 
     public void ResettaVisualeLenti()
     {
         NascondiTutteLeLenti();
+        lenteMontata = false;
+        schermoControllato = false;
+
         if (GameManager.instance != null) GameManager.instance.lenteSceltaFinale = "";
+        
+        if (GameManager.instance != null)
+        {
+            if (cameraDallAlto != null) cameraDallAlto.fieldOfView = GameManager.instance.fovStandard;
+            if (cameraMirino != null) cameraMirino.fieldOfView = GameManager.instance.fovStandard;
+        }
     }
 
     void NascondiTutteLeLenti()
@@ -133,12 +233,12 @@ public class SpostamentoCamera : MonoBehaviour
 
         if (inModalitaSpostamento)
         {
-            GestisciMovimento();
-
-            if (Input.GetKeyDown(KeyCode.E) && possoUscire)
-            {
-                EsciDaModalitaSpostamento();
-            }
+            GestisciMovimento(); 
+            if (Input.GetKeyDown(KeyCode.E) && possoUscire) EsciDaModalitaSpostamento();
+        }
+        else if (inControlloSchermo)
+        {
+            if (Input.GetKeyDown(KeyCode.E) && possoUscire) EsciControlloSchermo();
         }
     }
 
@@ -146,7 +246,7 @@ public class SpostamentoCamera : MonoBehaviour
     {
         if (evidenziatore != null && GameManager.instance != null)
         {
-            if (inModalitaSpostamento)
+            if (inModalitaSpostamento || inControlloSchermo)
             {
                 evidenziatore.Spegni();
                 return;
@@ -158,9 +258,15 @@ public class SpostamentoCamera : MonoBehaviour
             InventarioGiocatore inventario = FindFirstObjectByType<InventarioGiocatore>();
             bool hoLenteInMano = (inventario != null && inventario.haUnOggetto && inventario.categoriaInMano == OggettoRaccolta.TipoOggetto.Lente);
 
-            if ((faseFotografia && hoLenteInMano) || faseRevisione)
+            if (faseFotografia)
             {
-                evidenziatore.Accendi();
+                if (!lenteMontata && hoLenteInMano) evidenziatore.Accendi(); // Da montare
+                else if (lenteMontata && !schermoControllato) evidenziatore.Accendi(); // Da controllare
+                else evidenziatore.Spegni(); // Finita
+            }
+            else if (faseRevisione)
+            {
+                evidenziatore.Accendi(); // Si illumina in Regia
             }
             else
             {
@@ -175,13 +281,11 @@ public class SpostamentoCamera : MonoBehaviour
         possoUscire = false;
         
         if (mioCollider != null) mioCollider.enabled = false;
-
         BloccaGiocatore(true);
 
         if (cameraGiocatore != null) cameraGiocatore.enabled = false;
         if (cameraDallAlto != null) cameraDallAlto.gameObject.SetActive(true);
 
-        Debug.Log("[Camera] Spostamento ATTIVO. Usa WASD/Frecce. (Premi E per uscire)");
         StartCoroutine(TimerSbloccoUscita());
     }
 
@@ -200,14 +304,9 @@ public class SpostamentoCamera : MonoBehaviour
         if (cameraGiocatore != null) cameraGiocatore.enabled = true;
 
         BloccaGiocatore(false);
-        
         if (mioCollider != null) mioCollider.enabled = true;
 
-        if (GameManager.instance != null)
-        {
-            GameManager.instance.cameraPosizionata = true;
-            Debug.Log("<color=green>[Camera] Posizione Salvata!</color>");
-        }
+        if (GameManager.instance != null) GameManager.instance.cameraPosizionata = true;
     }
 
     void GestisciMovimento()
@@ -261,24 +360,6 @@ public class SpostamentoCamera : MonoBehaviour
         { 
             Cursor.lockState = CursorLockMode.Locked; 
             Cursor.visible = false; 
-        }
-    }
-
-    void OnDrawGizmosSelected()
-    {
-        if (usaLimiti)
-        {
-            Gizmos.color = new Color(1, 0, 0, 0.3f); 
-            float centroX = (minX + maxX) / 2;
-            float centroZ = (minZ + maxZ) / 2;
-            float larghezza = maxX - minX;
-            float profondita = maxZ - minZ;
-
-            Vector3 centro = new Vector3(centroX, transform.position.y, centroZ);
-            Vector3 dimensione = new Vector3(larghezza, 1f, profondita);
-
-            Gizmos.DrawCube(centro, dimensione);
-            Gizmos.DrawWireCube(centro, dimensione);
         }
     }
 }

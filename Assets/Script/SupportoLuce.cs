@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class SupportoLuce : MonoBehaviour
 {
-    [Header("Trascina qui i modelli figli")]
+    [Header("Modelli 3D Figli")]
     public GameObject modelloSoftbox;
     public GameObject modelloFresnel;
     public GameObject modelloArtistica;
@@ -11,7 +11,7 @@ public class SupportoLuce : MonoBehaviour
     public AudioClip suonoPiazzamento;
     private AudioSource audioSource;
 
-    private bool luceGiaPosizionata = false;
+    [HideInInspector] public bool luceGiaPosizionata = false;
 
     void Start()
     {
@@ -24,10 +24,13 @@ public class SupportoLuce : MonoBehaviour
 
     public void PiazzaLuce()
     {
-        GameManager gm = FindFirstObjectByType<GameManager>();
-        InventarioGiocatore inventario = FindFirstObjectByType<InventarioGiocatore>(); // Riferimento all'inventario
+        GameManager gm = GameManager.instance;
+        InventarioGiocatore inventario = FindFirstObjectByType<InventarioGiocatore>(); 
         
-        if (gm == null) return;
+        if (gm == null || inventario == null) return;
+
+        // Se la task non è quella delle Luci, non fare nulla
+        if (gm.taskAttuale != GameManager.Reparto.Luci) return;
 
         if (luceGiaPosizionata) 
         {
@@ -35,62 +38,71 @@ public class SupportoLuce : MonoBehaviour
             return;
         }
 
-        if (string.IsNullOrEmpty(gm.LuceScelta))
+        if (!inventario.haUnOggetto || inventario.categoriaInMano != OggettoRaccolta.TipoOggetto.Luce)
         {
-            Debug.Log("Non hai ancora scelto nessuna luce da piazzare!");
+            Debug.Log("Non hai una luce in mano!");
             return;
         }
 
-        string nomeLuce = gm.LuceScelta;
-        NascondiTutto(); 
+        string nomeLuce = inventario.oggettoInMano;
+        gm.LuceScelta = nomeLuce; 
 
-        bool luceTrovata = false;
+        bool modelloAttivato = false;
 
-        if (IsNameMatch(nomeLuce, "Softbox"))
-        {
-            if (modelloSoftbox != null) { modelloSoftbox.SetActive(true); luceTrovata = true; }
-        }
-        else if (IsNameMatch(nomeLuce, "Fresnel"))
-        {
-            if (modelloFresnel != null) { modelloFresnel.SetActive(true); luceTrovata = true; }
-        }
-        else if (IsNameMatch(nomeLuce, "Artistica")) 
-        {
-            if (modelloArtistica != null) { modelloArtistica.SetActive(true); luceTrovata = true; }
-        }
+        if (IsNameMatch(nomeLuce, "Softbox")) { if (modelloSoftbox) { modelloSoftbox.SetActive(true); modelloAttivato = true; } }
+        else if (IsNameMatch(nomeLuce, "Fresnel")) { if (modelloFresnel) { modelloFresnel.SetActive(true); modelloAttivato = true; } }
+        else if (IsNameMatch(nomeLuce, "Artistica")) { if (modelloArtistica) { modelloArtistica.SetActive(true); modelloAttivato = true; } }
 
-        if (luceTrovata)
+        if (modelloAttivato)
         {
             luceGiaPosizionata = true;
-            gm.LucePosizionataCorrettamente = true;
-
-            if (suonoPiazzamento != null)
-            {
-                audioSource.PlayOneShot(suonoPiazzamento);
-            }
-
-            // --- NUOVA LOGICA: PULISCI MANO E CHIUDI TASK ---
-            if (inventario != null)
-            {
-                inventario.RimuoviOggetto(); // Rimuove fisicamente la luce dalla mano del player
-            }
+            if (suonoPiazzamento != null) audioSource.PlayOneShot(suonoPiazzamento);
             
-            // Completa subito la task delle Luci!
-            gm.CompletaTask(GameManager.Reparto.Luci);
-            
-            Debug.Log($"<color=green>SUCCESSO: Piazzata {nomeLuce} e task Luci completata!</color>");
-        }
-        else
-        {
-            Debug.LogWarning($"<color=red>FALLITO:</color> Il nome '{nomeLuce}' non corrisponde a Softbox, Fresnel o Artistica.");
+            Debug.Log($"<color=cyan>Luce piazzata su {gameObject.name}. Controllo stato globale...</color>");
+            VerificaCompletamentoLuci();
         }
     }
 
+    void VerificaCompletamentoLuci()
+    {
+        if (GameManager.instance == null || GameManager.instance.supportiLuciFisici == null) return;
+
+        // Prendiamo i supporti direttamente dalla lista definita nel GameManager
+        GameObject[] supportiDaControllare = GameManager.instance.supportiLuciFisici;
+        
+        int totali = supportiDaControllare.Length;
+        int completati = 0;
+
+        foreach (GameObject obj in supportiDaControllare)
+        {
+            if (obj == null) continue;
+            
+            SupportoLuce script = obj.GetComponent<SupportoLuce>();
+            if (script != null && script.luceGiaPosizionata)
+            {
+                completati++;
+            }
+        }
+
+        Debug.Log($"<color=white>Stato Luci (da lista GM): {completati} su {totali} supporti pronti.</color>");
+
+        if (completati >= totali && totali > 0)
+        {
+            InventarioGiocatore inv = FindFirstObjectByType<InventarioGiocatore>();
+            if (inv != null) inv.RimuoviOggetto();
+
+            GameManager.instance.LucePosizionataCorrettamente = true;
+            GameManager.instance.CompletaTask(GameManager.Reparto.Luci);
+            
+            Debug.Log("<color=green>TUTTI I SUPPORTI DELLA LISTA SONO PRONTI!</color>");
+        }
+    }
+
+    // Metodo di pulizia per sicurezza (chiamalo se vuoi resettare la scena)
     public void ResettaSupporto()
     {
         luceGiaPosizionata = false;
         NascondiTutto();
-        Debug.Log($"[Supporto] {gameObject.name} resettato.");
     }
 
     void NascondiTutto()
@@ -102,6 +114,6 @@ public class SupportoLuce : MonoBehaviour
 
     private bool IsNameMatch(string input, string target)
     {
-        return input.IndexOf(target, System.StringComparison.OrdinalIgnoreCase) >= 0;
+        return input.ToLower().Contains(target.ToLower());
     }
 }

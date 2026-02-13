@@ -87,12 +87,25 @@ public class InterazioneGiocatore : MonoBehaviour
             {
                 trovatoQualcosa = true;
                 
-                // Controlliamo in che fase del gioco ci troviamo
-                if (GameManager.instance != null)
+                SpostamentoCamera spostaCam = hit.collider.GetComponent<SpostamentoCamera>();
+                if (spostaCam == null) spostaCam = hit.collider.GetComponentInParent<SpostamentoCamera>();
+                
+                if (GameManager.instance != null && spostaCam != null)
                 {
                     if (GameManager.instance.taskAttuale == GameManager.Reparto.Fotografia)
                     {
-                        messaggioDaMostrare = "[E] MONTA LENTE";
+                        if (!spostaCam.lenteMontata)
+                        {
+                            messaggioDaMostrare = "[E] MONTA LENTE";
+                        }
+                        else if (spostaCam.lenteMontata && !spostaCam.schermoControllato)
+                        {
+                            messaggioDaMostrare = "[E] CONTROLLA SCHERMO";
+                        }
+                        else
+                        {
+                            messaggioDaMostrare = "TELECAMERA PRONTA"; // Quando hai finito sia di montare che di controllare
+                        }
                     }
                     else if (GameManager.instance.taskAttuale == GameManager.Reparto.Regia)
                     {
@@ -100,8 +113,12 @@ public class InterazioneGiocatore : MonoBehaviour
                     }
                     else
                     {
-                        messaggioDaMostrare = "TELECAMERA"; // Mostra solo il nome se non serve a niente ora
+                        messaggioDaMostrare = "TELECAMERA"; 
                     }
+                }
+                else
+                {
+                    messaggioDaMostrare = "TELECAMERA"; 
                 }
             }
             // ---------------------------

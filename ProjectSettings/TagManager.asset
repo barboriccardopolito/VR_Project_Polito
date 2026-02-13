@@ -8,6 +8,7 @@ TagManager:
   - Lente
   - Raccoglibile
   - Videocamera
+  - SupportoLuce
   layers:
   - Default
   - TransparentFX
