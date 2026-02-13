@@ -14467,6 +14467,7 @@ GameObject:
   m_Component:
   - component: {fileID: 647361227}
   - component: {fileID: 647361229}
+  - component: {fileID: 647361230}
   - component: {fileID: 647361228}
   m_Layer: 5
   m_Name: LabelCanvas
@@ -14593,6 +14594,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 647361226}
   m_CullTransparentMesh: 1
+--- !u!114 &647361230
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 647361226}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 944c753aa8071d54a8ee4420fb0ee3d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LookAtPlayer
 --- !u!1 &652205585
 GameObject:
   m_ObjectHideFlags: 0
@@ -20217,6 +20230,7 @@ GameObject:
   - component: {fileID: 961740459}
   - component: {fileID: 961740462}
   - component: {fileID: 961740461}
+  - component: {fileID: 961740463}
   - component: {fileID: 961740460}
   m_Layer: 5
   m_Name: LabelCanvas
@@ -20357,6 +20371,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NewMonoBehaviourScript
   modelloLavalierAddosso: {fileID: 0}
   suonoMontaggioLavalier: {fileID: 0}
+--- !u!114 &961740463
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 961740458}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 944c753aa8071d54a8ee4420fb0ee3d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LookAtPlayer
 --- !u!1 &967962249 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: a01a1849633da02438f3843f9e17c18a, type: 3}
@@ -21663,6 +21689,7 @@ GameObject:
   - component: {fileID: 1011705714}
   - component: {fileID: 1011705717}
   - component: {fileID: 1011705716}
+  - component: {fileID: 1011705718}
   - component: {fileID: 1011705715}
   m_Layer: 5
   m_Name: LabelCanvas
@@ -21803,6 +21830,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NewMonoBehaviourScript
   modelloLavalierAddosso: {fileID: 0}
   suonoMontaggioLavalier: {fileID: 0}
+--- !u!114 &1011705718
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1011705713}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 944c753aa8071d54a8ee4420fb0ee3d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LookAtPlayer
 --- !u!1 &1012662510
 GameObject:
   m_ObjectHideFlags: 0
@@ -21813,6 +21852,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1012662511}
   - component: {fileID: 1012662513}
+  - component: {fileID: 1012662514}
   - component: {fileID: 1012662512}
   m_Layer: 5
   m_Name: LabelCanvas
@@ -21939,6 +21979,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1012662510}
   m_CullTransparentMesh: 1
+--- !u!114 &1012662514
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1012662510}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 944c753aa8071d54a8ee4420fb0ee3d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LookAtPlayer
 --- !u!1 &1023075705 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2707430338101333061, guid: 2a00655f6f84f9a459c374fb1ab412ed, type: 3}
@@ -24248,6 +24300,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1146160964}
   - component: {fileID: 1146160966}
+  - component: {fileID: 1146160967}
   - component: {fileID: 1146160965}
   m_Layer: 5
   m_Name: LabelCanvas
@@ -24374,6 +24427,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1146160963}
   m_CullTransparentMesh: 1
+--- !u!114 &1146160967
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1146160963}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 944c753aa8071d54a8ee4420fb0ee3d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LookAtPlayer
 --- !u!1 &1146339642
 GameObject:
   m_ObjectHideFlags: 0
@@ -32849,6 +32914,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1508607902}
   - component: {fileID: 1508607904}
+  - component: {fileID: 1508607905}
   - component: {fileID: 1508607903}
   m_Layer: 5
   m_Name: LabelCanvas
@@ -32975,6 +33041,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1508607901}
   m_CullTransparentMesh: 1
+--- !u!114 &1508607905
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1508607901}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 944c753aa8071d54a8ee4420fb0ee3d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LookAtPlayer
 --- !u!1 &1510721185
 GameObject:
   m_ObjectHideFlags: 0
@@ -40640,6 +40718,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1866742926}
   - component: {fileID: 1866742928}
+  - component: {fileID: 1866742929}
   - component: {fileID: 1866742927}
   m_Layer: 5
   m_Name: LabelCanvas
@@ -40766,6 +40845,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1866742925}
   m_CullTransparentMesh: 1
+--- !u!114 &1866742929
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1866742925}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 944c753aa8071d54a8ee4420fb0ee3d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LookAtPlayer
 --- !u!1 &1872203618 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7151161983311965459, guid: 1576f96929bee494486bc0e930c14d4e, type: 3}
