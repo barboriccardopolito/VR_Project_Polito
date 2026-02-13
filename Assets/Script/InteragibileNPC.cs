@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections; 
 
 public class InteragibileNPC : MonoBehaviour
 {
@@ -10,6 +11,8 @@ public class InteragibileNPC : MonoBehaviour
 
     [TextArea(3, 10)]
     public string messaggioTask;
+
+    [HideInInspector] public bool staParlando = false;
 
     private Evidenziatore evidenziatore;
 
@@ -49,14 +52,20 @@ public class InteragibileNPC : MonoBehaviour
 
     public void Interagisci()
     {
+        if (staParlando) return;
+
+        // --- MODIFICA PRODUZIONE: Blocca il prompt per l'NPCWander ---
         NPCWander produzioneScript = GetComponent<NPCWander>();
-        if (produzioneScript != null) produzioneScript.InterazioneConPlayer();
+        if (produzioneScript != null) 
+        {
+            StartCoroutine(GestisciStatoParlato(4.5f)); // <-- Attiva il blocco prompt
+            produzioneScript.InterazioneConPlayer();
+        }
 
         NPC_Staff staffScript = GetComponent<NPC_Staff>();
         bool faseRevisione = (GameManager.instance.taskAttuale == GameManager.Reparto.Regia);
         bool èIlMioTurno = (GameManager.instance.taskAttuale == tipoReparto);
 
-        
         bool possoInteragire = èIlMioTurno || faseRevisione; 
         
         bool installazioneLuciInCorso = (GameManager.instance.LuceScelta != "");
@@ -70,7 +79,8 @@ public class InteragibileNPC : MonoBehaviour
             Debug.Log($"<color=yellow>[{tipoReparto}]:</color> Non disturbare ora. Non è il mio turno.");
             if (staffScript != null && staffScript.audioNonEIlMioTurno != null)
             {
-                 staffScript.GetComponent<AudioSource>().PlayOneShot(staffScript.audioNonEIlMioTurno);
+                StartCoroutine(GestisciStatoParlato(staffScript.audioNonEIlMioTurno.length));
+                staffScript.GetComponent<AudioSource>().PlayOneShot(staffScript.audioNonEIlMioTurno);
             }
             return;
         }
@@ -82,6 +92,7 @@ public class InteragibileNPC : MonoBehaviour
 
             if (èIlMioTurno && !staffScript.haGiaParlato && (!faseRevisione || tipoReparto == GameManager.Reparto.Regia))
             {
+                StartCoroutine(GestisciStatoParlato(4.5f)); 
                 staffScript.AvviaDialogoIniziale();
                 Debug.Log($"[{tipoReparto}] Ascolta il briefing iniziale.");
                 return; 
@@ -98,6 +109,7 @@ public class InteragibileNPC : MonoBehaviour
                 if (staffScript != null)
                 {
                     Debug.Log("<color=yellow>[Dir. Fotografia]:</color> Controllo finale...");
+                    StartCoroutine(GestisciStatoParlato(3.5f)); 
                     staffScript.ReazioneFineTask(() => {
                         GameManager.instance.CompletaTask(tipoReparto);
                     });
@@ -116,6 +128,7 @@ public class InteragibileNPC : MonoBehaviour
                 if (staffScript != null)
                 {
                     Debug.Log("<color=yellow>[Addetto Luci]:</color> Controllo finale...");
+                    StartCoroutine(GestisciStatoParlato(3.5f)); 
                     staffScript.ReazioneFineTask(() => {
                         GameManager.instance.CompletaTask(tipoReparto); 
                     });
@@ -136,6 +149,7 @@ public class InteragibileNPC : MonoBehaviour
                  if (staffScript != null)
                  {
                       Debug.Log("<color=green>[Fonico]:</color> Controllo setup audio...");
+                      StartCoroutine(GestisciStatoParlato(3.5f)); 
                       staffScript.ReazioneFineTask(() => 
                       {
                           GameManager.instance.ApplicaEffettoMicrofono(GameManager.instance.micDaInstallare);
@@ -156,7 +170,10 @@ public class InteragibileNPC : MonoBehaviour
              return;
         }
 
+        // --- MODIFICA PRODUZIONE (Blocco finale per sicurezza) ---
         if (tipoReparto == GameManager.Reparto.Produzione) { 
+            StartCoroutine(GestisciStatoParlato(4.5f)); // <-- Attiva il blocco prompt
+            
             if (evidenziatore != null) evidenziatore.Spegni();
             if (produzioneScript != null) produzioneScript.InterazioneConPlayer(); 
             else GameManager.instance.CompletaTask(tipoReparto);
@@ -174,6 +191,7 @@ public class InteragibileNPC : MonoBehaviour
                 if (staffScript != null)
                 {
                     Debug.Log("<color=red>[Regista]:</color> Chiamo l'azione...");
+                    StartCoroutine(GestisciStatoParlato(3f)); 
                     staffScript.ReazioneCiak(() => 
                     {
                         RegiaManager.instance.AvviaCiak();
@@ -196,6 +214,8 @@ public class InteragibileNPC : MonoBehaviour
 
             if (oggettoCorretto)
             {
+                StartCoroutine(GestisciStatoParlato(3.5f)); 
+
                 if (tipoReparto == GameManager.Reparto.Fotografia)
                 {
                     if (GameManager.instance.lenteSceltaFinale != "") GameManager.instance.RestituisciOggettoAlTavolo(GameManager.instance.lenteSceltaFinale);
@@ -235,5 +255,12 @@ public class InteragibileNPC : MonoBehaviour
             if (faseRevisione && tipoReparto != GameManager.Reparto.Regia) Debug.Log($"[{tipoReparto}]: Se vuoi cambiare qualcosa, portami l'attrezzatura nuova.");
             else if (staffScript == null || staffScript.haGiaParlato) Debug.Log($"[Info]: {messaggioTask}");
         }
+    }
+
+    public IEnumerator GestisciStatoParlato(float durata)
+    {
+        staParlando = true;
+        yield return new WaitForSeconds(durata);
+        staParlando = false;
     }
 }

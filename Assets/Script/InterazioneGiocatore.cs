@@ -58,35 +58,58 @@ public class InterazioneGiocatore : MonoBehaviour
             bool trovatoQualcosa = false;
             string messaggioDaMostrare = "[E] INTERAGISCI";
 
+// 1. OGGETTI RACCOGLIBILI
             OggettoRaccolta oggetto = hit.collider.GetComponent<OggettoRaccolta>();
             if (oggetto != null)
             {
                 trovatoQualcosa = true;
-                messaggioDaMostrare = "[E] RACCOGLI " + oggetto.nomeOggetto.ToUpper();
+                SelettoreOggetti selettore = oggetto.GetComponentInParent<SelettoreOggetti>();
+                
+                // Se l'oggetto è in una valigia, offri di esaminarla
+                if (selettore != null && selettore.PuoiInteragire())
+                {
+                    messaggioDaMostrare = "[E] ESAMINA VALIGIA";
+                }
+                else
+                {
+                    messaggioDaMostrare = "[E] RACCOGLI " + oggetto.nomeOggetto.ToUpper();
+                }
             }
 
+            // 2. NPC (Modificato per nascondere il prompt se sta parlando)
             else if (hit.collider.GetComponent<InteragibileNPC>() != null) 
             {
-                trovatoQualcosa = true;
-                messaggioDaMostrare = "[E] PARLA";
+                InteragibileNPC npc = hit.collider.GetComponent<InteragibileNPC>();
+                if (npc != null && !npc.staParlando) // Controllo stato parlato
+                {
+                    trovatoQualcosa = true;
+                    messaggioDaMostrare = "[E] PARLA";
+                }
+                else
+                {
+                    // Se sta parlando, nascondiamo forzatamente il widget
+                    if (widgetInterazione != null) widgetInterazione.SetActive(false);
+                }
             }
             
+            // 3. SUPPORTI LUCI
             else if (hit.collider.GetComponent<SupportoLuce>() != null) 
             {
                 trovatoQualcosa = true;
                 messaggioDaMostrare = "[E] PIAZZA LUCE";
             }
+
+            // 4. SUPPORTI MICROFONI
             else if (hit.collider.GetComponent<SupportoMicrofono>() != null)
             {
                 trovatoQualcosa = true;
                 messaggioDaMostrare = "[E] PIAZZA MICROFONO";
             }
 
-            // --- LA MODIFICA È QUI ---
+            // 5. VIDEOCAMERE (Lenti e Spostamento)
             else if (hit.collider.GetComponent<SpostamentoCamera>() != null || hit.collider.CompareTag("Videocamera")) 
             {
                 trovatoQualcosa = true;
-                
                 SpostamentoCamera spostaCam = hit.collider.GetComponent<SpostamentoCamera>();
                 if (spostaCam == null) spostaCam = hit.collider.GetComponentInParent<SpostamentoCamera>();
                 
@@ -95,17 +118,11 @@ public class InterazioneGiocatore : MonoBehaviour
                     if (GameManager.instance.taskAttuale == GameManager.Reparto.Fotografia)
                     {
                         if (!spostaCam.lenteMontata)
-                        {
                             messaggioDaMostrare = "[E] MONTA LENTE";
-                        }
                         else if (spostaCam.lenteMontata && !spostaCam.schermoControllato)
-                        {
                             messaggioDaMostrare = "[E] CONTROLLA SCHERMO";
-                        }
                         else
-                        {
-                            messaggioDaMostrare = "TELECAMERA PRONTA"; // Quando hai finito sia di montare che di controllare
-                        }
+                            messaggioDaMostrare = "TELECAMERA PRONTA";
                     }
                     else if (GameManager.instance.taskAttuale == GameManager.Reparto.Regia)
                     {
@@ -116,25 +133,23 @@ public class InterazioneGiocatore : MonoBehaviour
                         messaggioDaMostrare = "TELECAMERA"; 
                     }
                 }
-                else
-                {
-                    messaggioDaMostrare = "TELECAMERA"; 
-                }
             }
-            // ---------------------------
 
+            // 6. ATTORI (Microfonaggio Lavalier)
             else if (GameManager.instance.micDaInstallare == "Lavalier" && hit.collider.GetComponent<AttoreMicrofonabile>() != null)
             {
                 trovatoQualcosa = true;
                 messaggioDaMostrare = "[E] MICROFONA ATTORE";
             }
 
+            // 7. MACCHINETTA CAFFE
             else if (hit.collider.GetComponent<MacchinettaCaffe>() != null) 
             {
                 trovatoQualcosa = true;
                 messaggioDaMostrare = "[E] SPEGNI";
             }
 
+            // GESTIONE FINALE VISUALIZZAZIONE
             if (trovatoQualcosa)
             {
                 MostraWidget(hit, messaggioDaMostrare);
@@ -169,7 +184,6 @@ public class InterazioneGiocatore : MonoBehaviour
         if (widgetInterazione == null) return;
 
         widgetInterazione.SetActive(true);
-        
         if (testoWidget != null) testoWidget.text = testo;
 
         Vector3 direzione = (cameraGiocatore.position - hit.point).normalized;
@@ -188,14 +202,22 @@ public class InterazioneGiocatore : MonoBehaviour
         if (Physics.Raycast(raggio, out hit, distanzaInterazione, layerDaColpire))
         {
             OggettoRaccolta obj = hit.collider.GetComponent<OggettoRaccolta>();
-            if (obj != null) { obj.EseguiRaccolta(); return; }
+            if (obj != null) 
+            { 
+                SelettoreOggetti selettore = obj.GetComponentInParent<SelettoreOggetti>();
+                if (selettore != null && selettore.PuoiInteragire())
+                {
+                    selettore.EntraInSelezione();
+                }
+                else
+                {
+                    obj.EseguiRaccolta(); 
+                }
+                return; 
+            }
 
             AttoreMicrofonabile attore = hit.collider.GetComponent<AttoreMicrofonabile>();
-            if (attore != null)
-            {
-                attore.ProvaAMicrofonare();
-                return;
-            }
+            if (attore != null) { attore.ProvaAMicrofonare(); return; }
 
             InteragibileNPC npc = hit.collider.GetComponent<InteragibileNPC>();
             if (npc != null) { npc.Interagisci(); return; }
@@ -203,10 +225,10 @@ public class InterazioneGiocatore : MonoBehaviour
             SpostamentoCamera spostaCam = hit.collider.GetComponent<SpostamentoCamera>();
             if (spostaCam == null) spostaCam = hit.collider.GetComponentInParent<SpostamentoCamera>(); 
             if (spostaCam != null) { spostaCam.Interagisci(); return; }
+
             if (hit.collider.CompareTag("Videocamera")) 
             {
                 GameManager.instance.cameraPosizionata = true;
-                Debug.Log("Camera posizionata via Tag.");
                 return;
             }
 
