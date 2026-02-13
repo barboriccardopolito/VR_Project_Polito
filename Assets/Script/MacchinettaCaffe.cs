@@ -50,7 +50,6 @@ public class MacchinettaCaffe : MonoBehaviour
         }
         else
         {
-            // Per Lavalier, Ambisonic o Nessuno, torna al valore originale (es. 2 metri)
             audioSourceLocale.maxDistance = distanzaOriginale;
         }
     }

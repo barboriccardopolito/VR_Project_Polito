@@ -38,17 +38,29 @@ public class RadioSistema : MonoBehaviour
         }
     }
 
-    public void RiceviRadio()
+    // Sostituisci la vecchia funzione RiceviRadio() con queste tre:
+
+    public void MostraRadioVisivamente()
     {
+        // Fa solo comparire la radio addosso al player (niente suoni o attivazioni)
+        if (radioAddossoAlPlayer != null) radioAddossoAlPlayer.SetActive(true);
+    }
+
+    public void SuonaBipTest()
+    {
+        // Suona solo il bip di conferma quando il player preme R
+        if (audioSource != null && suonoRicezione != null) audioSource.PlayOneShot(suonoRicezione);
+    }
+
+    public void AttivaLogicaRadio()
+    {
+        // Attiva ufficialmente la radio DOPO che l'NPC ha finito di parlare
         if (haLaRadio) return;
         haLaRadio = true;
 
-        if (radioAddossoAlPlayer != null) radioAddossoAlPlayer.SetActive(true);
-        if (audioSource != null && suonoRicezione != null) audioSource.PlayOneShot(suonoRicezione);
-
         RiproduciPreTask(GameManager.Reparto.Fotografia);
 
-        Debug.Log("<color=green>[SYSTEM]</color> Radio ricevuta!");
+        Debug.Log("<color=green>[SYSTEM]</color> Radio pienamente operativa!");
     }
 
     public void GestisciCambioTask(GameManager.Reparto vecchiaTask, GameManager.Reparto nuovaTask)

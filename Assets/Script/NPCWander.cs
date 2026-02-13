@@ -127,8 +127,9 @@ public class NPCWander : MonoBehaviour
         StartCoroutine(SequenzaDialogo());
     }
 
-    IEnumerator SequenzaDialogo()
+IEnumerator SequenzaDialogo()
     {
+        // 1. NPC fa l'introduzione (es. "Ti serve questa per comunicare")
         if (clipsIntroduzione != null)
         {
             foreach (AudioClip clip in clipsIntroduzione)
@@ -143,21 +144,30 @@ public class NPCWander : MonoBehaviour
             }
         }
 
-        // --- PAUSA TUTORIAL ---
+        // 2. CONSEGNA FISICA DELLA RADIO
+        // La radio scompare dal tavolo/cintura e appare in mano al giocatore
+        if (radioSistema != null) radioSistema.MostraRadioVisivamente();
+        if (oggettoRadioFisico != null) oggettoRadioFisico.SetActive(false);
+
+        // 3. TUTORIAL: TEST DELLA RADIO
         if (promptTastoR != null)
         {
-            // Mostra scritta "PREMI R"
+            // Mostra la scritta "PREMI R PER TESTARE"
             promptTastoR.SetActive(true);
 
-            // Aspetta finché non premi R
+            // Il gioco aspetta qui finché non premi fisicamente R
             yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.R));
 
             // Nascondi scritta
             promptTastoR.SetActive(false);
             
-            yield return new WaitForSeconds(0.5f);
+            // Suona il BIP dalla radio del giocatore
+            if (radioSistema != null) radioSistema.SuonaBipTest();
+            
+            yield return new WaitForSeconds(0.5f); // Piccola pausa naturale dopo il bip
         }
 
+        // 4. RISPOSTA NPC ("Perfetto, la radio funziona...")
         if (clipConsegnaRadio != null)
         {
             audioSource.Stop();
@@ -166,17 +176,17 @@ public class NPCWander : MonoBehaviour
             yield return new WaitForSeconds(clipConsegnaRadio.length);
         }
 
-        Debug.Log("NPC: 'Ecco a te.'");
-        
-        if (radioSistema != null) radioSistema.RiceviRadio();
-        
-        if (oggettoRadioFisico != null) oggettoRadioFisico.SetActive(false);
+        Debug.Log("NPC: 'Consegna completata e testata.'");
 
+        // 5. ATTIVAZIONE FINALE
+        // Segna la task della Produzione come completata nel GameManager
         if (GameManager.instance != null) 
             GameManager.instance.CompletaTask(GameManager.Reparto.Produzione);
 
-        staParlando = false;
+        // ORA la radio diventa attiva (haLaRadio = true) e fa partire la voce della Fotografia
+        if (radioSistema != null) radioSistema.AttivaLogicaRadio();
 
+        staParlando = false;
         Alzati();
     }
 

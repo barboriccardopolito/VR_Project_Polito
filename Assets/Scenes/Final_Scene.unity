@@ -17875,7 +17875,7 @@ MonoBehaviour:
   haLaRadio: 0
   radioAddossoAlPlayer: {fileID: 792783636}
   audioSource: {fileID: 0}
-  suonoRicezione: {fileID: 0}
+  suonoRicezione: {fileID: 8300000, guid: 03cb327afaeed0b4dacb95bc08f4cc9e, type: 3}
   audioPreTask: []
   audioIntermedi:
   - {fileID: 8300000, guid: a598546aad97bdf43b0cfb5a3c4eee74, type: 3}
