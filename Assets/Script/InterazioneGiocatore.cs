@@ -22,7 +22,6 @@ public class InterazioneGiocatore : MonoBehaviour
     public Vector3 offsetGrafico = new Vector3(0, 0.1f, 0);
 
     private bool bersaglioAgganciato = false;
-    
     private TextMeshProUGUI testoWidget;
 
     void Start()
@@ -58,36 +57,36 @@ public class InterazioneGiocatore : MonoBehaviour
             bool trovatoQualcosa = false;
             string messaggioDaMostrare = "[E] INTERAGISCI";
 
-// 1. OGGETTI RACCOGLIBILI
+            // 1. CONTROLLO VALIGIA E OGGETTI RACCOGLIBILI
+            SelettoreOggetti selettore = hit.collider.GetComponent<SelettoreOggetti>();
             OggettoRaccolta oggetto = hit.collider.GetComponent<OggettoRaccolta>();
-            if (oggetto != null)
+
+            // Se colpisco un oggetto normale, controllo se è dentro una valigia
+            if (selettore == null && oggetto != null) 
+                selettore = oggetto.GetComponentInParent<SelettoreOggetti>();
+
+            if (selettore != null && selettore.PuoiInteragire())
             {
                 trovatoQualcosa = true;
-                SelettoreOggetti selettore = oggetto.GetComponentInParent<SelettoreOggetti>();
-                
-                // Se l'oggetto è in una valigia, offri di esaminarla
-                if (selettore != null && selettore.PuoiInteragire())
-                {
-                    messaggioDaMostrare = "[E] ESAMINA VALIGIA";
-                }
-                else
-                {
-                    messaggioDaMostrare = "[E] RACCOGLI " + oggetto.nomeOggetto.ToUpper();
-                }
+                messaggioDaMostrare = "[E] ESAMINA VALIGIA";
+            }
+            else if (oggetto != null)
+            {
+                trovatoQualcosa = true;
+                messaggioDaMostrare = "[E] RACCOGLI " + oggetto.nomeOggetto.ToUpper();
             }
 
-            // 2. NPC (Modificato per nascondere il prompt se sta parlando)
+            // 2. NPC
             else if (hit.collider.GetComponent<InteragibileNPC>() != null) 
             {
                 InteragibileNPC npc = hit.collider.GetComponent<InteragibileNPC>();
-                if (npc != null && !npc.staParlando) // Controllo stato parlato
+                if (npc != null && !npc.staParlando)
                 {
                     trovatoQualcosa = true;
                     messaggioDaMostrare = "[E] PARLA";
                 }
                 else
                 {
-                    // Se sta parlando, nascondiamo forzatamente il widget
                     if (widgetInterazione != null) widgetInterazione.SetActive(false);
                 }
             }
@@ -106,7 +105,7 @@ public class InterazioneGiocatore : MonoBehaviour
                 messaggioDaMostrare = "[E] PIAZZA MICROFONO";
             }
 
-            // 5. VIDEOCAMERE (Lenti e Spostamento)
+            // 5. VIDEOCAMERE
             else if (hit.collider.GetComponent<SpostamentoCamera>() != null || hit.collider.CompareTag("Videocamera")) 
             {
                 trovatoQualcosa = true;
@@ -125,17 +124,17 @@ public class InterazioneGiocatore : MonoBehaviour
                             messaggioDaMostrare = "TELECAMERA PRONTA";
                     }
                     else if (GameManager.instance.taskAttuale == GameManager.Reparto.Regia)
-                    {
                         messaggioDaMostrare = "[E] SPOSTA CAMERA";
-                    }
                     else
-                    {
                         messaggioDaMostrare = "TELECAMERA"; 
-                    }
+                }
+                else
+                {
+                    messaggioDaMostrare = "TELECAMERA"; 
                 }
             }
 
-            // 6. ATTORI (Microfonaggio Lavalier)
+            // 6. ATTORI
             else if (GameManager.instance.micDaInstallare == "Lavalier" && hit.collider.GetComponent<AttoreMicrofonabile>() != null)
             {
                 trovatoQualcosa = true;
@@ -149,7 +148,6 @@ public class InterazioneGiocatore : MonoBehaviour
                 messaggioDaMostrare = "[E] SPEGNI";
             }
 
-            // GESTIONE FINALE VISUALIZZAZIONE
             if (trovatoQualcosa)
             {
                 MostraWidget(hit, messaggioDaMostrare);
@@ -169,12 +167,9 @@ public class InterazioneGiocatore : MonoBehaviour
     void AnimaMirino()
     {
         if (mirinoUI == null) return;
-
         Color targetColor = bersaglioAgganciato ? coloreAttivo : coloreRiposo;
         float targetScale = bersaglioAgganciato ? scalaAttiva : scalaRiposo;
-
         mirinoUI.color = Color.Lerp(mirinoUI.color, targetColor, Time.deltaTime * velocitaAnimazione);
-        
         Vector3 nuovaScala = Vector3.Lerp(mirinoUI.transform.localScale, Vector3.one * targetScale, Time.deltaTime * velocitaAnimazione);
         mirinoUI.transform.localScale = nuovaScala;
     }
@@ -182,13 +177,10 @@ public class InterazioneGiocatore : MonoBehaviour
     void MostraWidget(RaycastHit hit, string testo)
     {
         if (widgetInterazione == null) return;
-
         widgetInterazione.SetActive(true);
         if (testoWidget != null) testoWidget.text = testo;
-
         Vector3 direzione = (cameraGiocatore.position - hit.point).normalized;
         widgetInterazione.transform.position = hit.point + offsetGrafico + (direzione * 0.2f);
-        
         widgetInterazione.transform.LookAt(cameraGiocatore);
         widgetInterazione.transform.Rotate(0, 180, 0);
     }
@@ -201,18 +193,21 @@ public class InterazioneGiocatore : MonoBehaviour
         
         if (Physics.Raycast(raggio, out hit, distanzaInterazione, layerDaColpire))
         {
+            // CONTROLLO VALIGIA O OGGETTI
+            SelettoreOggetti selettore = hit.collider.GetComponent<SelettoreOggetti>();
             OggettoRaccolta obj = hit.collider.GetComponent<OggettoRaccolta>();
-            if (obj != null) 
+
+            if (selettore == null && obj != null) 
+                selettore = obj.GetComponentInParent<SelettoreOggetti>();
+
+            if (selettore != null && selettore.PuoiInteragire())
+            {
+                selettore.EntraInSelezione();
+                return;
+            }
+            else if (obj != null) 
             { 
-                SelettoreOggetti selettore = obj.GetComponentInParent<SelettoreOggetti>();
-                if (selettore != null && selettore.PuoiInteragire())
-                {
-                    selettore.EntraInSelezione();
-                }
-                else
-                {
-                    obj.EseguiRaccolta(); 
-                }
+                obj.EseguiRaccolta(); 
                 return; 
             }
 
