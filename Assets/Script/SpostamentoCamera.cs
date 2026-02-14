@@ -94,17 +94,26 @@ public class SpostamentoCamera : MonoBehaviour
         {
             string nomeLente = inventario.oggettoInMano;
             
-            // Salviamo la lente scelta (basta farlo una volta per il GameManager)
             GameManager.instance.lenteSceltaFinale = nomeLente;
 
-            // Mostra la lente SOLO su questa telecamera
-            MostraModelloLente(nomeLente);
+            // 1. Mostra la lente e salva il modello in una variabile
+            GameObject lenteDaAnimare = MostraModelloLente(nomeLente);
 
-            if (suonoMontaggioLente != null) audioSource.PlayOneShot(suonoMontaggioLente);
+            // --- 2. IL COLLEGAMENTO CON LA CINEMATICA ---
+            MontaggioLenteCinematica cinematica = GetComponent<MontaggioLenteCinematica>();
+            if (cinematica != null && lenteDaAnimare != null)
+            {
+                // Avvia la magia!
+                cinematica.AvviaCinematicaMontaggio(lenteDaAnimare);
+            }
+            else
+            {
+                // Fallback: se manca lo script della cinematica, fa come prima
+                if (suonoMontaggioLente != null) audioSource.PlayOneShot(suonoMontaggioLente);
+            }
+            // ---------------------------------------------
 
-            // Segna QUESTA camera come montata
             lenteMontata = true;
-            
             Debug.Log($"<color=yellow>Lente montata su {gameObject.name}. Ora controlla lo schermo!</color>");
         }
         else
@@ -139,10 +148,7 @@ public class SpostamentoCamera : MonoBehaviour
         BloccaGiocatore(false);
         if (mioCollider != null) mioCollider.enabled = true;
 
-        // Segna QUESTA camera come controllata
         schermoControllato = true;
-
-        // --- CONTROLLO GLOBALE: Abbiamo finito tutte le telecamere? ---
         VerificaCompletamentoFotografia();
     }
 
@@ -162,13 +168,10 @@ public class SpostamentoCamera : MonoBehaviour
 
         if (tutteFatte)
         {
-            // Svuota la mano del giocatore SOLO quando l'ultima camera è stata controllata
             InventarioGiocatore inv = FindFirstObjectByType<InventarioGiocatore>();
             if (inv != null) inv.RimuoviOggetto();
 
-            // Completa la task!
             if (GameManager.instance != null) GameManager.instance.CompletaTask(GameManager.Reparto.Fotografia);
-            
             Debug.Log("<color=green>Tutte le camere sono pronte! Task Fotografia COMPLETATA!</color>");
         }
         else
@@ -177,35 +180,38 @@ public class SpostamentoCamera : MonoBehaviour
         }
     }
 
-public void MostraModelloLente(string nomeLente)
+    // HO CAMBIATO QUI: Ora restituisce un GameObject invece di "void"
+    public GameObject MostraModelloLente(string nomeLente)
     {
         NascondiTutteLeLenti();
         float nuovoFov = 60f; 
+        GameObject lenteAttivata = null; // Memorizza quale modello stiamo attivando
 
         if (GameManager.instance != null)
         {
-            // ---> AGGIUNGI QUESTA RIGA: Accende il volume (che colpirà solo i mirini!) <---
             GameManager.instance.ApplicaEffettoLente(nomeLente);
 
             if (nomeLente.Contains("Grandangolo")) 
             {
-                if (modelloGrandangolo) modelloGrandangolo.SetActive(true);
+                if (modelloGrandangolo) { modelloGrandangolo.SetActive(true); lenteAttivata = modelloGrandangolo; }
                 nuovoFov = GameManager.instance.fovGrandangolo; 
             }
             else if (nomeLente.Contains("Cinematografica")) 
             {
-                if (modelloCinematografica) modelloCinematografica.SetActive(true);
+                if (modelloCinematografica) { modelloCinematografica.SetActive(true); lenteAttivata = modelloCinematografica; }
                 nuovoFov = GameManager.instance.fovCinematic;
             }
             else 
             {
-                if (modelloStandard) modelloStandard.SetActive(true);
+                if (modelloStandard) { modelloStandard.SetActive(true); lenteAttivata = modelloStandard; }
                 nuovoFov = GameManager.instance.fovStandard;
             }
         }
 
         if (cameraDallAlto != null) cameraDallAlto.fieldOfView = nuovoFov;
         if (cameraMirino != null) cameraMirino.fieldOfView = nuovoFov;
+
+        return lenteAttivata; // Invia la lente allo script della cinematica!
     }
 
     public void ResettaVisualeLenti()
@@ -263,13 +269,13 @@ public void MostraModelloLente(string nomeLente)
 
             if (faseFotografia)
             {
-                if (!lenteMontata && hoLenteInMano) evidenziatore.Accendi(); // Da montare
-                else if (lenteMontata && !schermoControllato) evidenziatore.Accendi(); // Da controllare
-                else evidenziatore.Spegni(); // Finita
+                if (!lenteMontata && hoLenteInMano) evidenziatore.Accendi(); 
+                else if (lenteMontata && !schermoControllato) evidenziatore.Accendi(); 
+                else evidenziatore.Spegni(); 
             }
             else if (faseRevisione)
             {
-                evidenziatore.Accendi(); // Si illumina in Regia
+                evidenziatore.Accendi(); 
             }
             else
             {
