@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro; 
+using TMPro;
 using System.Collections;
 
 public class SelettoreOggetti : MonoBehaviour
@@ -8,7 +8,7 @@ public class SelettoreOggetti : MonoBehaviour
     [Header("Setup Visuale")]
     public Camera cameraDallAlto;
     public Camera cameraGiocatore;
-    public Transform puntoIspezione; 
+    public Transform puntoIspezione;
 
     [Header("Riferimenti Player")]
     public GameObject giocatore;
@@ -18,14 +18,14 @@ public class SelettoreOggetti : MonoBehaviour
 
     [Header("Impostazioni Task")]
     public GameManager.Reparto taskRichiesta;
-    
+
     [Header("Oggetti Selezionabili (I Pivot)")]
     public OggettoRaccolta[] oggetti;
 
     [Header("Impostazioni Ispezione 3D")]
-    public float distanzaSfondo = 3.0f;    
-    public float sensibilitaMouse = 8f;    
-    public float velocitaAnimazione = 12f; 
+    public float distanzaSfondo = 3.0f;
+    public float sensibilitaMouse = 8f;
+    public float velocitaAnimazione = 12f;
     [Range(0f, 1f)] public float opacitaSfondo = 0.85f;
 
     [Header("UI Scheda Tecnica")]
@@ -33,12 +33,23 @@ public class SelettoreOggetti : MonoBehaviour
     public TextMeshProUGUI testoTitolo;
     public TextMeshProUGUI testoDescrizione;
 
-    // --- NUOVE VARIABILI PER LA MACCHINA DA SCRIVERE ---
+    // --- NUOVI RIFERIMENTI PER LE BARRE RGB ---
+    [Header("UI - Animazione Barre RGB")]
+    public Image barraRossa;
+    public Image barraVerde;
+    public Image barraBlu;
+    [Tooltip("Velocità dell'oscillazione su e giù")]
+    public float velocitaAnimazioneRGB = 3f;
+    [Range(0f, 1f)] public float altezzaMinimaRGB = 0.1f;
+    [Range(0f, 1f)] public float altezzaMassimaRGB = 0.9f;
+    private Coroutine coroutineAnimazioneRGB;
+    // ------------------------------------------
+
     [Header("Effetto Macchina Da Scrivere")]
-    public float velocitaScrittura = 0.03f; // Tempo tra una lettera e l'altra
-    public AudioClip suonoBattitura;        // Il suono del singolo tasto
-    private AudioSource audioScrittura;     // Chi riproduce il suono
-    private Coroutine coroutineScrittura;   // Riferimento all'animazione in corso
+    public float velocitaScrittura = 0.03f;
+    public AudioClip suonoBattitura;
+    private AudioSource audioScrittura;
+    private Coroutine coroutineScrittura;
 
     private bool inSelezione = false;
     private int indiceAttuale = 0;
@@ -54,14 +65,14 @@ public class SelettoreOggetti : MonoBehaviour
 
     void Start()
     {
-        if (cameraDallAlto != null) 
+        if (cameraDallAlto != null)
         {
             cameraDallAlto.gameObject.SetActive(false);
             AudioListener al = cameraDallAlto.GetComponent<AudioListener>();
             if (al != null) al.enabled = false;
         }
         if (cameraGiocatore == null) cameraGiocatore = Camera.main;
-        
+
         if (giocatore != null)
         {
             scriptInterazione = giocatore.GetComponent<InterazioneGiocatore>();
@@ -70,23 +81,27 @@ public class SelettoreOggetti : MonoBehaviour
 
         if (pannelloSchedaUI != null) pannelloSchedaUI.SetActive(false);
 
-        // Prepariamo il componente audio per la battitura dei tasti
         audioScrittura = gameObject.AddComponent<AudioSource>();
         audioScrittura.playOnAwake = false;
-        audioScrittura.spatialBlend = 0f; // Audio 2D così si sente chiaro nell'UI
+        audioScrittura.spatialBlend = 0f;
 
         posOriginali = new Vector3[oggetti.Length];
         rotOriginali = new Quaternion[oggetti.Length];
-        
-        for(int i = 0; i < oggetti.Length; i++)
+
+        for (int i = 0; i < oggetti.Length; i++)
         {
-            if(oggetti[i] != null)
+            if (oggetti[i] != null)
             {
                 posOriginali[i] = oggetti[i].transform.localPosition;
                 rotOriginali[i] = oggetti[i].transform.localRotation;
             }
         }
         CreaSfondoScuro();
+
+        // Assicuro che le barre siano settate correttamente per l'animazione 'Filled'
+        if (barraRossa) { barraRossa.type = Image.Type.Filled; barraRossa.fillMethod = Image.FillMethod.Vertical; }
+        if (barraVerde) { barraVerde.type = Image.Type.Filled; barraVerde.fillMethod = Image.FillMethod.Vertical; }
+        if (barraBlu) { barraBlu.type = Image.Type.Filled; barraBlu.fillMethod = Image.FillMethod.Vertical; }
     }
 
     void CreaSfondoScuro()
@@ -96,13 +111,13 @@ public class SelettoreOggetti : MonoBehaviour
         sfondoCanvas = canvasObj.AddComponent<Canvas>();
         sfondoCanvas.renderMode = RenderMode.ScreenSpaceCamera;
         sfondoCanvas.worldCamera = cameraDallAlto;
-        sfondoCanvas.planeDistance = distanzaSfondo; 
-        
+        sfondoCanvas.planeDistance = distanzaSfondo;
+
         GameObject panelObj = new GameObject("PannelloNero");
         panelObj.transform.SetParent(canvasObj.transform, false);
         immagineSfondo = panelObj.AddComponent<Image>();
-        immagineSfondo.color = new Color(0.1f, 0.1f, 0.1f, 0f); 
-        
+        immagineSfondo.color = new Color(0.1f, 0.1f, 0.1f, 0f);
+
         RectTransform rt = immagineSfondo.rectTransform;
         rt.anchorMin = Vector2.zero; rt.anchorMax = Vector2.one; rt.sizeDelta = Vector2.zero;
         canvasObj.SetActive(false);
@@ -113,7 +128,7 @@ public class SelettoreOggetti : MonoBehaviour
     public void EntraInSelezione()
     {
         if (inSelezione) return;
-        inSelezione = true; 
+        inSelezione = true;
         possoUscire = false;
 
         indiceAttuale = 0;
@@ -122,7 +137,7 @@ public class SelettoreOggetti : MonoBehaviour
         BloccaGiocatore(true);
         if (cameraGiocatore != null) cameraGiocatore.enabled = false;
         if (cameraDallAlto != null) cameraDallAlto.gameObject.SetActive(true);
-        if (scriptInterazione != null) scriptInterazione.enabled = false; 
+        if (scriptInterazione != null) scriptInterazione.enabled = false;
 
         rotazioneOggettoCorrente = Vector2.zero;
         sfondoCanvas.gameObject.SetActive(true);
@@ -130,6 +145,11 @@ public class SelettoreOggetti : MonoBehaviour
 
         if (pannelloSchedaUI != null) pannelloSchedaUI.SetActive(true);
         AggiornaSchedaTecnica();
+
+        // --- AVVIA L'ANIMAZIONE RGB ---
+        if (coroutineAnimazioneRGB != null) StopCoroutine(coroutineAnimazioneRGB);
+        coroutineAnimazioneRGB = StartCoroutine(AnimaBarreRGB());
+        // ------------------------------
 
         StartCoroutine(TimerSblocco());
     }
@@ -147,10 +167,10 @@ public class SelettoreOggetti : MonoBehaviour
 
         float mouseX = Input.GetAxis("Mouse X") * sensibilitaMouse;
         float mouseY = Input.GetAxis("Mouse Y") * sensibilitaMouse;
-        rotazioneOggettoCorrente.x += mouseY; 
-        rotazioneOggettoCorrente.y -= mouseX; 
+        rotazioneOggettoCorrente.x += mouseY;
+        rotazioneOggettoCorrente.y -= mouseX;
 
-        if (Input.GetKeyDown(KeyCode.E) && possoUscire) 
+        if (Input.GetKeyDown(KeyCode.E) && possoUscire)
         {
             ScegliOggetto();
         }
@@ -174,7 +194,7 @@ public class SelettoreOggetti : MonoBehaviour
             {
                 Vector3 targetPos = puntoIspezione != null ? puntoIspezione.position : cameraDallAlto.transform.position + (cameraDallAlto.transform.forward * 0.5f);
                 oggetti[i].transform.position = Vector3.Lerp(oggetti[i].transform.position, targetPos, Time.deltaTime * velocitaAnimazione);
-                
+
                 Quaternion rotazioneSchermo = cameraDallAlto.transform.rotation;
                 Quaternion offsetMouse = Quaternion.Euler(rotazioneOggettoCorrente.x, rotazioneOggettoCorrente.y, 0);
                 oggetti[i].transform.rotation = Quaternion.Lerp(oggetti[i].transform.rotation, rotazioneSchermo * offsetMouse, Time.deltaTime * velocitaAnimazione);
@@ -190,33 +210,36 @@ public class SelettoreOggetti : MonoBehaviour
     void CambiaSelezione(int dir)
     {
         int tentativi = 0;
-        do {
+        do
+        {
             indiceAttuale += dir;
             if (indiceAttuale >= oggetti.Length) indiceAttuale = 0;
             else if (indiceAttuale < 0) indiceAttuale = oggetti.Length - 1;
             tentativi++;
         } while (!oggetti[indiceAttuale].gameObject.activeInHierarchy && tentativi < oggetti.Length);
-        
+
         rotazioneOggettoCorrente = Vector2.zero;
-        
+
         AggiornaSchedaTecnica();
     }
 
     void ScegliOggetto()
     {
-        inSelezione = false; 
-        possoUscire = false; 
-        targetAlphaSfondo = 0f; 
+        inSelezione = false;
+        possoUscire = false;
+        targetAlphaSfondo = 0f;
 
         if (pannelloSchedaUI != null) pannelloSchedaUI.SetActive(false);
-        
-        // Fermiamo la scrittura se stiamo uscendo dall'ispezione
+
         if (coroutineScrittura != null) StopCoroutine(coroutineScrittura);
+        // --- FERMA L'ANIMAZIONE RGB ---
+        if (coroutineAnimazioneRGB != null) StopCoroutine(coroutineAnimazioneRGB);
+        // ------------------------------
 
         if (cameraDallAlto != null) cameraDallAlto.gameObject.SetActive(false);
         if (cameraGiocatore != null) cameraGiocatore.enabled = true;
         if (scriptInterazione != null) scriptInterazione.enabled = true;
-        
+
         BloccaGiocatore(false);
 
         if (oggetti[indiceAttuale].gameObject.activeInHierarchy)
@@ -227,52 +250,94 @@ public class SelettoreOggetti : MonoBehaviour
         }
     }
 
-    // --- LOGICA MODIFICATA: Avvia la Coroutine invece di scrivere di botto ---
     void AggiornaSchedaTecnica()
     {
         if (pannelloSchedaUI == null) return;
 
         if (oggetti.Length > 0 && oggetti[indiceAttuale] != null)
         {
-            // Se c'era già una scrittura in corso (es. l'utente ha premuto A/D velocemente), fermala
             if (coroutineScrittura != null) StopCoroutine(coroutineScrittura);
-            
-            // Fai partire la nuova animazione
+
             string titolo = oggetti[indiceAttuale].nomeTecnico;
             string descrizione = oggetti[indiceAttuale].descrizioneTecnica;
             coroutineScrittura = StartCoroutine(EffettoTestoAnimato(titolo, descrizione));
         }
     }
 
-    // --- COROUTINE DELLA MACCHINA DA SCRIVERE ---
+    // --- NUOVA COROUTINE PER ANIMARE LE BARRE RGB ---
+    IEnumerator AnimaBarreRGB()
+    {
+        float timer = 0f;
+        // Continua ad animare finché siamo nella schermata di selezione
+        while (inSelezione)
+        {
+            timer += Time.deltaTime * velocitaAnimazioneRGB;
+
+            // Usiamo la funzione Seno (Mathf.Sin) per creare un movimento oscillatorio fluido.
+            // Aggiungiamo un offset diverso (0, 1.5f, 3f) a ciascuna barra per farle muovere in modo indipendente e non sincronizzato.
+            // Mathf.Lerp interpola tra l'altezza minima e massima basandosi sul valore dell'onda.
+
+            if (barraRossa)
+                barraRossa.fillAmount = Mathf.Lerp(altezzaMinimaRGB, altezzaMassimaRGB, (Mathf.Sin(timer) + 1f) / 2f);
+
+            if (barraVerde)
+                barraVerde.fillAmount = Mathf.Lerp(altezzaMinimaRGB, altezzaMassimaRGB, (Mathf.Sin(timer + 1.5f) + 1f) / 2f);
+
+            if (barraBlu)
+                barraBlu.fillAmount = Mathf.Lerp(altezzaMinimaRGB, altezzaMassimaRGB, (Mathf.Sin(timer + 3f) + 1f) / 2f);
+
+            yield return null; // Aspetta il prossimo frame
+        }
+    }
+    // ------------------------------------------------
+
     IEnumerator EffettoTestoAnimato(string titoloCompleto, string descCompleta)
     {
-        // Svuota i testi all'inizio
-        if (testoTitolo != null) testoTitolo.text = "";
-        if (testoDescrizione != null) testoDescrizione.text = "";
-
-        // 1. Scrive il Titolo
         if (testoTitolo != null)
         {
-            foreach (char lettera in titoloCompleto)
+            testoTitolo.text = titoloCompleto;
+            testoTitolo.maxVisibleCharacters = 0;
+        }
+
+        if (testoDescrizione != null)
+        {
+            testoDescrizione.text = descCompleta;
+            testoDescrizione.maxVisibleCharacters = 0;
+        }
+
+        if (testoTitolo != null)
+        {
+            for (int i = 0; i < titoloCompleto.Length; i++)
             {
-                testoTitolo.text += lettera;
+                testoTitolo.maxVisibleCharacters = i + 1;
+                char lettera = titoloCompleto[i];
                 SuonaTasto(lettera);
                 yield return new WaitForSeconds(velocitaScrittura);
             }
         }
 
-        // Piccola pausa scenica tra titolo e descrizione
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(0.15f);
 
-        // 2. Scrive la Descrizione (leggermente più veloce del titolo)
         if (testoDescrizione != null)
         {
-            foreach (char lettera in descCompleta)
+            for (int i = 0; i < descCompleta.Length; i++)
             {
-                testoDescrizione.text += lettera;
+                testoDescrizione.maxVisibleCharacters = i + 1;
+                char lettera = descCompleta[i];
                 SuonaTasto(lettera);
-                yield return new WaitForSeconds(velocitaScrittura * 0.6f); 
+
+                if (lettera == '.' || lettera == ':' || lettera == '\n')
+                {
+                    yield return new WaitForSeconds(velocitaScrittura * 6f);
+                }
+                else if (lettera == ',' || lettera == ';')
+                {
+                    yield return new WaitForSeconds(velocitaScrittura * 3f);
+                }
+                else
+                {
+                    yield return new WaitForSeconds(velocitaScrittura * 0.5f);
+                }
             }
         }
     }
@@ -281,12 +346,10 @@ public class SelettoreOggetti : MonoBehaviour
     {
         if (suonoBattitura != null && audioScrittura != null)
         {
-            // Evita di fare rumore sugli spazi vuoti, rende l'audio più "organico"
-            if (lettera != ' ')
+            if (lettera != ' ' && lettera != '.' && lettera != ',')
             {
-                // Varia leggermente il "tono" (pitch) per non farlo sembrare un mitra robotico
-                audioScrittura.pitch = Random.Range(0.9f, 1.1f);
-                audioScrittura.PlayOneShot(suonoBattitura, 0.4f); // 0.4f è il volume
+                audioScrittura.pitch = Random.Range(0.95f, 1.05f);
+                audioScrittura.PlayOneShot(suonoBattitura, 0.2f);
             }
         }
     }
@@ -305,7 +368,7 @@ public class SelettoreOggetti : MonoBehaviour
         }
 
         if (controllerGiocatore != null) controllerGiocatore.enabled = !blocca;
-        
+
         if (blocca) { Cursor.lockState = CursorLockMode.Locked; Cursor.visible = false; }
         else { Cursor.lockState = CursorLockMode.Locked; Cursor.visible = false; }
     }
