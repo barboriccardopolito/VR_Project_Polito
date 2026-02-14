@@ -2,15 +2,15 @@ using UnityEngine;
 
 public class SupportoMicrofono : MonoBehaviour
 {
-    [Header("Visuali Microfoni")]
+    [Header("Modelli 3D Figli")]
     public GameObject modelloBoom;
     public GameObject modelloAmbisonic;
 
     [Header("Audio")]
-    public AudioClip suonoPiazzamento; 
+    public AudioClip suonoPiazzamento;
     private AudioSource audioSource;
 
-    private bool giaPiazzato = false;
+    [HideInInspector] public bool microfonoPiazzato = false;
 
     void Start()
     {
@@ -21,65 +21,91 @@ public class SupportoMicrofono : MonoBehaviour
         NascondiTutto();
     }
 
-    public void PiazzaMicrofono()
+    public void PiazzaMicrofono() // Chiamata quando premi E sullo stativo
     {
-        InventarioGiocatore inventario = FindFirstObjectByType<InventarioGiocatore>(); // Riferimento inventario
-        string micInMano = GameManager.instance.micScelto;
+        GameManager gm = GameManager.instance;
+        InventarioGiocatore inventario = FindFirstObjectByType<InventarioGiocatore>(); 
 
-        if (string.IsNullOrEmpty(micInMano))
+        if (gm == null || inventario == null) return;
+
+        if (gm.taskAttuale != GameManager.Reparto.Fonico) return;
+
+        if (microfonoPiazzato)
         {
-            Debug.Log("Non hai selezionato nessun microfono!");
+            Debug.Log("Questo supporto ha già un microfono.");
             return;
         }
 
-        GameManager.instance.ResettaVisualeSupportiMicrofoni();
-
-        bool successo = false;
-
-        if (micInMano.Contains("Boom"))
+        // --- CONTROLLO CORRETTO SULL'INVENTARIO ---
+        if (!inventario.haUnOggetto || inventario.categoriaInMano != OggettoRaccolta.TipoOggetto.Microfono)
         {
-            if (modelloBoom != null) 
-            { 
-                modelloBoom.SetActive(true); 
-                successo = true; 
-            }
-        }
-        else if (micInMano.Contains("Ambisonic"))
-        {
-            if (modelloAmbisonic != null) 
-            { 
-                modelloAmbisonic.SetActive(true); 
-                successo = true; 
-            }
+            Debug.Log("Non hai un microfono in mano!");
+            return;
         }
 
-        if (successo)
+        string nomeMic = inventario.oggettoInMano;
+        
+        // Salviamo la scelta per quando torneremo dall'NPC
+        gm.micDaInstallare = nomeMic; 
+
+        // Variabili per la Cinematica
+        GameObject micAttivato = null;
+        string titoloOlogramma = "";
+        string descOlogramma = "";
+
+        // RICONOSCIMENTO MICROFONO E TESTI
+        if (IsNameMatch(nomeMic, "Boom")) 
+        { 
+            if (modelloBoom) { modelloBoom.SetActive(true); micAttivato = modelloBoom; }
+            titoloOlogramma = "Microfono Boom (Shotgun)";
+            descOlogramma = "Pattern polare iper-cardioide. Altissima direzionalità per isolare i dialoghi dal rumore ambientale del set.";
+        }
+        else if (IsNameMatch(nomeMic, "Ambisonic")) 
+        { 
+            if (modelloAmbisonic) { modelloAmbisonic.SetActive(true); micAttivato = modelloAmbisonic; }
+            titoloOlogramma = "Microfono VR Ambisonic";
+            descOlogramma = "Capsula tetraedrica. Cattura il campo sonoro a 360 gradi (A-Format) per un audio spaziale totalmente immersivo.";
+        }
+
+        if (micAttivato != null)
         {
-            giaPiazzato = true;
-            GameManager.instance.supportoPiazzato = true;
+            microfonoPiazzato = true;
+            gm.supportoPiazzato = true; // Diciamo al GM che il pezzo fisico è sul set
+            
+            // Svuotiamo la mano del giocatore
+            inventario.RimuoviOggetto();
 
-            if (suonoPiazzamento != null) audioSource.PlayOneShot(suonoPiazzamento);
-
-            // --- NUOVA LOGICA: PULISCI MANO ---
-            if (inventario != null)
+            // --- LANCIO DELLA CINEMATICA (Se presente) ---
+            MontaggioMicrofonoCinematica cinematica = GetComponent<MontaggioMicrofonoCinematica>();
+            if (cinematica != null)
             {
-                inventario.RimuoviOggetto(); // Nasconde l'asta/treppiede dalla mano
+                cinematica.AvviaCinematicaMontaggio(micAttivato, titoloOlogramma, descOlogramma);
+            }
+            else
+            {
+                // Fallback sonoro se non hai ancora messo lo script della cinematica
+                if (suonoPiazzamento != null) audioSource.PlayOneShot(suonoPiazzamento);
             }
 
-            Debug.Log($"<color=green>Piazzato {micInMano} con successo!</color>");
-            GameManager.instance.CompletaTask(GameManager.Reparto.Fonico); // Chiude la task
+            Debug.Log($"<color=green>Microfono piazzato! Torna dal Fonico per il Soundcheck.</color>");
+            // NON COMPLETIAMO LA TASK QUI! Ci penserà l'NPC quando andremo a parlargli.
         }
     }
 
     public void ResettaSupporto()
     {
+        microfonoPiazzato = false;
         NascondiTutto();
-        giaPiazzato = false;
     }
 
     void NascondiTutto()
     {
         if (modelloBoom) modelloBoom.SetActive(false);
         if (modelloAmbisonic) modelloAmbisonic.SetActive(false);
+    }
+
+    private bool IsNameMatch(string input, string target)
+    {
+        return input.ToLower().Contains(target.ToLower());
     }
 }
