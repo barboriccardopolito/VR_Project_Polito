@@ -10,6 +10,14 @@ public class OggettoRaccolta : MonoBehaviour
     [Tooltip("Scrivi qui il nome esatto che vuoi vedere a schermo (es. 'Grandangolo', 'Fresnel')")]
     public string nomeOggetto; 
 
+    // --- NOVITÀ: DATI PER LA SCHEDA TECNICA ---
+    [Header("Scheda Tecnica Ispezione")]
+    public string nomeTecnico = "Nome Oggetto";
+    
+    [TextArea(3, 6)] // Allarga il box di testo nell'Inspector
+    public string descrizioneTecnica = "Inserisci qui le specifiche tecniche...";
+    // -----------------------------------------
+
     private Evidenziatore evidenziatore;
 
     void Start()
@@ -49,7 +57,6 @@ public class OggettoRaccolta : MonoBehaviour
         }
     }
 
-    // --- NUOVA FUNZIONE ---
     void AvviaFeedbackRemotoNPC()
     {
         // Trova tutti gli NPC nella scena

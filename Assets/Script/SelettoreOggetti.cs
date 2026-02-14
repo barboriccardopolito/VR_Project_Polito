@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro; 
 using System.Collections;
 
 public class SelettoreOggetti : MonoBehaviour
@@ -26,6 +27,18 @@ public class SelettoreOggetti : MonoBehaviour
     public float sensibilitaMouse = 8f;    
     public float velocitaAnimazione = 12f; 
     [Range(0f, 1f)] public float opacitaSfondo = 0.85f;
+
+    [Header("UI Scheda Tecnica")]
+    public GameObject pannelloSchedaUI;
+    public TextMeshProUGUI testoTitolo;
+    public TextMeshProUGUI testoDescrizione;
+
+    // --- NUOVE VARIABILI PER LA MACCHINA DA SCRIVERE ---
+    [Header("Effetto Macchina Da Scrivere")]
+    public float velocitaScrittura = 0.03f; // Tempo tra una lettera e l'altra
+    public AudioClip suonoBattitura;        // Il suono del singolo tasto
+    private AudioSource audioScrittura;     // Chi riproduce il suono
+    private Coroutine coroutineScrittura;   // Riferimento all'animazione in corso
 
     private bool inSelezione = false;
     private int indiceAttuale = 0;
@@ -54,6 +67,13 @@ public class SelettoreOggetti : MonoBehaviour
             scriptInterazione = giocatore.GetComponent<InterazioneGiocatore>();
             controllerGiocatore = giocatore.GetComponent<CharacterController>();
         }
+
+        if (pannelloSchedaUI != null) pannelloSchedaUI.SetActive(false);
+
+        // Prepariamo il componente audio per la battitura dei tasti
+        audioScrittura = gameObject.AddComponent<AudioSource>();
+        audioScrittura.playOnAwake = false;
+        audioScrittura.spatialBlend = 0f; // Audio 2D così si sente chiaro nell'UI
 
         posOriginali = new Vector3[oggetti.Length];
         rotOriginali = new Quaternion[oggetti.Length];
@@ -108,6 +128,9 @@ public class SelettoreOggetti : MonoBehaviour
         sfondoCanvas.gameObject.SetActive(true);
         targetAlphaSfondo = opacitaSfondo;
 
+        if (pannelloSchedaUI != null) pannelloSchedaUI.SetActive(true);
+        AggiornaSchedaTecnica();
+
         StartCoroutine(TimerSblocco());
     }
 
@@ -127,7 +150,6 @@ public class SelettoreOggetti : MonoBehaviour
         rotazioneOggettoCorrente.x += mouseY; 
         rotazioneOggettoCorrente.y -= mouseX; 
 
-        // RITORNO AL PLAYER: Premendo E raccoglie l'oggetto e chiude tutto
         if (Input.GetKeyDown(KeyCode.E) && possoUscire) 
         {
             ScegliOggetto();
@@ -174,7 +196,10 @@ public class SelettoreOggetti : MonoBehaviour
             else if (indiceAttuale < 0) indiceAttuale = oggetti.Length - 1;
             tentativi++;
         } while (!oggetti[indiceAttuale].gameObject.activeInHierarchy && tentativi < oggetti.Length);
+        
         rotazioneOggettoCorrente = Vector2.zero;
+        
+        AggiornaSchedaTecnica();
     }
 
     void ScegliOggetto()
@@ -183,11 +208,15 @@ public class SelettoreOggetti : MonoBehaviour
         possoUscire = false; 
         targetAlphaSfondo = 0f; 
 
+        if (pannelloSchedaUI != null) pannelloSchedaUI.SetActive(false);
+        
+        // Fermiamo la scrittura se stiamo uscendo dall'ispezione
+        if (coroutineScrittura != null) StopCoroutine(coroutineScrittura);
+
         if (cameraDallAlto != null) cameraDallAlto.gameObject.SetActive(false);
         if (cameraGiocatore != null) cameraGiocatore.enabled = true;
         if (scriptInterazione != null) scriptInterazione.enabled = true;
         
-        // Ritorno fluido dei parametri
         BloccaGiocatore(false);
 
         if (oggetti[indiceAttuale].gameObject.activeInHierarchy)
@@ -198,11 +227,74 @@ public class SelettoreOggetti : MonoBehaviour
         }
     }
 
+    // --- LOGICA MODIFICATA: Avvia la Coroutine invece di scrivere di botto ---
+    void AggiornaSchedaTecnica()
+    {
+        if (pannelloSchedaUI == null) return;
+
+        if (oggetti.Length > 0 && oggetti[indiceAttuale] != null)
+        {
+            // Se c'era già una scrittura in corso (es. l'utente ha premuto A/D velocemente), fermala
+            if (coroutineScrittura != null) StopCoroutine(coroutineScrittura);
+            
+            // Fai partire la nuova animazione
+            string titolo = oggetti[indiceAttuale].nomeTecnico;
+            string descrizione = oggetti[indiceAttuale].descrizioneTecnica;
+            coroutineScrittura = StartCoroutine(EffettoTestoAnimato(titolo, descrizione));
+        }
+    }
+
+    // --- COROUTINE DELLA MACCHINA DA SCRIVERE ---
+    IEnumerator EffettoTestoAnimato(string titoloCompleto, string descCompleta)
+    {
+        // Svuota i testi all'inizio
+        if (testoTitolo != null) testoTitolo.text = "";
+        if (testoDescrizione != null) testoDescrizione.text = "";
+
+        // 1. Scrive il Titolo
+        if (testoTitolo != null)
+        {
+            foreach (char lettera in titoloCompleto)
+            {
+                testoTitolo.text += lettera;
+                SuonaTasto(lettera);
+                yield return new WaitForSeconds(velocitaScrittura);
+            }
+        }
+
+        // Piccola pausa scenica tra titolo e descrizione
+        yield return new WaitForSeconds(0.2f);
+
+        // 2. Scrive la Descrizione (leggermente più veloce del titolo)
+        if (testoDescrizione != null)
+        {
+            foreach (char lettera in descCompleta)
+            {
+                testoDescrizione.text += lettera;
+                SuonaTasto(lettera);
+                yield return new WaitForSeconds(velocitaScrittura * 0.6f); 
+            }
+        }
+    }
+
+    void SuonaTasto(char lettera)
+    {
+        if (suonoBattitura != null && audioScrittura != null)
+        {
+            // Evita di fare rumore sugli spazi vuoti, rende l'audio più "organico"
+            if (lettera != ' ')
+            {
+                // Varia leggermente il "tono" (pitch) per non farlo sembrare un mitra robotico
+                audioScrittura.pitch = Random.Range(0.9f, 1.1f);
+                audioScrittura.PlayOneShot(suonoBattitura, 0.4f); // 0.4f è il volume
+            }
+        }
+    }
+
     void BloccaGiocatore(bool blocca)
     {
         if (giocatore == null) return;
 
-        // Disabilita gli script di movimento PRIMA del controller per evitare l'errore in console
         if (nomiScriptDaDisabilitare != null)
         {
             foreach (string nomeScript in nomiScriptDaDisabilitare)
