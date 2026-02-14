@@ -5518,7 +5518,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5766871148682481652, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 5.538
+      value: 8.3
       objectReference: {fileID: 0}
     - target: {fileID: 5766871148682481652, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
       propertyPath: m_LocalRotation.w
@@ -7494,11 +7494,11 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 536053053}
-  - {fileID: 722489945}
   - {fileID: 1784268744}
+  - {fileID: 766253594}
+  - {fileID: 722489945}
   - {fileID: 636062588}
   - {fileID: 473002737}
-  - {fileID: 766253594}
   - {fileID: 3462232357534464263}
   - {fileID: 619271141}
   - {fileID: 420916827}
@@ -11828,6 +11828,7 @@ MonoBehaviour:
   cameraGiocatore: {fileID: 1823688466}
   puntoIspezione: {fileID: 768017233}
   giocatore: {fileID: 858305082}
+  hudGiocatore: {fileID: 1182327102}
   nomiScriptDaDisabilitare:
   - PlayerMovement
   - MouseLook
@@ -11843,12 +11844,12 @@ MonoBehaviour:
   pannelloSchedaUI: {fileID: 1146129966}
   testoTitolo: {fileID: 1026464763}
   testoDescrizione: {fileID: 925804053}
-  barraRossa: {fileID: 40811104}
-  barraVerde: {fileID: 412872199}
-  barraBlu: {fileID: 154804529}
-  velocitaAnimazioneRGB: 1.5
-  altezzaMinimaRGB: 0.1
-  altezzaMassimaRGB: 0.9
+  barra1: {fileID: 40811104}
+  barra2: {fileID: 412872199}
+  barra3: {fileID: 154804529}
+  velocitaAnimazioneBarre: 3
+  altezzaMinimaBarre: 0.1
+  altezzaMassimaBarre: 0.9
   velocitaScrittura: 0.03
   suonoBattitura: {fileID: 0}
 --- !u!65 &536053056
@@ -17468,6 +17469,7 @@ MonoBehaviour:
   cameraGiocatore: {fileID: 1823688466}
   puntoIspezione: {fileID: 473002737}
   giocatore: {fileID: 858305082}
+  hudGiocatore: {fileID: 1182327102}
   nomiScriptDaDisabilitare:
   - PlayerMovement
   - MouseLook
@@ -17483,12 +17485,12 @@ MonoBehaviour:
   pannelloSchedaUI: {fileID: 1148022337}
   testoTitolo: {fileID: 1963151595}
   testoDescrizione: {fileID: 1608026109}
-  barraRossa: {fileID: 650755394}
-  barraVerde: {fileID: 1386155462}
-  barraBlu: {fileID: 1035827533}
-  velocitaAnimazioneRGB: 1.5
-  altezzaMinimaRGB: 0.1
-  altezzaMassimaRGB: 0.9
+  barra1: {fileID: 650755394}
+  barra2: {fileID: 1386155462}
+  barra3: {fileID: 1035827533}
+  velocitaAnimazioneBarre: 3
+  altezzaMinimaBarre: 0.1
+  altezzaMassimaBarre: 0.9
   velocitaScrittura: 0.03
   suonoBattitura: {fileID: 0}
 --- !u!65 &766253596
@@ -30019,15 +30021,15 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 7c0b1a53e8c9c4246b360761b0863fae, type: 2}
     - target: {fileID: 5766871148682481652, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 8.004914
+      value: 8.655
       objectReference: {fileID: 0}
     - target: {fileID: 5766871148682481652, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.2500072
+      value: 1.25
       objectReference: {fileID: 0}
     - target: {fileID: 5766871148682481652, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -3.4773054
+      value: -2.501
       objectReference: {fileID: 0}
     - target: {fileID: 5766871148682481652, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
       propertyPath: m_LocalRotation.w
@@ -35201,15 +35203,15 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: ee118b62964709a48a658728e59bbb4d, type: 2}
     - target: {fileID: 5766871148682481652, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 4.178728
+      value: 4.035
       objectReference: {fileID: 0}
     - target: {fileID: 5766871148682481652, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.2500062
+      value: 1.25
       objectReference: {fileID: 0}
     - target: {fileID: 5766871148682481652, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -4.7124534
+      value: -4.527
       objectReference: {fileID: 0}
     - target: {fileID: 5766871148682481652, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
       propertyPath: m_LocalRotation.w
@@ -39124,6 +39126,7 @@ MonoBehaviour:
   cameraGiocatore: {fileID: 1823688466}
   puntoIspezione: {fileID: 1726380869}
   giocatore: {fileID: 858305082}
+  hudGiocatore: {fileID: 1182327102}
   nomiScriptDaDisabilitare:
   - PlayerMovement
   - MouseLook
@@ -39139,12 +39142,12 @@ MonoBehaviour:
   pannelloSchedaUI: {fileID: 1500549107}
   testoTitolo: {fileID: 63330343}
   testoDescrizione: {fileID: 326605684}
-  barraRossa: {fileID: 1844020131}
-  barraVerde: {fileID: 770160843}
-  barraBlu: {fileID: 1108098171}
-  velocitaAnimazioneRGB: 1.5
-  altezzaMinimaRGB: 0.1
-  altezzaMassimaRGB: 0.9
+  barra1: {fileID: 1844020131}
+  barra2: {fileID: 770160843}
+  barra3: {fileID: 1108098171}
+  velocitaAnimazioneBarre: 3
+  altezzaMinimaBarre: 0.1
+  altezzaMassimaBarre: 0.9
   velocitaScrittura: 0.03
   suonoBattitura: {fileID: 0}
 --- !u!1001 &1787153359

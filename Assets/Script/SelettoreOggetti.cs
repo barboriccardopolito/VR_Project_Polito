@@ -12,6 +12,7 @@ public class SelettoreOggetti : MonoBehaviour
 
     [Header("Riferimenti Player")]
     public GameObject giocatore;
+    public GameObject hudGiocatore; // L'HUD 2D da spegnere
     public string[] nomiScriptDaDisabilitare;
     private InterazioneGiocatore scriptInterazione;
     private CharacterController controllerGiocatore;
@@ -33,17 +34,14 @@ public class SelettoreOggetti : MonoBehaviour
     public TextMeshProUGUI testoTitolo;
     public TextMeshProUGUI testoDescrizione;
 
-    // --- NUOVI RIFERIMENTI PER LE BARRE RGB ---
-    [Header("UI - Animazione Barre RGB")]
-    public Image barraRossa;
-    public Image barraVerde;
-    public Image barraBlu;
-    [Tooltip("Velocità dell'oscillazione su e giù")]
-    public float velocitaAnimazioneRGB = 3f;
-    [Range(0f, 1f)] public float altezzaMinimaRGB = 0.1f;
-    [Range(0f, 1f)] public float altezzaMassimaRGB = 0.9f;
-    private Coroutine coroutineAnimazioneRGB;
-    // ------------------------------------------
+    [Header("UI - Animazione Barre Contestuali")]
+    public Image barra1; 
+    public Image barra2; 
+    public Image barra3; 
+    public float velocitaAnimazioneBarre = 3f;
+    [Range(0f, 1f)] public float altezzaMinimaBarre = 0.1f;
+    [Range(0f, 1f)] public float altezzaMassimaBarre = 0.9f;
+    private Coroutine coroutineAnimazioneBarre;
 
     [Header("Effetto Macchina Da Scrivere")]
     public float velocitaScrittura = 0.03f;
@@ -98,10 +96,34 @@ public class SelettoreOggetti : MonoBehaviour
         }
         CreaSfondoScuro();
 
-        // Assicuro che le barre siano settate correttamente per l'animazione 'Filled'
-        if (barraRossa) { barraRossa.type = Image.Type.Filled; barraRossa.fillMethod = Image.FillMethod.Vertical; }
-        if (barraVerde) { barraVerde.type = Image.Type.Filled; barraVerde.fillMethod = Image.FillMethod.Vertical; }
-        if (barraBlu) { barraBlu.type = Image.Type.Filled; barraBlu.fillMethod = Image.FillMethod.Vertical; }
+        if (barra1) { barra1.type = Image.Type.Filled; barra1.fillMethod = Image.FillMethod.Vertical; }
+        if (barra2) { barra2.type = Image.Type.Filled; barra2.fillMethod = Image.FillMethod.Vertical; }
+        if (barra3) { barra3.type = Image.Type.Filled; barra3.fillMethod = Image.FillMethod.Vertical; }
+
+        ImpostaColoriBarre();
+    }
+
+    void ImpostaColoriBarre()
+    {
+        float alpha = 0.8f; 
+        if (taskRichiesta == GameManager.Reparto.Fotografia)
+        {
+            if (barra1) barra1.color = new Color(1f, 0.2f, 0.2f, alpha); 
+            if (barra2) barra2.color = new Color(0.2f, 1f, 0.2f, alpha); 
+            if (barra3) barra3.color = new Color(0.2f, 0.5f, 1f, alpha); 
+        }
+        else if (taskRichiesta == GameManager.Reparto.Fonico)
+        {
+            if (barra1) barra1.color = new Color(0.1f, 0.9f, 0.1f, alpha); 
+            if (barra2) barra2.color = new Color(0.9f, 0.9f, 0.1f, alpha); 
+            if (barra3) barra3.color = new Color(0.9f, 0.1f, 0.1f, alpha); 
+        }
+        else if (taskRichiesta == GameManager.Reparto.Luci)
+        {
+            if (barra1) barra1.color = new Color(1f, 0.4f, 0f, alpha);   
+            if (barra2) barra2.color = new Color(1f, 1f, 1f, alpha);     
+            if (barra3) barra3.color = new Color(0.3f, 0.7f, 1f, alpha); 
+        }
     }
 
     void CreaSfondoScuro()
@@ -138,6 +160,9 @@ public class SelettoreOggetti : MonoBehaviour
         if (cameraGiocatore != null) cameraGiocatore.enabled = false;
         if (cameraDallAlto != null) cameraDallAlto.gameObject.SetActive(true);
         if (scriptInterazione != null) scriptInterazione.enabled = false;
+        
+        // Spegne l'HUD 2D
+        if (hudGiocatore != null) hudGiocatore.SetActive(false);
 
         rotazioneOggettoCorrente = Vector2.zero;
         sfondoCanvas.gameObject.SetActive(true);
@@ -146,10 +171,8 @@ public class SelettoreOggetti : MonoBehaviour
         if (pannelloSchedaUI != null) pannelloSchedaUI.SetActive(true);
         AggiornaSchedaTecnica();
 
-        // --- AVVIA L'ANIMAZIONE RGB ---
-        if (coroutineAnimazioneRGB != null) StopCoroutine(coroutineAnimazioneRGB);
-        coroutineAnimazioneRGB = StartCoroutine(AnimaBarreRGB());
-        // ------------------------------
+        if (coroutineAnimazioneBarre != null) StopCoroutine(coroutineAnimazioneBarre);
+        coroutineAnimazioneBarre = StartCoroutine(AnimaBarreContestuali());
 
         StartCoroutine(TimerSblocco());
     }
@@ -219,7 +242,6 @@ public class SelettoreOggetti : MonoBehaviour
         } while (!oggetti[indiceAttuale].gameObject.activeInHierarchy && tentativi < oggetti.Length);
 
         rotazioneOggettoCorrente = Vector2.zero;
-
         AggiornaSchedaTecnica();
     }
 
@@ -232,13 +254,13 @@ public class SelettoreOggetti : MonoBehaviour
         if (pannelloSchedaUI != null) pannelloSchedaUI.SetActive(false);
 
         if (coroutineScrittura != null) StopCoroutine(coroutineScrittura);
-        // --- FERMA L'ANIMAZIONE RGB ---
-        if (coroutineAnimazioneRGB != null) StopCoroutine(coroutineAnimazioneRGB);
-        // ------------------------------
+        if (coroutineAnimazioneBarre != null) StopCoroutine(coroutineAnimazioneBarre);
 
         if (cameraDallAlto != null) cameraDallAlto.gameObject.SetActive(false);
         if (cameraGiocatore != null) cameraGiocatore.enabled = true;
-        if (scriptInterazione != null) scriptInterazione.enabled = true;
+        
+        // Riaccende l'HUD 2D
+        if (hudGiocatore != null) hudGiocatore.SetActive(true);
 
         BloccaGiocatore(false);
 
@@ -248,7 +270,18 @@ public class SelettoreOggetti : MonoBehaviour
             oggetti[indiceAttuale].transform.localPosition = posOriginali[indiceAttuale];
             oggetti[indiceAttuale].transform.localRotation = rotOriginali[indiceAttuale];
         }
+
+        // LANCIA LA FUNZIONE ANTI-BUG!
+        StartCoroutine(RiattivaInterazioneRitardata());
     }
+
+    // --- ECCO LA FUNZIONE CHE MANCAVA! ---
+    IEnumerator RiattivaInterazioneRitardata()
+    {
+        yield return new WaitForSeconds(0.2f);
+        if (scriptInterazione != null) scriptInterazione.enabled = true;
+    }
+    // -------------------------------------
 
     void AggiornaSchedaTecnica()
     {
@@ -264,46 +297,53 @@ public class SelettoreOggetti : MonoBehaviour
         }
     }
 
-    // --- NUOVA COROUTINE PER ANIMARE LE BARRE RGB ---
-    IEnumerator AnimaBarreRGB()
+    IEnumerator AnimaBarreContestuali()
     {
         float timer = 0f;
-        // Continua ad animare finché siamo nella schermata di selezione
+        float nextVUStep = 0f;
+        float targetVU1 = 0f, targetVU2 = 0f, targetVU3 = 0f;
+
         while (inSelezione)
         {
-            timer += Time.deltaTime * velocitaAnimazioneRGB;
+            timer += Time.deltaTime;
 
-            // Usiamo la funzione Seno (Mathf.Sin) per creare un movimento oscillatorio fluido.
-            // Aggiungiamo un offset diverso (0, 1.5f, 3f) a ciascuna barra per farle muovere in modo indipendente e non sincronizzato.
-            // Mathf.Lerp interpola tra l'altezza minima e massima basandosi sul valore dell'onda.
+            switch (taskRichiesta)
+            {
+                case GameManager.Reparto.Fotografia:
+                    if (barra1) barra1.fillAmount = Mathf.Lerp(altezzaMinimaBarre, altezzaMassimaBarre, (Mathf.Sin(timer * velocitaAnimazioneBarre) + 1f) / 2f);
+                    if (barra2) barra2.fillAmount = Mathf.Lerp(altezzaMinimaBarre, altezzaMassimaBarre, (Mathf.Sin(timer * velocitaAnimazioneBarre + 1.5f) + 1f) / 2f);
+                    if (barra3) barra3.fillAmount = Mathf.Lerp(altezzaMinimaBarre, altezzaMassimaBarre, (Mathf.Sin(timer * velocitaAnimazioneBarre + 3f) + 1f) / 2f);
+                    break;
 
-            if (barraRossa)
-                barraRossa.fillAmount = Mathf.Lerp(altezzaMinimaRGB, altezzaMassimaRGB, (Mathf.Sin(timer) + 1f) / 2f);
+                case GameManager.Reparto.Fonico:
+                    if (timer > nextVUStep)
+                    {
+                        targetVU1 = Random.Range(0.4f, 1f);   
+                        targetVU2 = Random.Range(0.1f, 0.7f); 
+                        targetVU3 = Random.Range(0.0f, 0.3f); 
+                        nextVUStep = timer + 0.1f; 
+                    }
+                    if (barra1) barra1.fillAmount = Mathf.Lerp(barra1.fillAmount, targetVU1, Time.deltaTime * 20f);
+                    if (barra2) barra2.fillAmount = Mathf.Lerp(barra2.fillAmount, targetVU2, Time.deltaTime * 20f);
+                    if (barra3) barra3.fillAmount = Mathf.Lerp(barra3.fillAmount, targetVU3, Time.deltaTime * 20f);
+                    break;
 
-            if (barraVerde)
-                barraVerde.fillAmount = Mathf.Lerp(altezzaMinimaRGB, altezzaMassimaRGB, (Mathf.Sin(timer + 1.5f) + 1f) / 2f);
+                case GameManager.Reparto.Luci:
+                    float speedLuci = velocitaAnimazioneBarre * 0.2f; 
+                    if (barra1) barra1.fillAmount = Mathf.Lerp(0.6f, 0.9f, (Mathf.Sin(timer * speedLuci) + 1f) / 2f);
+                    if (barra2) barra2.fillAmount = Mathf.Lerp(0.8f, 1f, (Mathf.Sin(timer * speedLuci + 2f) + 1f) / 2f);
+                    if (barra3) barra3.fillAmount = Mathf.Lerp(0.3f, 0.5f, (Mathf.Sin(timer * speedLuci + 4f) + 1f) / 2f);
+                    break;
+            }
 
-            if (barraBlu)
-                barraBlu.fillAmount = Mathf.Lerp(altezzaMinimaRGB, altezzaMassimaRGB, (Mathf.Sin(timer + 3f) + 1f) / 2f);
-
-            yield return null; // Aspetta il prossimo frame
+            yield return null;
         }
     }
-    // ------------------------------------------------
 
     IEnumerator EffettoTestoAnimato(string titoloCompleto, string descCompleta)
     {
-        if (testoTitolo != null)
-        {
-            testoTitolo.text = titoloCompleto;
-            testoTitolo.maxVisibleCharacters = 0;
-        }
-
-        if (testoDescrizione != null)
-        {
-            testoDescrizione.text = descCompleta;
-            testoDescrizione.maxVisibleCharacters = 0;
-        }
+        if (testoTitolo != null) { testoTitolo.text = titoloCompleto; testoTitolo.maxVisibleCharacters = 0; }
+        if (testoDescrizione != null) { testoDescrizione.text = descCompleta; testoDescrizione.maxVisibleCharacters = 0; }
 
         if (testoTitolo != null)
         {
@@ -326,18 +366,9 @@ public class SelettoreOggetti : MonoBehaviour
                 char lettera = descCompleta[i];
                 SuonaTasto(lettera);
 
-                if (lettera == '.' || lettera == ':' || lettera == '\n')
-                {
-                    yield return new WaitForSeconds(velocitaScrittura * 6f);
-                }
-                else if (lettera == ',' || lettera == ';')
-                {
-                    yield return new WaitForSeconds(velocitaScrittura * 3f);
-                }
-                else
-                {
-                    yield return new WaitForSeconds(velocitaScrittura * 0.5f);
-                }
+                if (lettera == '.' || lettera == ':' || lettera == '\n') yield return new WaitForSeconds(velocitaScrittura * 6f);
+                else if (lettera == ',' || lettera == ';') yield return new WaitForSeconds(velocitaScrittura * 3f);
+                else yield return new WaitForSeconds(velocitaScrittura * 0.5f);
             }
         }
     }
@@ -357,18 +388,25 @@ public class SelettoreOggetti : MonoBehaviour
     void BloccaGiocatore(bool blocca)
     {
         if (giocatore == null) return;
-
+        
         if (nomiScriptDaDisabilitare != null)
         {
             foreach (string nomeScript in nomiScriptDaDisabilitare)
             {
-                MonoBehaviour s = giocatore.GetComponent(nomeScript) as MonoBehaviour;
-                if (s != null) s.enabled = !blocca;
+                // Spegne script sul giocatore
+                MonoBehaviour sPlayer = giocatore.GetComponent(nomeScript) as MonoBehaviour;
+                if (sPlayer != null) sPlayer.enabled = !blocca;
+                
+                // Spegne script ANCHE sulla telecamera (MouseLook)
+                if (cameraGiocatore != null)
+                {
+                    MonoBehaviour sCam = cameraGiocatore.GetComponent(nomeScript) as MonoBehaviour;
+                    if (sCam != null) sCam.enabled = !blocca;
+                }
             }
         }
-
+        
         if (controllerGiocatore != null) controllerGiocatore.enabled = !blocca;
-
         if (blocca) { Cursor.lockState = CursorLockMode.Locked; Cursor.visible = false; }
         else { Cursor.lockState = CursorLockMode.Locked; Cursor.visible = false; }
     }
