@@ -25045,7 +25045,9 @@ MonoBehaviour:
   durataAnimazione: 2
   giocatore: {fileID: 858305082}
   hudGiocatore: {fileID: 1182327102}
-  nomiScriptDaDisabilitare: []
+  nomiScriptDaDisabilitare:
+  - PlayerMovement
+  - MouseLook
   distanzaSfondo: 0.4
   opacitaSfondo: 0.9
   velocitaFadeSfondo: 5
@@ -45044,7 +45046,9 @@ MonoBehaviour:
   durataAnimazione: 2
   giocatore: {fileID: 858305082}
   hudGiocatore: {fileID: 1182327102}
-  nomiScriptDaDisabilitare: []
+  nomiScriptDaDisabilitare:
+  - PlayerMovement
+  - MouseLook
   distanzaSfondo: 0.4
   opacitaSfondo: 0.9
   velocitaFadeSfondo: 5
