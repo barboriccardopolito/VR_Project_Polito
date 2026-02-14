@@ -157,7 +157,7 @@ public class SelettoreOggetti : MonoBehaviour
         for (int i = 0; i < oggetti.Length; i++) { if (oggetti[i].gameObject.activeInHierarchy) { indiceAttuale = i; break; } }
 
         BloccaGiocatore(true);
-        if (cameraGiocatore != null) cameraGiocatore.enabled = false;
+        if (cameraGiocatore != null) cameraGiocatore.gameObject.SetActive(false); // <--- CAMBIATO QUI!
         if (cameraDallAlto != null) cameraDallAlto.gameObject.SetActive(true);
         if (scriptInterazione != null) scriptInterazione.enabled = false;
         
@@ -247,6 +247,8 @@ public class SelettoreOggetti : MonoBehaviour
 
     void ScegliOggetto()
     {
+        if (!inSelezione) return; // Sicurezza extra anti-doppio clic
+
         inSelezione = false;
         possoUscire = false;
         targetAlphaSfondo = 0f;
@@ -256,32 +258,45 @@ public class SelettoreOggetti : MonoBehaviour
         if (coroutineScrittura != null) StopCoroutine(coroutineScrittura);
         if (coroutineAnimazioneBarre != null) StopCoroutine(coroutineAnimazioneBarre);
 
+        // 1. Spegniamo l'ispezione e riaccendiamo il giocatore
         if (cameraDallAlto != null) cameraDallAlto.gameObject.SetActive(false);
         if (cameraGiocatore != null) cameraGiocatore.enabled = true;
         
-        // Riaccende l'HUD 2D
+        // 2. Riaccende l'HUD 2D
         if (hudGiocatore != null) hudGiocatore.SetActive(true);
 
+        // 3. Sblocca i comandi (Testa e Movimento)
         BloccaGiocatore(false);
 
-        if (oggetti[indiceAttuale].gameObject.activeInHierarchy)
+        // 4. TRY-CATCH: Impedisce a qualsiasi errore esterno di bloccare l'uscita dalla camera!
+        try 
         {
-            oggetti[indiceAttuale].EseguiRaccolta();
-            oggetti[indiceAttuale].transform.localPosition = posOriginali[indiceAttuale];
-            oggetti[indiceAttuale].transform.localRotation = rotOriginali[indiceAttuale];
+            if (oggetti[indiceAttuale] != null && oggetti[indiceAttuale].gameObject.activeInHierarchy)
+            {
+                oggetti[indiceAttuale].EseguiRaccolta();
+                oggetti[indiceAttuale].transform.localPosition = posOriginali[indiceAttuale];
+                oggetti[indiceAttuale].transform.localRotation = rotOriginali[indiceAttuale];
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogWarning("Errore durante la raccolta (ma l'uscita dalla visuale è salva!): " + e.Message);
         }
 
-        // LANCIA LA FUNZIONE ANTI-BUG!
+        // 5. Lancia la nuova funzione anti-incastro
         StartCoroutine(RiattivaInterazioneRitardata());
     }
 
-    // --- ECCO LA FUNZIONE CHE MANCAVA! ---
     IEnumerator RiattivaInterazioneRitardata()
     {
-        yield return new WaitForSeconds(0.2f);
+        // LA MAGIA ASSOLUTA: Aspetta che il giocatore rilasci FISICAMENTE il tasto E!
+        yield return new WaitUntil(() => !Input.GetKey(KeyCode.E));
+        
+        // Un piccolissimo respiro extra per far aggiornare Unity
+        yield return new WaitForSeconds(0.1f);
+        
         if (scriptInterazione != null) scriptInterazione.enabled = true;
     }
-    // -------------------------------------
 
     void AggiornaSchedaTecnica()
     {

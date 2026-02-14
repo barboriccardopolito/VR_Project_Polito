@@ -18,6 +18,21 @@ public class SpostamentoCamera : MonoBehaviour
     public float minZ = -10f; 
     public float maxZ = 10f;  
 
+    // --- NUOVA SEZIONE: ROTAZIONE PAN E TILT ---
+    [Header("Rotazione Camera (Pan & Tilt)")]
+    [Tooltip("Inserisci qui l'oggetto che fa da collo/testa alla camera (es. Sterzo)")]
+    public Transform testaCamera; 
+    public float sensibilitaRotazione = 2f;
+    [Tooltip("Gradi massimi di rotazione a Destra e Sinistra")]
+    public float limiteOrizzontale = 45f; 
+    [Tooltip("Gradi massimi di rotazione in Su e Giù")]
+    public float limiteVerticale = 25f;   
+    
+    private float rotPan = 0f;
+    private float rotTilt = 0f;
+    private Quaternion rotInizialeTesta;
+    // -------------------------------------------
+
     [Header("Riferimenti Player")]
     public GameObject giocatore; 
     public string[] nomiScriptDaDisabilitare; 
@@ -30,7 +45,6 @@ public class SpostamentoCamera : MonoBehaviour
     [Header("Audio")]
     public AudioClip suonoMontaggioLente;
 
-    // --- STATI DELLA SINGOLA TELECAMERA ---
     [HideInInspector] public bool lenteMontata = false;
     [HideInInspector] public bool schermoControllato = false;
 
@@ -56,6 +70,9 @@ public class SpostamentoCamera : MonoBehaviour
         if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
         audioSource.spatialBlend = 1.0f;
 
+        // Salviamo la rotazione iniziale del collo della macchina
+        if (testaCamera != null) rotInizialeTesta = testaCamera.localRotation;
+
         NascondiTutteLeLenti();
     }
 
@@ -65,19 +82,13 @@ public class SpostamentoCamera : MonoBehaviour
 
         if (GameManager.instance.taskAttuale == GameManager.Reparto.Fotografia)
         {
-            if (!lenteMontata)
-            {
-                PiazzaLente();
-            }
+            if (!lenteMontata) PiazzaLente();
             else if (lenteMontata && !schermoControllato)
             {
                 if (inControlloSchermo) return;
                 EntraControlloSchermo();
             }
-            else
-            {
-                Debug.Log("Questa telecamera è già a posto!");
-            }
+            else Debug.Log("Questa telecamera è già a posto!");
         }
         else if (GameManager.instance.taskAttuale == GameManager.Reparto.Regia)
         {
@@ -93,25 +104,19 @@ public class SpostamentoCamera : MonoBehaviour
         if (inventario != null && inventario.haUnOggetto && inventario.categoriaInMano == OggettoRaccolta.TipoOggetto.Lente)
         {
             string nomeLente = inventario.oggettoInMano;
-            
             GameManager.instance.lenteSceltaFinale = nomeLente;
 
-            // 1. Mostra la lente e salva il modello in una variabile
             GameObject lenteDaAnimare = MostraModelloLente(nomeLente);
 
-            // --- 2. IL COLLEGAMENTO CON LA CINEMATICA ---
             MontaggioLenteCinematica cinematica = GetComponent<MontaggioLenteCinematica>();
             if (cinematica != null && lenteDaAnimare != null)
             {
-                // Avvia la magia!
                 cinematica.AvviaCinematicaMontaggio(lenteDaAnimare);
             }
             else
             {
-                // Fallback: se manca lo script della cinematica, fa come prima
                 if (suonoMontaggioLente != null) audioSource.PlayOneShot(suonoMontaggioLente);
             }
-            // ---------------------------------------------
 
             lenteMontata = true;
             Debug.Log($"<color=yellow>Lente montata su {gameObject.name}. Ora controlla lo schermo!</color>");
@@ -133,7 +138,6 @@ public class SpostamentoCamera : MonoBehaviour
         if (cameraGiocatore != null) cameraGiocatore.enabled = false;
         if (cameraDallAlto != null) cameraDallAlto.gameObject.SetActive(true);
 
-        Debug.Log("[Camera] Visuale attivata. Premi E per uscire.");
         StartCoroutine(TimerSbloccoUscita());
     }
 
@@ -159,11 +163,7 @@ public class SpostamentoCamera : MonoBehaviour
 
         foreach (SpostamentoCamera cam in tutteLeCamere)
         {
-            if (!cam.schermoControllato)
-            {
-                tutteFatte = false;
-                break;
-            }
+            if (!cam.schermoControllato) { tutteFatte = false; break; }
         }
 
         if (tutteFatte)
@@ -174,18 +174,13 @@ public class SpostamentoCamera : MonoBehaviour
             if (GameManager.instance != null) GameManager.instance.CompletaTask(GameManager.Reparto.Fotografia);
             Debug.Log("<color=green>Tutte le camere sono pronte! Task Fotografia COMPLETATA!</color>");
         }
-        else
-        {
-            Debug.Log("<color=cyan>Camera verificata. Vai a montare/controllare le altre!</color>");
-        }
     }
 
-    // HO CAMBIATO QUI: Ora restituisce un GameObject invece di "void"
     public GameObject MostraModelloLente(string nomeLente)
     {
         NascondiTutteLeLenti();
         float nuovoFov = 60f; 
-        GameObject lenteAttivata = null; // Memorizza quale modello stiamo attivando
+        GameObject lenteAttivata = null; 
 
         if (GameManager.instance != null)
         {
@@ -211,7 +206,7 @@ public class SpostamentoCamera : MonoBehaviour
         if (cameraDallAlto != null) cameraDallAlto.fieldOfView = nuovoFov;
         if (cameraMirino != null) cameraMirino.fieldOfView = nuovoFov;
 
-        return lenteAttivata; // Invia la lente allo script della cinematica!
+        return lenteAttivata; 
     }
 
     public void ResettaVisualeLenti()
@@ -243,6 +238,7 @@ public class SpostamentoCamera : MonoBehaviour
         if (inModalitaSpostamento)
         {
             GestisciMovimento(); 
+            GestisciRotazione(); // <--- CHIAMATA ALLA ROTAZIONE
             if (Input.GetKeyDown(KeyCode.E) && possoUscire) EsciDaModalitaSpostamento();
         }
         else if (inControlloSchermo)
@@ -277,10 +273,7 @@ public class SpostamentoCamera : MonoBehaviour
             {
                 evidenziatore.Accendi(); 
             }
-            else
-            {
-                evidenziatore.Spegni();
-            }
+            else evidenziatore.Spegni();
         }
     }
 
@@ -324,7 +317,7 @@ public class SpostamentoCamera : MonoBehaviour
         float z = Input.GetAxis("Vertical");   
 
         Vector3 camRight = cameraDallAlto.transform.right;
-        Vector3 camForward = cameraDallAlto.transform.up;
+        Vector3 camForward = cameraDallAlto.transform.up; // "up" è avanti quando la camera guarda in basso
 
         camRight.y = 0;
         camForward.y = 0;
@@ -342,6 +335,27 @@ public class SpostamentoCamera : MonoBehaviour
             transform.position = pos;
         }
     }
+
+    // --- FUNZIONE ROTAZIONE ADATTATA AGLI ASSI DEL MODELLO ---
+    void GestisciRotazione()
+    {
+        if (testaCamera == null) return;
+
+        // Leggiamo i movimenti del mouse
+        float mouseX = Input.GetAxis("Mouse X") * sensibilitaRotazione;
+        float mouseY = Input.GetAxis("Mouse Y") * sensibilitaRotazione;
+
+        rotPan += mouseX;
+        rotTilt -= mouseY; 
+
+        // Blocchiamo le rotazioni entro i limiti impostati
+        rotPan = Mathf.Clamp(rotPan, -limiteOrizzontale, limiteOrizzontale);
+        rotTilt = Mathf.Clamp(rotTilt, -limiteVerticale, limiteVerticale);
+
+        // IL TRUCCO È QUI: Abbiamo spostato 'rotPan' dalla Y (il secondo valore) alla Z (il terzo valore)
+        testaCamera.localRotation = rotInizialeTesta * Quaternion.Euler(rotTilt, 0, rotPan);
+    }
+    // --------------------------------------------------------
 
     void BloccaGiocatore(bool blocca)
     {
@@ -369,6 +383,34 @@ public class SpostamentoCamera : MonoBehaviour
         { 
             Cursor.lockState = CursorLockMode.Locked; 
             Cursor.visible = false; 
+        }
+    }
+    // --- FUNZIONE PER DISEGNARE I LIMITI NELLA SCENA ---
+    void OnDrawGizmosSelected()
+    {
+        if (usaLimiti)
+        {
+            // Colore del recinto (Azzurro semitrasparente)
+            Gizmos.color = new Color(0f, 1f, 1f, 0.8f);
+
+            // Calcoliamo il centro del nostro recinto
+            float centroX = (minX + maxX) / 2f;
+            float centroZ = (minZ + maxZ) / 2f;
+
+            // Calcoliamo quanto è largo e lungo
+            float larghezzaX = Mathf.Abs(maxX - minX);
+            float lunghezzaZ = Mathf.Abs(maxZ - minZ);
+
+            // Posizioniamo il recinto alla stessa altezza (Y) della base della telecamera
+            Vector3 centroGizmo = new Vector3(centroX, transform.position.y, centroZ);
+            Vector3 dimensioneGizmo = new Vector3(larghezzaX, 0.05f, lunghezzaZ); // Molto sottile sull'asse Y
+
+            // Disegna il contorno del recinto
+            Gizmos.DrawWireCube(centroGizmo, dimensioneGizmo);
+
+            // Disegna l'interno del recinto con un colore molto più trasparente
+            Gizmos.color = new Color(0f, 1f, 1f, 0.1f);
+            Gizmos.DrawCube(centroGizmo, dimensioneGizmo);
         }
     }
 }
