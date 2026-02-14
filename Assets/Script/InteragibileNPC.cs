@@ -43,7 +43,7 @@ public class InteragibileNPC : MonoBehaviour
                 if (!taskAudioFinita) devoIlluminarmi = true;
             }
 
-            if (tipoReparto == GameManager.Reparto.Fotografia && GameManager.instance.lenteSceltaFinale != "" && !GameManager.instance.cameraPosizionata)
+            if (tipoReparto == GameManager.Reparto.Fotografia && GameManager.instance.lenteSceltaFinale != "" && !TutteLeCamereMontate())
                 devoIlluminarmi = true;
 
             if (devoIlluminarmi) evidenziatore.Accendi(); else evidenziatore.Spegni();
@@ -54,11 +54,10 @@ public class InteragibileNPC : MonoBehaviour
     {
         if (staParlando) return;
 
-        // --- MODIFICA PRODUZIONE: Blocca il prompt per l'NPCWander ---
         NPCWander produzioneScript = GetComponent<NPCWander>();
         if (produzioneScript != null) 
         {
-            StartCoroutine(GestisciStatoParlato(4.5f)); // <-- Attiva il blocco prompt
+            StartCoroutine(GestisciStatoParlato(4.5f)); 
             produzioneScript.InterazioneConPlayer();
         }
 
@@ -100,11 +99,92 @@ public class InteragibileNPC : MonoBehaviour
         }
 
         InventarioGiocatore inv = FindFirstObjectByType<InventarioGiocatore>();
+        
+        // --- LOGICA CONSEGNA OGGETTI CON FILTRO DI SICUREZZA ---
+        if (inv != null && inv.haUnOggetto)
+        {
+            bool oggettoCorretto = false;
+            if (tipoReparto == GameManager.Reparto.Fotografia && inv.categoriaInMano == OggettoRaccolta.TipoOggetto.Lente) 
+            {
+                // SE hai una lente, ma NON hai finito di montarla su TUTTE le camere, l'NPC non la prende
+                if (!TutteLeCamereMontate())
+                {
+                    Debug.Log("<color=orange>[Dir. Fotografia]:</color> Vai a montare quella lente sulle macchine da presa, non darla a me!");
+                    return; 
+                }
+                oggettoCorretto = true;
+            }
+            
+            if (tipoReparto == GameManager.Reparto.Luci && inv.categoriaInMano == OggettoRaccolta.TipoOggetto.Luce) 
+            {
+                // SE hai una luce ma non è posizionata correttamente
+                if (!GameManager.instance.LucePosizionataCorrettamente)
+                {
+                    Debug.Log("<color=orange>[Addetto Luci]:</color> Piazza quel faro sugli stativi prima di tornare da me.");
+                    return;
+                }
+                oggettoCorretto = true;
+            }
+
+            if (tipoReparto == GameManager.Reparto.Fonico && inv.categoriaInMano == OggettoRaccolta.TipoOggetto.Microfono)
+            {
+                bool taskAudioFinita = false;
+                if (GameManager.instance.micDaInstallare == "Lavalier" && GameManager.instance.attoriMicrofonatiAttuali >= GameManager.instance.attoriDaMicrofonare) taskAudioFinita = true;
+                else if ((GameManager.instance.micDaInstallare == "Boom" || GameManager.instance.micDaInstallare == "Ambisonic") && GameManager.instance.supportoPiazzato) taskAudioFinita = true;
+                
+                if (!taskAudioFinita)
+                {
+                    Debug.Log("<color=orange>[Fonico]:</color> Porta quel microfono in posizione, muoviti!");
+                    return;
+                }
+                oggettoCorretto = true;
+            }
+
+            if (oggettoCorretto)
+            {
+                StartCoroutine(GestisciStatoParlato(3.5f)); 
+
+                if (tipoReparto == GameManager.Reparto.Fotografia)
+                {
+                    if (GameManager.instance.lenteSceltaFinale != "") GameManager.instance.RestituisciOggettoAlTavolo(GameManager.instance.lenteSceltaFinale);
+                    GameManager.instance.lenteSceltaFinale = inv.oggettoInMano;
+                    GameManager.instance.ResetEffettoLente();
+                    GameManager.instance.cameraPosizionata = false;
+
+                    if (staffScript != null) staffScript.ReazioneConsegnaLente(inv.oggettoInMano);
+                    inv.ConsegnaOggetto();
+                }
+                else if (tipoReparto == GameManager.Reparto.Luci)
+                {
+                    if (GameManager.instance.LuceScelta != "") GameManager.instance.RestituisciOggettoAlTavolo(GameManager.instance.LuceScelta);
+                    GameManager.instance.ResettaVisualeSupportiLuci(); 
+                    GameManager.instance.LuceScelta = inv.oggettoInMano;
+                    GameManager.instance.LucePosizionataCorrettamente = false; 
+
+                    if (staffScript != null) staffScript.ReazioneConsegnaLuce(inv.oggettoInMano);
+                    inv.ConsegnaOggetto();
+                }
+                else if (tipoReparto == GameManager.Reparto.Fonico)
+                {
+                    if (GameManager.instance.micScelto != "") GameManager.instance.RestituisciOggettoAlTavolo(GameManager.instance.micScelto);
+                    GameManager.instance.micScelto = inv.oggettoInMano;
+                    GameManager.instance.micDaInstallare = inv.oggettoInMano;
+                    GameManager.instance.attoriMicrofonatiAttuali = 0; 
+                    GameManager.instance.supportoPiazzato = false; 
+                    
+                    if (staffScript != null) staffScript.ReazioneConsegnaMicrofono(inv.oggettoInMano);
+                    inv.ConsegnaOggetto();
+                }
+                return; // Esce dopo la consegna
+            }
+        }
+
+        // --- LOGICA FINE TASK (QUANDO NON HAI OGGETTI IN MANO) ---
         bool fotografiaInCorso = (GameManager.instance.taskAttuale == GameManager.Reparto.Fotografia) || (faseRevisione && tipoReparto == GameManager.Reparto.Fotografia);
 
         if (tipoReparto == GameManager.Reparto.Fotografia && (!inv || !inv.haUnOggetto) && fotografiaInCorso)
         {
-            if (GameManager.instance.lenteSceltaFinale != "" && GameManager.instance.cameraPosizionata)
+            if (GameManager.instance.lenteSceltaFinale != "" && TutteLeCamereMontate())
             {
                 if (staffScript != null)
                 {
@@ -116,7 +196,7 @@ public class InteragibileNPC : MonoBehaviour
                 }
                 else GameManager.instance.CompletaTask(tipoReparto);
             }
-            else if (GameManager.instance.lenteSceltaFinale != "") Debug.LogWarning("[Dir. Fotografia]: Sposta la videocamera!");
+            else if (GameManager.instance.lenteSceltaFinale != "") Debug.LogWarning("[Dir. Fotografia]: Monta le lenti e sposta le camere!");
             else if (staffScript != null && staffScript.haGiaParlato) Debug.Log("[Dir. Fotografia]: Portami una lente.");
             return;
         }
@@ -170,10 +250,8 @@ public class InteragibileNPC : MonoBehaviour
              return;
         }
 
-        // --- MODIFICA PRODUZIONE (Blocco finale per sicurezza) ---
         if (tipoReparto == GameManager.Reparto.Produzione) { 
-            StartCoroutine(GestisciStatoParlato(4.5f)); // <-- Attiva il blocco prompt
-            
+            StartCoroutine(GestisciStatoParlato(4.5f)); 
             if (evidenziatore != null) evidenziatore.Spegni();
             if (produzioneScript != null) produzioneScript.InterazioneConPlayer(); 
             else GameManager.instance.CompletaTask(tipoReparto);
@@ -205,56 +283,20 @@ public class InteragibileNPC : MonoBehaviour
             }
         }
 
-        if (inv != null && inv.haUnOggetto)
+        if (staffScript == null || staffScript.haGiaParlato) Debug.Log($"[Info]: {messaggioTask}");
+    }
+
+    // Funzione helper per controllare se tutte le macchine da presa hanno la lente
+    bool TutteLeCamereMontate()
+    {
+        SpostamentoCamera[] camere = FindObjectsByType<SpostamentoCamera>(FindObjectsSortMode.None);
+        if (camere.Length == 0) return true; // Se non ci sono camere, consideriamo fatto
+        
+        foreach (var cam in camere)
         {
-            bool oggettoCorretto = false;
-            if (tipoReparto == GameManager.Reparto.Fotografia && inv.categoriaInMano == OggettoRaccolta.TipoOggetto.Lente) oggettoCorretto = true;
-            if (tipoReparto == GameManager.Reparto.Luci && inv.categoriaInMano == OggettoRaccolta.TipoOggetto.Luce) oggettoCorretto = true;
-            if (tipoReparto == GameManager.Reparto.Fonico && inv.categoriaInMano == OggettoRaccolta.TipoOggetto.Microfono) oggettoCorretto = true;
-
-            if (oggettoCorretto)
-            {
-                StartCoroutine(GestisciStatoParlato(3.5f)); 
-
-                if (tipoReparto == GameManager.Reparto.Fotografia)
-                {
-                    if (GameManager.instance.lenteSceltaFinale != "") GameManager.instance.RestituisciOggettoAlTavolo(GameManager.instance.lenteSceltaFinale);
-                    GameManager.instance.lenteSceltaFinale = inv.oggettoInMano;
-                    GameManager.instance.ResetEffettoLente();
-                    GameManager.instance.cameraPosizionata = false;
-
-                    if (staffScript != null) staffScript.ReazioneConsegnaLente(inv.oggettoInMano);
-                    inv.ConsegnaOggetto();
-                }
-                else if (tipoReparto == GameManager.Reparto.Luci)
-                {
-                    if (GameManager.instance.LuceScelta != "") GameManager.instance.RestituisciOggettoAlTavolo(GameManager.instance.LuceScelta);
-                    GameManager.instance.ResettaVisualeSupportiLuci(); 
-                    GameManager.instance.LuceScelta = inv.oggettoInMano;
-                    GameManager.instance.LucePosizionataCorrettamente = false; 
-
-                    if (staffScript != null) staffScript.ReazioneConsegnaLuce(inv.oggettoInMano);
-                    inv.ConsegnaOggetto();
-                }
-                else if (tipoReparto == GameManager.Reparto.Fonico)
-                {
-                    if (GameManager.instance.micScelto != "") GameManager.instance.RestituisciOggettoAlTavolo(GameManager.instance.micScelto);
-                    GameManager.instance.micScelto = inv.oggettoInMano;
-                    GameManager.instance.micDaInstallare = inv.oggettoInMano;
-                    GameManager.instance.attoriMicrofonatiAttuali = 0; 
-                    GameManager.instance.supportoPiazzato = false; 
-                    
-                    if (staffScript != null) staffScript.ReazioneConsegnaMicrofono(inv.oggettoInMano);
-                    inv.ConsegnaOggetto();
-                }
-            }
-            else Debug.Log($"[Task]: Oggetto errato!");
+            if (!cam.lenteMontata) return false;
         }
-        else
-        {
-            if (faseRevisione && tipoReparto != GameManager.Reparto.Regia) Debug.Log($"[{tipoReparto}]: Se vuoi cambiare qualcosa, portami l'attrezzatura nuova.");
-            else if (staffScript == null || staffScript.haGiaParlato) Debug.Log($"[Info]: {messaggioTask}");
-        }
+        return true;
     }
 
     public IEnumerator GestisciStatoParlato(float durata)

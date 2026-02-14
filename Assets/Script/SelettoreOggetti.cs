@@ -12,7 +12,7 @@ public class SelettoreOggetti : MonoBehaviour
 
     [Header("Riferimenti Player")]
     public GameObject giocatore;
-    public GameObject hudGiocatore; // L'HUD 2D da spegnere
+    public GameObject hudGiocatore;
     public string[] nomiScriptDaDisabilitare;
     private InterazioneGiocatore scriptInterazione;
     private CharacterController controllerGiocatore;
@@ -94,6 +94,7 @@ public class SelettoreOggetti : MonoBehaviour
                 rotOriginali[i] = oggetti[i].transform.localRotation;
             }
         }
+        
         CreaSfondoScuro();
 
         if (barra1) { barra1.type = Image.Type.Filled; barra1.fillMethod = Image.FillMethod.Vertical; }
@@ -152,32 +153,37 @@ public class SelettoreOggetti : MonoBehaviour
         if (inSelezione) return;
         inSelezione = true;
         possoUscire = false;
-
         indiceAttuale = 0;
-        for (int i = 0; i < oggetti.Length; i++) { if (oggetti[i].gameObject.activeInHierarchy) { indiceAttuale = i; break; } }
 
         BloccaGiocatore(true);
-        if (cameraGiocatore != null) cameraGiocatore.gameObject.SetActive(false); // <--- CAMBIATO QUI!
-        if (cameraDallAlto != null) cameraDallAlto.gameObject.SetActive(true);
-        if (scriptInterazione != null) scriptInterazione.enabled = false;
         
-        // Spegne l'HUD 2D
+        // --- SPEGNIMENTO SICURO ---
+        if (cameraGiocatore != null) 
+        {
+            cameraGiocatore.enabled = false; 
+            cameraGiocatore.gameObject.SetActive(false); 
+        }
+        
+        if (cameraDallAlto != null) cameraDallAlto.gameObject.SetActive(true);
         if (hudGiocatore != null) hudGiocatore.SetActive(false);
-
-        rotazioneOggettoCorrente = Vector2.zero;
-        sfondoCanvas.gameObject.SetActive(true);
-        targetAlphaSfondo = opacitaSfondo;
 
         if (pannelloSchedaUI != null) pannelloSchedaUI.SetActive(true);
         AggiornaSchedaTecnica();
-
+        
         if (coroutineAnimazioneBarre != null) StopCoroutine(coroutineAnimazioneBarre);
         coroutineAnimazioneBarre = StartCoroutine(AnimaBarreContestuali());
+
+        if (sfondoCanvas != null) sfondoCanvas.gameObject.SetActive(true);
+        targetAlphaSfondo = opacitaSfondo;
 
         StartCoroutine(TimerSblocco());
     }
 
-    IEnumerator TimerSblocco() { yield return new WaitForSeconds(0.5f); possoUscire = true; }
+    IEnumerator TimerSblocco() 
+    { 
+        yield return new WaitForSeconds(0.5f); 
+        possoUscire = true; 
+    }
 
     void Update()
     {
@@ -247,7 +253,7 @@ public class SelettoreOggetti : MonoBehaviour
 
     void ScegliOggetto()
     {
-        if (!inSelezione) return; // Sicurezza extra anti-doppio clic
+        if (!inSelezione) return;
 
         inSelezione = false;
         possoUscire = false;
@@ -258,17 +264,19 @@ public class SelettoreOggetti : MonoBehaviour
         if (coroutineScrittura != null) StopCoroutine(coroutineScrittura);
         if (coroutineAnimazioneBarre != null) StopCoroutine(coroutineAnimazioneBarre);
 
-        // 1. Spegniamo l'ispezione e riaccendiamo il giocatore
+        // --- ACCENSIONE SICURA ---
         if (cameraDallAlto != null) cameraDallAlto.gameObject.SetActive(false);
-        if (cameraGiocatore != null) cameraGiocatore.enabled = true;
         
-        // 2. Riaccende l'HUD 2D
+        if (cameraGiocatore != null) 
+        {
+            cameraGiocatore.gameObject.SetActive(true); 
+            cameraGiocatore.enabled = true; 
+        }
+        
         if (hudGiocatore != null) hudGiocatore.SetActive(true);
 
-        // 3. Sblocca i comandi (Testa e Movimento)
         BloccaGiocatore(false);
 
-        // 4. TRY-CATCH: Impedisce a qualsiasi errore esterno di bloccare l'uscita dalla camera!
         try 
         {
             if (oggetti[indiceAttuale] != null && oggetti[indiceAttuale].gameObject.activeInHierarchy)
@@ -280,21 +288,16 @@ public class SelettoreOggetti : MonoBehaviour
         }
         catch (System.Exception e)
         {
-            Debug.LogWarning("Errore durante la raccolta (ma l'uscita dalla visuale è salva!): " + e.Message);
+            Debug.LogWarning("Errore durante la raccolta: " + e.Message);
         }
 
-        // 5. Lancia la nuova funzione anti-incastro
         StartCoroutine(RiattivaInterazioneRitardata());
     }
 
     IEnumerator RiattivaInterazioneRitardata()
     {
-        // LA MAGIA ASSOLUTA: Aspetta che il giocatore rilasci FISICAMENTE il tasto E!
         yield return new WaitUntil(() => !Input.GetKey(KeyCode.E));
-        
-        // Un piccolissimo respiro extra per far aggiornare Unity
         yield return new WaitForSeconds(0.1f);
-        
         if (scriptInterazione != null) scriptInterazione.enabled = true;
     }
 
@@ -408,11 +411,9 @@ public class SelettoreOggetti : MonoBehaviour
         {
             foreach (string nomeScript in nomiScriptDaDisabilitare)
             {
-                // Spegne script sul giocatore
                 MonoBehaviour sPlayer = giocatore.GetComponent(nomeScript) as MonoBehaviour;
                 if (sPlayer != null) sPlayer.enabled = !blocca;
                 
-                // Spegne script ANCHE sulla telecamera (MouseLook)
                 if (cameraGiocatore != null)
                 {
                     MonoBehaviour sCam = cameraGiocatore.GetComponent(nomeScript) as MonoBehaviour;
@@ -422,7 +423,7 @@ public class SelettoreOggetti : MonoBehaviour
         }
         
         if (controllerGiocatore != null) controllerGiocatore.enabled = !blocca;
-        if (blocca) { Cursor.lockState = CursorLockMode.Locked; Cursor.visible = false; }
-        else { Cursor.lockState = CursorLockMode.Locked; Cursor.visible = false; }
+        Cursor.lockState = CursorLockMode.Locked; 
+        Cursor.visible = false;
     }
 }
