@@ -29,7 +29,6 @@ public class SupportoLuce : MonoBehaviour
         
         if (gm == null || inventario == null) return;
 
-        // Se la task non è quella delle Luci, non fare nulla
         if (gm.taskAttuale != GameManager.Reparto.Luci) return;
 
         if (luceGiaPosizionata) 
@@ -47,16 +46,47 @@ public class SupportoLuce : MonoBehaviour
         string nomeLuce = inventario.oggettoInMano;
         gm.LuceScelta = nomeLuce; 
 
-        bool modelloAttivato = false;
+        // VARIABILI PER LA CINEMATICA
+        GameObject luceAttivata = null;
+        string titoloOlogramma = "";
+        string descOlogramma = "";
 
-        if (IsNameMatch(nomeLuce, "Softbox")) { if (modelloSoftbox) { modelloSoftbox.SetActive(true); modelloAttivato = true; } }
-        else if (IsNameMatch(nomeLuce, "Fresnel")) { if (modelloFresnel) { modelloFresnel.SetActive(true); modelloAttivato = true; } }
-        else if (IsNameMatch(nomeLuce, "Artistica")) { if (modelloArtistica) { modelloArtistica.SetActive(true); modelloAttivato = true; } }
+        // RICONOSCIMENTO LUCE E ASSEGNAZIONE TESTI
+        if (IsNameMatch(nomeLuce, "Softbox")) 
+        { 
+            if (modelloSoftbox) { modelloSoftbox.SetActive(true); luceAttivata = modelloSoftbox; }
+            titoloOlogramma = "Pannello LED Softbox";
+            descOlogramma = "Luce diffusa con pannello a nido d'ape. Avvolge morbidamente il soggetto attenuando le ombre e le imperfezioni del viso.";
+        }
+        else if (IsNameMatch(nomeLuce, "Fresnel")) 
+        { 
+            if (modelloFresnel) { modelloFresnel.SetActive(true); luceAttivata = modelloFresnel; }
+            titoloOlogramma = "Proiettore Fresnel 2K";
+            descOlogramma = "Temperatura 5600K (Daylight). La lente a gradini produce un fascio di luce duro e incisivo. Ideale come Key Light.";
+        }
+        else if (IsNameMatch(nomeLuce, "Artistica")) 
+        { 
+            if (modelloArtistica) { modelloArtistica.SetActive(true); luceAttivata = modelloArtistica; }
+            titoloOlogramma = "Tubo LED RGB Pixel";
+            descOlogramma = "Emettitore a spettro cromatico completo. Ottimo per essere usato come luce pratica in scena o per riflessi creativi.";
+        }
 
-        if (modelloAttivato)
+        if (luceAttivata != null)
         {
             luceGiaPosizionata = true;
-            if (suonoPiazzamento != null) audioSource.PlayOneShot(suonoPiazzamento);
+            
+            // --- LANCIO DELLA CINEMATICA ---
+            MontaggioLuceCinematica cinematica = GetComponent<MontaggioLuceCinematica>();
+            if (cinematica != null)
+            {
+                // Avvia l'animazione calandola dall'alto e scrivendo l'ologramma!
+                cinematica.AvviaCinematicaMontaggio(luceAttivata, titoloOlogramma, descOlogramma);
+            }
+            else
+            {
+                // Fallback classico se dimentichi di mettere lo script della cinematica
+                if (suonoPiazzamento != null) audioSource.PlayOneShot(suonoPiazzamento);
+            }
             
             Debug.Log($"<color=cyan>Luce piazzata su {gameObject.name}. Controllo stato globale...</color>");
             VerificaCompletamentoLuci();
@@ -67,7 +97,6 @@ public class SupportoLuce : MonoBehaviour
     {
         if (GameManager.instance == null || GameManager.instance.supportiLuciFisici == null) return;
 
-        // Prendiamo i supporti direttamente dalla lista definita nel GameManager
         GameObject[] supportiDaControllare = GameManager.instance.supportiLuciFisici;
         
         int totali = supportiDaControllare.Length;
@@ -98,7 +127,6 @@ public class SupportoLuce : MonoBehaviour
         }
     }
 
-    // Metodo di pulizia per sicurezza (chiamalo se vuoi resettare la scena)
     public void ResettaSupporto()
     {
         luceGiaPosizionata = false;
