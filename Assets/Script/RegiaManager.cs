@@ -17,11 +17,16 @@ public class RegiaManager : MonoBehaviour
     [Header("Camere del Set")]
     public Camera[] camereSet; 
 
+    // --- NUOVI SLOT PER GLI EFFETTI VISIVI ---
+    [Header("Effetti Post-Processing (Wow Factor)")]
+    public GameObject volumeGrandangolo;
+    public GameObject volumeCinematografica;
+    public GameObject volumeDistorta;
+
     [Header("Stato del Sistema")]
     public bool previewInCorso = false;
     public bool registrazioneInCorso = false;
 
-    // --- NOVITÀ: Array per salvare le texture originali dei mirini ---
     private RenderTexture[] textureMiriniOriginali;
 
     void Awake()
@@ -31,25 +36,19 @@ public class RegiaManager : MonoBehaviour
 
     void Start()
     {
-        // Inizializza l'array
         textureMiriniOriginali = new RenderTexture[camereSet.Length];
 
-        // Salviamo i mirini e LASCIAMO ACCESE le camere
         for (int i = 0; i < camereSet.Length; i++)
         {
             if (camereSet[i] != null)
             {
-                // Salviamo la RenderTexture che hai messo nell'Inspector (es. Mirino_RT_1)
                 textureMiriniOriginali[i] = camereSet[i].targetTexture;
-                
-                // IMPORTANTE: Le lasciamo accese così gli schermetti funzionano da subito!
                 camereSet[i].gameObject.SetActive(true);
                 camereSet[i].enabled = true;
             }
         }
     }
 
-    // --- FASE 1: PREVIEW (Monitor Piccolo) ---
     public void AttivaPreview()
     {
         if (camereSet == null || camereSet.Length == 0) return;
@@ -69,14 +68,12 @@ public class RegiaManager : MonoBehaviour
         
         while (!registrazioneInCorso)
         {
-            // 1. Ripristina i mirini locali su tutte le camere
             for (int i = 0; i < camereSet.Length; i++) 
             { 
                 if (camereSet[i] != null) 
                     camereSet[i].targetTexture = textureMiriniOriginali[i]; 
             }
 
-            // 2. La camera corrente manda il suo segnale al Monitor Grande
             if (camereSet[indiceCam] != null)
             {
                 camereSet[indiceCam].targetTexture = textureMonitor;
@@ -90,7 +87,6 @@ public class RegiaManager : MonoBehaviour
         }
     }
 
-    // --- FASE 2: CIAK FINALE ---
     public void AvviaCiak()
     {
         if (registrazioneInCorso) return;
@@ -111,10 +107,8 @@ public class RegiaManager : MonoBehaviour
         if (gestoreRecitazione != null) gestoreRecitazione.AvviaCiakUnico();
         if (mainCameraPlayer) mainCameraPlayer.enabled = false; 
 
-        // CICLO DI REGISTRAZIONE
         for (int i = 0; i < camereSet.Length; i++)
         {
-            // A. Assicuriamoci che tutte le altre camere abbiano il loro mirino locale
             for (int j = 0; j < camereSet.Length; j++) 
             { 
                 if(camereSet[j] != null) camereSet[j].targetTexture = textureMiriniOriginali[j]; 
@@ -122,14 +116,11 @@ public class RegiaManager : MonoBehaviour
 
             if (camereSet[i] == null) continue;
 
-            // B. LA CAMERA CORRENTE VA A TUTTO SCHERMO
             Camera camAttuale = camereSet[i];
             
-            // Stacchiamo la texture, così l'immagine va sul tuo monitor vero!
             camAttuale.targetTexture = null; 
             camAttuale.enabled = true; 
 
-            // Se hai ancora lo script per abbassare gli FPS, disattiviamolo durante il film finale
             OttimizzaCamera optScript = camAttuale.GetComponent<OttimizzaCamera>();
             if (optScript != null) optScript.enabled = false;
             
@@ -143,7 +134,6 @@ public class RegiaManager : MonoBehaviour
         if (gestoreRecitazione != null) gestoreRecitazione.FermaTutto();
         if (mainCameraPlayer) mainCameraPlayer.enabled = true;
 
-        // RIORDINO FINALE: Rimettiamo le texture ai mirini e riattiviamo l'ottimizzazione
         for (int i = 0; i < camereSet.Length; i++) 
         {
             if(camereSet[i] != null) 
@@ -158,15 +148,33 @@ public class RegiaManager : MonoBehaviour
         if (gestoreFinale != null) gestoreFinale.AvviaTitoliDiCoda();
     }
 
+    // --- FUNZIONE AGGIORNATA PER I VOLUMI ---
     void ApplicaEffettiScelti(Camera camDestinazione)
     {
+        // 1. Spegniamo tutti gli effetti speciali di default
+        if (volumeGrandangolo) volumeGrandangolo.SetActive(false);
+        if (volumeCinematografica) volumeCinematografica.SetActive(false);
+        if (volumeDistorta) volumeDistorta.SetActive(false);
+
         if (GameManager.instance != null && GameManager.instance.fovStandard > 0) 
         {
             switch (GameManager.instance.lenteSceltaFinale)
             {
-                case "Grandangolo": camDestinazione.fieldOfView = GameManager.instance.fovGrandangolo; break;
-                case "Cinematografica": camDestinazione.fieldOfView = GameManager.instance.fovCinematic; break;
-                default: camDestinazione.fieldOfView = GameManager.instance.fovStandard; break;
+                case "Grandangolo": 
+                    camDestinazione.fieldOfView = GameManager.instance.fovGrandangolo; 
+                    if (volumeGrandangolo) volumeGrandangolo.SetActive(true);
+                    break;
+                case "Cinematografica": 
+                    camDestinazione.fieldOfView = GameManager.instance.fovCinematic; 
+                    if (volumeCinematografica) volumeCinematografica.SetActive(true);
+                    break;
+                case "Distorta": 
+                    camDestinazione.fieldOfView = GameManager.instance.fovDistorta; 
+                    if (volumeDistorta) volumeDistorta.SetActive(true);
+                    break;
+                default: 
+                    camDestinazione.fieldOfView = GameManager.instance.fovStandard; 
+                    break;
             }
         }
     }

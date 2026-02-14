@@ -33,10 +33,16 @@ public class GameManager : MonoBehaviour
     public int attoriDaMicrofonare = 2;
     public int attoriMicrofonatiAttuali = 0;
 
+    [Header("Effetti Post-Processing (Wow Factor)")]
+    public GameObject volumeGrandangolo;     // Es: Vignettatura e nitidezza estrema
+    public GameObject volumeCinematografica; // Es: Bande nere (UI), Film Grain, Depth of Field
+    public GameObject volumeDistorta;        // Es: Lens Distortion (Fisheye) e Aberrazione Cromatica
+
     [Header("Parametri Lenti HDRP")]
     public float fovStandard = 60f;
     public float fovGrandangolo = 90f;
     public float fovCinematic = 40f;
+    public float fovDistorta = 110f;
     public Volume globalVolume; 
     private LensDistortion distortion;
     public bool cameraPosizionata = false;
@@ -232,22 +238,34 @@ public class GameManager : MonoBehaviour
         LucePosizionataCorrettamente = false; 
     }
 
-    public void ApplicaEffettoLente(string nomeLente) 
+public void ApplicaEffettoLente(string nomeLente) 
     {
-        Camera cam = Camera.main;
-        if (cam == null || distortion == null) return;
+        // 1. Spegni prima tutti gli effetti per resettare la visuale
+        if (volumeGrandangolo) volumeGrandangolo.SetActive(false);
+        if (volumeCinematografica) volumeCinematografica.SetActive(false);
+        if (volumeDistorta) volumeDistorta.SetActive(false);
+
+        // 2. Accendi solo il volume corrispondente
         switch (nomeLente) 
         {
-            case "Grandangolo": cam.fieldOfView = fovGrandangolo; distortion.intensity.value = -0.3f; break;
-            case "Distorta": cam.fieldOfView = fovStandard; distortion.intensity.value = 0.6f; break;
-            case "Cinematografica": cam.fieldOfView = fovCinematic; distortion.intensity.value = 0f; break;
-            default: cam.fieldOfView = fovStandard; distortion.intensity.value = 0f; break;
+            case "Grandangolo": 
+                if (volumeGrandangolo) volumeGrandangolo.SetActive(true);
+                break;
+            case "Distorta": 
+                if (volumeDistorta) volumeDistorta.SetActive(true);
+                break;
+            case "Cinematografica": 
+                if (volumeCinematografica) volumeCinematografica.SetActive(true);
+                break;
         }
     }
 
-    public void ResetEffettoLente() {
-        if (Camera.main != null) Camera.main.fieldOfView = fovStandard;
-        if (distortion != null) distortion.intensity.value = 0f;
+    public void ResetEffettoLente() 
+    {
+        // Spegniamo tutti i volumi
+        if (volumeGrandangolo) volumeGrandangolo.SetActive(false);
+        if (volumeCinematografica) volumeCinematografica.SetActive(false);
+        if (volumeDistorta) volumeDistorta.SetActive(false);
     }
 
     public void ApplicaEffettoMicrofono(string nomeMic) 

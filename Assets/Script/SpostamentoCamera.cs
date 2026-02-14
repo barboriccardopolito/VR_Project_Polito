@@ -177,13 +177,16 @@ public class SpostamentoCamera : MonoBehaviour
         }
     }
 
-    public void MostraModelloLente(string nomeLente)
+public void MostraModelloLente(string nomeLente)
     {
         NascondiTutteLeLenti();
         float nuovoFov = 60f; 
 
         if (GameManager.instance != null)
         {
+            // ---> AGGIUNGI QUESTA RIGA: Accende il volume (che colpirà solo i mirini!) <---
+            GameManager.instance.ApplicaEffettoLente(nomeLente);
+
             if (nomeLente.Contains("Grandangolo")) 
             {
                 if (modelloGrandangolo) modelloGrandangolo.SetActive(true);
