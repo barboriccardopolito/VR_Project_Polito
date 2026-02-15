@@ -92,16 +92,11 @@ public class SpostamentoCamera : MonoBehaviour
             }
             else if (lenteMontata && schermoControllato)
             {
-                // Se hai già controllato lo schermo e hai in mano una lente DIVERSA, la cambi. Altrimenti ignora.
                 if (hoLenteInMano && nomeLenteInMano != lenteMontataQui)
                 {
                     if (lenteMontataQui != "") GameManager.instance.RestituisciOggettoAlTavolo(lenteMontataQui);
                     ResettaVisualeLenti(); 
                     PiazzaLente();
-                }
-                else
-                {
-                    Debug.Log("Questa telecamera è già a posto con questa lente!");
                 }
             }
         }
@@ -143,6 +138,8 @@ public class SpostamentoCamera : MonoBehaviour
             }
 
             lenteMontata = true;
+            inventario.RimuoviOggetto();
+
             Debug.Log($"<color=yellow>Lente montata su {gameObject.name}. Ora controlla lo schermo!</color>");
         }
     }
@@ -189,7 +186,6 @@ public class SpostamentoCamera : MonoBehaviour
 
         if (tutteFatte)
         {
-            // Solo ora che hai finito tutte le camere, ti tolgo la lente dalle mani!
             InventarioGiocatore inv = FindFirstObjectByType<InventarioGiocatore>();
             if (inv != null) inv.RimuoviOggetto();
 
@@ -269,33 +265,48 @@ public class SpostamentoCamera : MonoBehaviour
         }
     }
 
+    // --- NUOVA LOGICA EVIDENZIATORE ---
     void GestisciEvidenziatore()
     {
-        if (evidenziatore != null && GameManager.instance != null)
+        if (evidenziatore == null || GameManager.instance == null) return;
+
+        if (inModalitaSpostamento || inControlloSchermo)
         {
-            if (inModalitaSpostamento || inControlloSchermo)
-            {
-                evidenziatore.Spegni();
-                return;
-            }
+            evidenziatore.Spegni();
+            return;
+        }
 
-            bool faseFotografia = (GameManager.instance.taskAttuale == GameManager.Reparto.Fotografia);
-            bool faseRevisione = (GameManager.instance.taskAttuale == GameManager.Reparto.Regia);
-            
-            InventarioGiocatore inventario = FindFirstObjectByType<InventarioGiocatore>();
-            bool hoLenteInMano = (inventario != null && inventario.haUnOggetto && inventario.categoriaInMano == OggettoRaccolta.TipoOggetto.Lente);
+        bool faseFotografia = (GameManager.instance.taskAttuale == GameManager.Reparto.Fotografia);
+        bool faseRevisione = (GameManager.instance.taskAttuale == GameManager.Reparto.Regia);
+        
+        InventarioGiocatore inv = FindFirstObjectByType<InventarioGiocatore>();
+        bool hoLenteInMano = (inv != null && inv.haUnOggetto && inv.categoriaInMano == OggettoRaccolta.TipoOggetto.Lente);
+        bool hoManiVuote = (inv == null || !inv.haUnOggetto);
+        string nomeLenteInMano = hoLenteInMano ? inv.oggettoInMano : "";
 
-            if (faseFotografia)
-            {
-                if (!lenteMontata && hoLenteInMano) evidenziatore.Accendi(); 
-                else if (lenteMontata && !schermoControllato) evidenziatore.Accendi(); 
-                else evidenziatore.Spegni(); 
-            }
-            else if (faseRevisione)
-            {
+        if (faseFotografia)
+        {
+            if (!lenteMontata && hoLenteInMano) 
                 evidenziatore.Accendi(); 
-            }
-            else evidenziatore.Spegni();
+            else if (lenteMontata && !schermoControllato) 
+                evidenziatore.Accendi(); 
+            else if (lenteMontata && schermoControllato && hoLenteInMano && nomeLenteInMano != lenteMontataQui) 
+                evidenziatore.Accendi();
+            else 
+                evidenziatore.Spegni(); 
+        }
+        else if (faseRevisione)
+        {
+            if (hoManiVuote) 
+                evidenziatore.Accendi();
+            else if (hoLenteInMano && nomeLenteInMano != lenteMontataQui) 
+                evidenziatore.Accendi();
+            else 
+                evidenziatore.Spegni();
+        }
+        else 
+        {
+            evidenziatore.Spegni();
         }
     }
 
