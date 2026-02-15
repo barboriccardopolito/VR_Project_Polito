@@ -1,7 +1,13 @@
 using UnityEngine;
 
 public class SupportoMicrofono : MonoBehaviour
-{
+{    
+    private string micMontatoQui = "";
+
+    [Header("Impostazioni Asta")]
+    [Tooltip("Scrivi 'Boom' o 'Ambisonic' per forzare quest'asta ad accettare SOLO quel microfono. Lascia vuoto per accettarli tutti.")]
+    public string tipoMicrofonoAccettato = "";
+
     [Header("Modelli 3D Figli")]
     public GameObject modelloBoom;
     public GameObject modelloAmbisonic;
@@ -21,39 +27,55 @@ public class SupportoMicrofono : MonoBehaviour
         NascondiTutto();
     }
 
-    public void PiazzaMicrofono() // Chiamata quando premi E sullo stativo
+    public void PiazzaMicrofono() 
     {
         GameManager gm = GameManager.instance;
         InventarioGiocatore inventario = FindFirstObjectByType<InventarioGiocatore>(); 
 
         if (gm == null || inventario == null) return;
+        if (gm.taskAttuale != GameManager.Reparto.Fonico && gm.taskAttuale != GameManager.Reparto.Regia) return;
 
-        if (gm.taskAttuale != GameManager.Reparto.Fonico) return;
+        bool hoMicInMano = (inventario.haUnOggetto && inventario.categoriaInMano == OggettoRaccolta.TipoOggetto.Microfono);
+        string nomeMicInMano = hoMicInMano ? inventario.oggettoInMano : "";
 
-        if (microfonoPiazzato)
+        // --- NOVITÀ: CONTROLLO ASTA CORRETTA ---
+        if (hoMicInMano && !string.IsNullOrEmpty(tipoMicrofonoAccettato))
         {
-            Debug.Log("Questo supporto ha già un microfono.");
-            return;
+            if (!IsNameMatch(nomeMicInMano, tipoMicrofonoAccettato))
+            {
+                Debug.Log($"<color=orange>Quest'asta accetta solo {tipoMicrofonoAccettato}! Tu hai {nomeMicInMano}.</color>");
+                return; // Ferma tutto, non te lo fa montare!
+            }
         }
 
-        // --- CONTROLLO CORRETTO SULL'INVENTARIO ---
-        if (!inventario.haUnOggetto || inventario.categoriaInMano != OggettoRaccolta.TipoOggetto.Microfono)
+        // --- CASO 1: MICROFONO GIA' PRESENTE ---
+        if (microfonoPiazzato)
+        {
+            if (hoMicInMano && nomeMicInMano != micMontatoQui)
+            {
+                gm.RestituisciOggettoAlTavolo(micMontatoQui); 
+                ResettaSupporto(); 
+            }
+            else
+            {
+                return; // Evita loop se premi E con lo stesso mic in mano
+            }
+        }
+        else if (!hoMicInMano)
         {
             Debug.Log("Non hai un microfono in mano!");
             return;
         }
 
+        // --- CASO 2: MONTAGGIO ---
         string nomeMic = inventario.oggettoInMano;
-        
-        // Salviamo la scelta per quando torneremo dall'NPC
+        micMontatoQui = nomeMic; 
         gm.micDaInstallare = nomeMic; 
-
-        // Variabili per la Cinematica
+        
         GameObject micAttivato = null;
         string titoloOlogramma = "";
         string descOlogramma = "";
 
-        // RICONOSCIMENTO MICROFONO E TESTI
         if (IsNameMatch(nomeMic, "Boom")) 
         { 
             if (modelloBoom) { modelloBoom.SetActive(true); micAttivato = modelloBoom; }
@@ -70,34 +92,8 @@ public class SupportoMicrofono : MonoBehaviour
         if (micAttivato != null)
         {
             microfonoPiazzato = true;
-            gm.supportoPiazzato = true; // Diciamo al GM che il pezzo fisico è sul set
-            
-            // Svuotiamo la mano del giocatore
-            inventario.RimuoviOggetto();
-
-            // --- LANCIO DELLA CINEMATICA (Se presente) ---
-            MontaggioMicrofonoCinematica cinematica = GetComponent<MontaggioMicrofonoCinematica>();
-            if (cinematica != null)
-            {
-                cinematica.AvviaCinematicaMontaggio(micAttivato, titoloOlogramma, descOlogramma);
-            }
-            else
-            {
-                // Fallback sonoro se non hai ancora messo lo script della cinematica
-                if (suonoPiazzamento != null) audioSource.PlayOneShot(suonoPiazzamento);
-            }
-
-            Debug.Log($"<color=green>Microfono piazzato! Torna dal Fonico per il Soundcheck.</color>");
-            // NON COMPLETIAMO LA TASK QUI! Ci penserà l'NPC quando andremo a parlargli.
-        }
-
-        if (micAttivato != null)
-        {
-            microfonoPiazzato = true;
             gm.supportoPiazzato = true; 
             
-            inventario.RimuoviOggetto();
-
             MontaggioMicrofonoCinematica cinematica = GetComponent<MontaggioMicrofonoCinematica>();
             if (cinematica != null)
             {
@@ -108,10 +104,15 @@ public class SupportoMicrofono : MonoBehaviour
                 if (suonoPiazzamento != null) audioSource.PlayOneShot(suonoPiazzamento);
             }
 
-            // --- AUTO COMPLETAMENTO TASK ---
-            Debug.Log($"<color=green>Microfono piazzato! Passiamo al prossimo reparto.</color>");
-            gm.ApplicaEffettoMicrofono(nomeMic); // Attiva l'effetto radio/ambiente
-            gm.CompletaTask(GameManager.Reparto.Fonico); // Chiude la task e fa squillare la radio!
+            // Pulizia sicura inventario e chiusura task
+            inventario.RimuoviOggetto();
+            gm.ApplicaEffettoMicrofono(nomeMic);
+
+            if (gm.taskAttuale == GameManager.Reparto.Fonico)
+            {
+                Debug.Log($"<color=green>Microfono piazzato! Passiamo al prossimo reparto.</color>");
+                gm.CompletaTask(GameManager.Reparto.Fonico); 
+            }
         }
     }
 

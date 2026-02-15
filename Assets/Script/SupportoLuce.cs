@@ -1,7 +1,9 @@
 using UnityEngine;
 
 public class SupportoLuce : MonoBehaviour
-{
+{    
+    private string luceMontataQui = "";
+
     [Header("Modelli 3D Figli")]
     public GameObject modelloSoftbox;
     public GameObject modelloFresnel;
@@ -28,24 +30,37 @@ public class SupportoLuce : MonoBehaviour
         InventarioGiocatore inventario = FindFirstObjectByType<InventarioGiocatore>(); 
         
         if (gm == null || inventario == null) return;
+        if (gm.taskAttuale != GameManager.Reparto.Luci && gm.taskAttuale != GameManager.Reparto.Regia) return;
 
-        if (gm.taskAttuale != GameManager.Reparto.Luci) return;
+        bool hoLuceInMano = (inventario.haUnOggetto && inventario.categoriaInMano == OggettoRaccolta.TipoOggetto.Luce);
+        string nomeLuceInMano = hoLuceInMano ? inventario.oggettoInMano : "";
 
+        // --- CASO 1: LA LUCE E' GIA' SU QUESTO STATIVO ---
         if (luceGiaPosizionata) 
         {
-            Debug.Log("Questo supporto ha già una luce.");
-            return;
+            if (hoLuceInMano && nomeLuceInMano != luceMontataQui)
+            {
+                // CAMBIO LUCE! Restituisce la vecchia al tavolo e accetta la nuova.
+                gm.RestituisciOggettoAlTavolo(luceMontataQui); 
+                ResettaSupporto(); 
+            }
+            else
+            {
+                // Se hai in mano la stessa luce o non hai niente, ignoralo. Niente spam in console.
+                return;
+            }
         }
-
-        if (!inventario.haUnOggetto || inventario.categoriaInMano != OggettoRaccolta.TipoOggetto.Luce)
+        else if (!hoLuceInMano) // Se lo stativo è vuoto ma non hai niente in mano
         {
             Debug.Log("Non hai una luce in mano!");
             return;
         }
 
+        // --- CASO 2: MONTAGGIO (Primo o Cambio) ---
         string nomeLuce = inventario.oggettoInMano;
+        luceMontataQui = nomeLuce; // Salva la memoria della nuova luce!
         gm.LuceScelta = nomeLuce; 
-
+        
         // VARIABILI PER LA CINEMATICA
         GameObject luceAttivata = null;
         string titoloOlogramma = "";
@@ -79,12 +94,10 @@ public class SupportoLuce : MonoBehaviour
             MontaggioLuceCinematica cinematica = GetComponent<MontaggioLuceCinematica>();
             if (cinematica != null)
             {
-                // Avvia l'animazione calandola dall'alto e scrivendo l'ologramma!
                 cinematica.AvviaCinematicaMontaggio(luceAttivata, titoloOlogramma, descOlogramma);
             }
             else
             {
-                // Fallback classico se dimentichi di mettere lo script della cinematica
                 if (suonoPiazzamento != null) audioSource.PlayOneShot(suonoPiazzamento);
             }
             
@@ -115,15 +128,27 @@ public class SupportoLuce : MonoBehaviour
 
         Debug.Log($"<color=white>Stato Luci (da lista GM): {completati} su {totali} supporti pronti.</color>");
 
+        // SOLO SE tutte le luci sono state piazzate E non l'avevamo già fatto prima, chiudiamo la task!
         if (completati >= totali && totali > 0)
         {
-            InventarioGiocatore inv = FindFirstObjectByType<InventarioGiocatore>();
-            if (inv != null) inv.RimuoviOggetto();
+            // Se eravamo al "Primo Giro" (non in regia), svuotiamo le mani e passiamo al prossimo reparto.
+            if (GameManager.instance.taskAttuale == GameManager.Reparto.Luci)
+            {
+                InventarioGiocatore inv = FindFirstObjectByType<InventarioGiocatore>();
+                if (inv != null) inv.RimuoviOggetto();
 
-            GameManager.instance.LucePosizionataCorrettamente = true;
-            GameManager.instance.CompletaTask(GameManager.Reparto.Luci);
-            
-            Debug.Log("<color=green>TUTTI I SUPPORTI DELLA LISTA SONO PRONTI!</color>");
+                GameManager.instance.LucePosizionataCorrettamente = true;
+                GameManager.instance.CompletaTask(GameManager.Reparto.Luci);
+                
+                Debug.Log("<color=green>TUTTI I SUPPORTI DELLA LISTA SONO PRONTI! Task Completata!</color>");
+            }
+            // Se siamo in Regia, non forziamo la chiusura della task (che è già Regia)
+            // e svuotiamo le mani per evitare bug visivi dell'inventario.
+            else if (GameManager.instance.taskAttuale == GameManager.Reparto.Regia)
+            {
+                InventarioGiocatore inv = FindFirstObjectByType<InventarioGiocatore>();
+                if (inv != null) inv.RimuoviOggetto();
+            }
         }
     }
 

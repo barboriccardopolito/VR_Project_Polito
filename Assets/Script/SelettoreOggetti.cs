@@ -146,7 +146,10 @@ public class SelettoreOggetti : MonoBehaviour
         canvasObj.SetActive(false);
     }
 
-    public bool PuoiInteragire() { return GameManager.instance != null && GameManager.instance.taskAttuale == taskRichiesta; }
+    public bool PuoiInteragire() 
+    { 
+        return GameManager.instance != null && (GameManager.instance.taskAttuale == taskRichiesta || GameManager.instance.taskAttuale == GameManager.Reparto.Regia); 
+    }
 
     public void EntraInSelezione()
     {
@@ -294,6 +297,17 @@ public class SelettoreOggetti : MonoBehaviour
         {
             if (oggetti[indiceAttuale] != null && oggetti[indiceAttuale].gameObject.activeInHierarchy)
             {
+                // ---- NUOVA LOGICA: RESTITUISCE L'OGGETTO CHE AVEVI GIA' IN MANO ----
+                if (scriptInterazione != null)
+                {
+                    InventarioGiocatore inv = scriptInterazione.GetComponent<InventarioGiocatore>();
+                    if (inv != null && inv.haUnOggetto && GameManager.instance != null)
+                    {
+                        GameManager.instance.RestituisciOggettoAlTavolo(inv.oggettoInMano);
+                    }
+                }
+                // -------------------------------------------------------------------
+
                 oggetti[indiceAttuale].EseguiRaccolta();
                 oggetti[indiceAttuale].transform.localPosition = posOriginali[indiceAttuale];
                 oggetti[indiceAttuale].transform.localRotation = rotOriginali[indiceAttuale];

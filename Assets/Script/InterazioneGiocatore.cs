@@ -57,40 +57,69 @@ public class InterazioneGiocatore : MonoBehaviour
             bool trovatoQualcosa = false;
             string messaggioDaMostrare = "";
 
-            // 1. NPC (Se sta parlando, nascondiamo tutto)
+            InventarioGiocatore inv = GetComponent<InventarioGiocatore>();
+            bool hoLuce = (inv != null && inv.haUnOggetto && inv.categoriaInMano == OggettoRaccolta.TipoOggetto.Luce);
+            bool hoMic = (inv != null && inv.haUnOggetto && inv.categoriaInMano == OggettoRaccolta.TipoOggetto.Microfono);
+            bool hoLente = (inv != null && inv.haUnOggetto && inv.categoriaInMano == OggettoRaccolta.TipoOggetto.Lente);
+
+            // 1. NPC (Se sta parlando O l'audio sta suonando, nascondiamo tutto)
             InteragibileNPC npc = hit.collider.GetComponent<InteragibileNPC>();
+            if (npc == null) npc = hit.collider.GetComponentInParent<InteragibileNPC>(); // Sicurezza per collider multipli
+
             if (npc != null)
             {
-                if (!npc.staParlando) 
+                // CONTROLLO AUDIO: Se l'NPC sta emettendo suono dal suo AudioSource, consideriamolo "parlante"
+                AudioSource voceNpc = npc.GetComponentInChildren<AudioSource>();
+                bool staRiproducendoAudio = (voceNpc != null && voceNpc.isPlaying);
+
+                if (!npc.staParlando && !staRiproducendoAudio) 
                 {
                     trovatoQualcosa = true;
                     messaggioDaMostrare = "[E] PARLA";
                 }
             }
             
-            // 2. SUPPORTI LUCI (Se c'è già la luce, nascondiamo)
+            // 2. SUPPORTI LUCI
             else if (hit.collider.GetComponent<SupportoLuce>() != null) 
             {
                 SupportoLuce luce = hit.collider.GetComponent<SupportoLuce>();
-                if (!luce.luceGiaPosizionata && GameManager.instance != null && GameManager.instance.taskAttuale == GameManager.Reparto.Luci)
+                if (GameManager.instance != null)
                 {
-                    trovatoQualcosa = true;
-                    messaggioDaMostrare = "[E] PIAZZA LUCE";
+                    if (!luce.luceGiaPosizionata && GameManager.instance.taskAttuale == GameManager.Reparto.Luci)
+                        { trovatoQualcosa = true; messaggioDaMostrare = "[E] PIAZZA LUCE"; }
+                    else if (GameManager.instance.taskAttuale == GameManager.Reparto.Regia && hoLuce)
+                        { trovatoQualcosa = true; messaggioDaMostrare = "[E] CAMBIA LUCE"; }
                 }
             }
 
-            // 3. SUPPORTI MICROFONI (Se c'è già il mic, nascondiamo)
+// 3. SUPPORTI MICROFONI
             else if (hit.collider.GetComponent<SupportoMicrofono>() != null)
             {
                 SupportoMicrofono mic = hit.collider.GetComponent<SupportoMicrofono>();
-                if (!mic.microfonoPiazzato && GameManager.instance != null && GameManager.instance.taskAttuale == GameManager.Reparto.Fonico)
+                if (GameManager.instance != null)
                 {
-                    trovatoQualcosa = true;
-                    messaggioDaMostrare = "[E] PIAZZA MICROFONO";
+                    // Controlla se la chiave corrisponde alla serratura!
+                    bool astaCorretta = true;
+                    if (hoMic && !string.IsNullOrEmpty(mic.tipoMicrofonoAccettato))
+                    {
+                        astaCorretta = inv.oggettoInMano.ToLower().Contains(mic.tipoMicrofonoAccettato.ToLower());
+                    }
+
+                    if (astaCorretta)
+                    {
+                        if (!mic.microfonoPiazzato && GameManager.instance.taskAttuale == GameManager.Reparto.Fonico)
+                            { trovatoQualcosa = true; messaggioDaMostrare = "[E] PIAZZA MICROFONO"; }
+                        else if (GameManager.instance.taskAttuale == GameManager.Reparto.Regia && hoMic)
+                            { trovatoQualcosa = true; messaggioDaMostrare = "[E] CAMBIA MICROFONO"; }
+                    }
+                    else
+                    {
+                        if (hoMic) { trovatoQualcosa = true; messaggioDaMostrare = "ASTA ERRATA"; }
+                    }
                 }
             }
 
-            // 4. VIDEOCAMERE (Controlla lo stato dei montaggi)
+            // 4. VIDEOCAMERE
             else if (hit.collider.GetComponent<SpostamentoCamera>() != null || hit.collider.GetComponentInParent<SpostamentoCamera>() != null) 
             {
                 SpostamentoCamera spostaCam = hit.collider.GetComponent<SpostamentoCamera>();
@@ -100,19 +129,14 @@ public class InterazioneGiocatore : MonoBehaviour
                 {
                     if (GameManager.instance.taskAttuale == GameManager.Reparto.Fotografia)
                     {
-                        if (!spostaCam.lenteMontata) 
-                        { 
-                            trovatoQualcosa = true; messaggioDaMostrare = "[E] MONTA LENTE"; 
-                        }
-                        else if (!spostaCam.schermoControllato) 
-                        { 
-                            trovatoQualcosa = true; messaggioDaMostrare = "[E] CONTROLLA SCHERMO"; 
-                        }
+                        if (!spostaCam.lenteMontata) { trovatoQualcosa = true; messaggioDaMostrare = "[E] MONTA LENTE"; }
+                        else if (!spostaCam.schermoControllato) { trovatoQualcosa = true; messaggioDaMostrare = "[E] CONTROLLA SCHERMO"; }
                     }
                     else if (GameManager.instance.taskAttuale == GameManager.Reparto.Regia)
                     {
                         trovatoQualcosa = true;
-                        messaggioDaMostrare = "[E] SPOSTA CAMERA";
+                        if (hoLente) messaggioDaMostrare = "[E] CAMBIA LENTE";
+                        else messaggioDaMostrare = "[E] SPOSTA CAMERA";
                     }
                 }
             }
@@ -159,7 +183,7 @@ public class InterazioneGiocatore : MonoBehaviour
             else if (hit.collider.GetComponent<PortaSet>() != null)
             {
                 PortaSet porta = hit.collider.GetComponent<PortaSet>();
-                if (!porta.isOpen) // Se è chiusa, mostra il testo
+                if (!porta.isOpen)
                 {
                     trovatoQualcosa = true;
                     if (GameManager.instance != null && GameManager.instance.taskAttuale == GameManager.Reparto.Produzione)
@@ -216,7 +240,6 @@ public class InterazioneGiocatore : MonoBehaviour
         Ray raggio = new Ray(cameraGiocatore.position, cameraGiocatore.forward);
         RaycastHit hit;
         
-        // IL CONTROLLO DELLA PORTA VA DOPO IL RAYCAST (Cioè dopo aver sparato il raggio e riempito "hit")
         if (Physics.Raycast(raggio, out hit, distanzaInterazione, layerDaColpire))
         {
             PortaSet portaDaAprire = hit.collider.GetComponent<PortaSet>();
@@ -243,6 +266,7 @@ public class InterazioneGiocatore : MonoBehaviour
             if (attore != null) { attore.ProvaAMicrofonare(); return; }
 
             InteragibileNPC npc = hit.collider.GetComponent<InteragibileNPC>();
+            if (npc == null) npc = hit.collider.GetComponentInParent<InteragibileNPC>();
             if (npc != null) { npc.Interagisci(); return; }
 
             SpostamentoCamera spostaCam = hit.collider.GetComponent<SpostamentoCamera>();

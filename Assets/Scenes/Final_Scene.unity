@@ -10362,7 +10362,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.RenderPipelines.Core.Runtime::UnityEngine.Rendering.ProbeVolume
   mode: 0
-  size: {x: 24.634993, y: 23.614204, z: 36.892033}
+  size: {x: 24.634993, y: 23.614202, z: 36.892033}
   overrideRendererFilters: 0
   minRendererVolumeSize: 0.1
   objectLayerMask:
@@ -26459,6 +26459,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73ce508ae3f08944184e90aaae44a1f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SupportoMicrofono
+  tipoMicrofonoAccettato: Ambisonic
   modelloBoom: {fileID: 2042488812}
   modelloAmbisonic: {fileID: 725268388}
   suonoPiazzamento: {fileID: 8300000, guid: 31385c2720f92e14eb6694b147f8e3f9, type: 3}
@@ -39689,23 +39690,23 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2969941170601612251, guid: f329066c68def48dc9124029609011ec, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.66300076
       objectReference: {fileID: 0}
     - target: {fileID: 2969941170601612251, guid: f329066c68def48dc9124029609011ec, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 2969941170601612251, guid: f329066c68def48dc9124029609011ec, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0.7486188
       objectReference: {fileID: 0}
     - target: {fileID: 2969941170601612251, guid: f329066c68def48dc9124029609011ec, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 2969941170601612251, guid: f329066c68def48dc9124029609011ec, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: -96.942
       objectReference: {fileID: 0}
     - target: {fileID: 5195406635965057101, guid: f329066c68def48dc9124029609011ec, type: 3}
       propertyPath: m_StaticEditorFlags
@@ -46976,6 +46977,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73ce508ae3f08944184e90aaae44a1f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SupportoMicrofono
+  tipoMicrofonoAccettato: Boom
   modelloBoom: {fileID: 2042488812}
   modelloAmbisonic: {fileID: 725268388}
   suonoPiazzamento: {fileID: 8300000, guid: 31385c2720f92e14eb6694b147f8e3f9, type: 3}
