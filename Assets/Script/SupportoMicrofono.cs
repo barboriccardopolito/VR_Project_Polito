@@ -90,6 +90,29 @@ public class SupportoMicrofono : MonoBehaviour
             Debug.Log($"<color=green>Microfono piazzato! Torna dal Fonico per il Soundcheck.</color>");
             // NON COMPLETIAMO LA TASK QUI! Ci penserà l'NPC quando andremo a parlargli.
         }
+
+        if (micAttivato != null)
+        {
+            microfonoPiazzato = true;
+            gm.supportoPiazzato = true; 
+            
+            inventario.RimuoviOggetto();
+
+            MontaggioMicrofonoCinematica cinematica = GetComponent<MontaggioMicrofonoCinematica>();
+            if (cinematica != null)
+            {
+                cinematica.AvviaCinematicaMontaggio(micAttivato, titoloOlogramma, descOlogramma);
+            }
+            else
+            {
+                if (suonoPiazzamento != null) audioSource.PlayOneShot(suonoPiazzamento);
+            }
+
+            // --- AUTO COMPLETAMENTO TASK ---
+            Debug.Log($"<color=green>Microfono piazzato! Passiamo al prossimo reparto.</color>");
+            gm.ApplicaEffettoMicrofono(nomeMic); // Attiva l'effetto radio/ambiente
+            gm.CompletaTask(GameManager.Reparto.Fonico); // Chiude la task e fa squillare la radio!
+        }
     }
 
     public void ResettaSupporto()

@@ -157,14 +157,21 @@ public class SelettoreOggetti : MonoBehaviour
 
         BloccaGiocatore(true);
         
-        // --- SPEGNIMENTO SICURO ---
+        // --- SPEGNIMENTO SICURO DEL GIOCATORE ---
         if (cameraGiocatore != null) 
         {
             cameraGiocatore.enabled = false; 
             cameraGiocatore.gameObject.SetActive(false); 
         }
         
-        if (cameraDallAlto != null) cameraDallAlto.gameObject.SetActive(true);
+        // --- ACCENSIONE TELECAMERA TAVOLO E ORECCHIE ---
+        if (cameraDallAlto != null) 
+        {
+            cameraDallAlto.gameObject.SetActive(true);
+            AudioListener al = cameraDallAlto.GetComponent<AudioListener>();
+            if (al != null) al.enabled = true; 
+        }
+
         if (hudGiocatore != null) hudGiocatore.SetActive(false);
 
         if (pannelloSchedaUI != null) pannelloSchedaUI.SetActive(true);
@@ -264,9 +271,15 @@ public class SelettoreOggetti : MonoBehaviour
         if (coroutineScrittura != null) StopCoroutine(coroutineScrittura);
         if (coroutineAnimazioneBarre != null) StopCoroutine(coroutineAnimazioneBarre);
 
-        // --- ACCENSIONE SICURA ---
-        if (cameraDallAlto != null) cameraDallAlto.gameObject.SetActive(false);
+        // --- SPEGNIMENTO TELECAMERA TAVOLO E ORECCHIE ---
+        if (cameraDallAlto != null) 
+        {
+            cameraDallAlto.gameObject.SetActive(false);
+            AudioListener al = cameraDallAlto.GetComponent<AudioListener>();
+            if (al != null) al.enabled = false;
+        }
         
+        // --- ACCENSIONE SICURA DEL GIOCATORE ---
         if (cameraGiocatore != null) 
         {
             cameraGiocatore.gameObject.SetActive(true); 
