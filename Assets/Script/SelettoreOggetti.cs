@@ -43,6 +43,14 @@ public class SelettoreOggetti : MonoBehaviour
     [Range(0f, 1f)] public float altezzaMassimaBarre = 0.9f;
     private Coroutine coroutineAnimazioneBarre;
 
+    // --- NUOVA SEZIONE: PALLINI CAROSELLO ---
+    [Header("UI - Indicatori Carosello")]
+    [Tooltip("Trascina qui le immagini dei pallini nell'ordine corretto (da sinistra a destra)")]
+    public Image[] palliniIndicatori;
+    public Color colorePallinoAttivo = Color.white;
+    public Color colorePallinoInattivo = new Color(1f, 1f, 1f, 0.3f); // Bianco semi-trasparente
+    // ----------------------------------------
+
     [Header("Effetto Macchina Da Scrivere")]
     public float velocitaScrittura = 0.03f;
     public AudioClip suonoBattitura;
@@ -156,18 +164,26 @@ public class SelettoreOggetti : MonoBehaviour
         if (inSelezione) return;
         inSelezione = true;
         possoUscire = false;
+        
+        // Cerca il primo oggetto attivo per non puntare al vuoto
         indiceAttuale = 0;
+        for (int i = 0; i < oggetti.Length; i++)
+        {
+            if (oggetti[i] != null && oggetti[i].gameObject.activeInHierarchy)
+            {
+                indiceAttuale = i;
+                break;
+            }
+        }
 
         BloccaGiocatore(true);
         
-        // --- SPEGNIMENTO SICURO DEL GIOCATORE ---
         if (cameraGiocatore != null) 
         {
             cameraGiocatore.enabled = false; 
             cameraGiocatore.gameObject.SetActive(false); 
         }
         
-        // --- ACCENSIONE TELECAMERA TAVOLO E ORECCHIE ---
         if (cameraDallAlto != null) 
         {
             cameraDallAlto.gameObject.SetActive(true);
@@ -179,6 +195,7 @@ public class SelettoreOggetti : MonoBehaviour
 
         if (pannelloSchedaUI != null) pannelloSchedaUI.SetActive(true);
         AggiornaSchedaTecnica();
+        AggiornaPallini(); // <-- Aggiorna la grafica dei pallini all'apertura
         
         if (coroutineAnimazioneBarre != null) StopCoroutine(coroutineAnimazioneBarre);
         coroutineAnimazioneBarre = StartCoroutine(AnimaBarreContestuali());
@@ -259,6 +276,36 @@ public class SelettoreOggetti : MonoBehaviour
 
         rotazioneOggettoCorrente = Vector2.zero;
         AggiornaSchedaTecnica();
+        AggiornaPallini(); // <-- Aggiorna i pallini quando scorri
+    }
+
+    // --- NUOVA LOGICA: GESTIONE GRAFICA PALLINI ---
+    void AggiornaPallini()
+    {
+        if (palliniIndicatori == null || palliniIndicatori.Length == 0) return;
+
+        for (int i = 0; i < palliniIndicatori.Length; i++)
+        {
+            if (palliniIndicatori[i] != null)
+            {
+                // Se l'oggetto associato a questo pallino non c'è sul tavolo (es. l'hai già in mano), 
+                // nascondi il pallino completamente!
+                if (i < oggetti.Length && (oggetti[i] == null || !oggetti[i].gameObject.activeInHierarchy))
+                {
+                    palliniIndicatori[i].gameObject.SetActive(false);
+                }
+                else
+                {
+                    palliniIndicatori[i].gameObject.SetActive(true);
+                    
+                    // Se è l'indice attuale, accendilo. Altrimenti, rendilo trasparente.
+                    if (i == indiceAttuale)
+                        palliniIndicatori[i].color = colorePallinoAttivo;
+                    else
+                        palliniIndicatori[i].color = colorePallinoInattivo;
+                }
+            }
+        }
     }
 
     void ScegliOggetto()
@@ -274,7 +321,6 @@ public class SelettoreOggetti : MonoBehaviour
         if (coroutineScrittura != null) StopCoroutine(coroutineScrittura);
         if (coroutineAnimazioneBarre != null) StopCoroutine(coroutineAnimazioneBarre);
 
-        // --- SPEGNIMENTO TELECAMERA TAVOLO E ORECCHIE ---
         if (cameraDallAlto != null) 
         {
             cameraDallAlto.gameObject.SetActive(false);
@@ -282,7 +328,6 @@ public class SelettoreOggetti : MonoBehaviour
             if (al != null) al.enabled = false;
         }
         
-        // --- ACCENSIONE SICURA DEL GIOCATORE ---
         if (cameraGiocatore != null) 
         {
             cameraGiocatore.gameObject.SetActive(true); 
@@ -297,7 +342,6 @@ public class SelettoreOggetti : MonoBehaviour
         {
             if (oggetti[indiceAttuale] != null && oggetti[indiceAttuale].gameObject.activeInHierarchy)
             {
-                // ---- NUOVA LOGICA: RESTITUISCE L'OGGETTO CHE AVEVI GIA' IN MANO ----
                 if (scriptInterazione != null)
                 {
                     InventarioGiocatore inv = scriptInterazione.GetComponent<InventarioGiocatore>();
@@ -306,7 +350,6 @@ public class SelettoreOggetti : MonoBehaviour
                         GameManager.instance.RestituisciOggettoAlTavolo(inv.oggettoInMano);
                     }
                 }
-                // -------------------------------------------------------------------
 
                 oggetti[indiceAttuale].EseguiRaccolta();
                 oggetti[indiceAttuale].transform.localPosition = posOriginali[indiceAttuale];
