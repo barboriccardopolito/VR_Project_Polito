@@ -108,7 +108,6 @@ public class InterazioneGiocatore : MonoBehaviour
                         { 
                             trovatoQualcosa = true; messaggioDaMostrare = "[E] CONTROLLA SCHERMO"; 
                         }
-                        // Se ha fatto tutto, "trovatoQualcosa" resta false e non mostra niente!
                     }
                     else if (GameManager.instance.taskAttuale == GameManager.Reparto.Regia)
                     {
@@ -155,9 +154,7 @@ public class InterazioneGiocatore : MonoBehaviour
                 trovatoQualcosa = true;
                 messaggioDaMostrare = "[E] SPEGNI";
             }
-            
-            PortaSet porta = hit.collider.GetComponent<PortaSet>();
-            if (porta != null && !porta.isOpen) { porta.TentaApertura(); return; }
+
             // 8. LA PORTA DEL SET
             else if (hit.collider.GetComponent<PortaSet>() != null)
             {
@@ -219,8 +216,12 @@ public class InterazioneGiocatore : MonoBehaviour
         Ray raggio = new Ray(cameraGiocatore.position, cameraGiocatore.forward);
         RaycastHit hit;
         
+        // IL CONTROLLO DELLA PORTA VA DOPO IL RAYCAST (Cioè dopo aver sparato il raggio e riempito "hit")
         if (Physics.Raycast(raggio, out hit, distanzaInterazione, layerDaColpire))
         {
+            PortaSet portaDaAprire = hit.collider.GetComponent<PortaSet>();
+            if (portaDaAprire != null && !portaDaAprire.isOpen) { portaDaAprire.TentaApertura(); return; }
+
             SelettoreOggetti selettore = hit.collider.GetComponent<SelettoreOggetti>();
             OggettoRaccolta obj = hit.collider.GetComponent<OggettoRaccolta>();
 

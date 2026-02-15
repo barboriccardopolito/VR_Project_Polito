@@ -41832,7 +41832,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79e6b283be3b69440a86ffa692c127c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PortaSet
-  angoloAperta: -119
+  rotazioneApertaY: -120
   velocitaApertura: 3
   isOpen: 0
 --- !u!65 &1724450878
