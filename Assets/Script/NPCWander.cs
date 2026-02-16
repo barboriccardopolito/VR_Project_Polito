@@ -9,7 +9,7 @@ public class NPCWander : MonoBehaviour
     public GameObject oggettoRadioFisico; 
 
     [Header("Posizioni")]
-    public Transform puntoDiUscitaSedia; 
+    public Transform puntoDiUscitaSedia; // Trascina qui l'oggetto vuoto "sicuro"
 
     [Header("Movimento")]
     public float raggioMovimento = 3f;
@@ -45,10 +45,11 @@ public class NPCWander : MonoBehaviour
         puntoIniziale = puntoDiUscitaSedia.position; 
 
         timer = tempoAttesaMin;
-        radioSistema = FindFirstObjectByType<RadioSistema>();
+        radioSistema = Object.FindFirstObjectByType<RadioSistema>();
 
         if (promptTastoR != null) promptTastoR.SetActive(false);
 
+        // Se il giocatore ha già la radio, l'NPC parte già in piedi che cammina
         if (radioSistema != null && radioSistema.haLaRadio)
             StartInPiedi();
         else
@@ -83,7 +84,11 @@ public class NPCWander : MonoBehaviour
             animator.SetFloat("Speed", agent.velocity.magnitude);
         }
 
-        if (isSeduto) return;
+        if (isSeduto)
+        {
+            if (staParlando) RuotaVersoGiocatore();
+            return;
+        }
 
         if (staParlando)
         {
@@ -140,13 +145,13 @@ public class NPCWander : MonoBehaviour
         }
 
         // --- 2. VISUALE LAVAGNA ---
-        FocusLavagna lavagna = FindFirstObjectByType<FocusLavagna>();
-        if (lavagna != null && lavagna.cameraLavagna != null) // Assicuriamoci che esista!
+        FocusLavagna lavagna = Object.FindFirstObjectByType<FocusLavagna>();
+        if (lavagna != null && lavagna.cameraLavagna != null)
         {
             lavagna.AvviaInquadratura();
             yield return new WaitForSeconds(0.5f); 
             
-            // Aspetta finché il focus è attivo (si spegnerà quando premi E)
+            // Aspetta finché il giocatore non preme E e chiude la lavagna
             yield return new WaitWhile(() => lavagna.isFocusAttivo);
         }
         else
@@ -186,6 +191,8 @@ public class NPCWander : MonoBehaviour
         if (radioSistema != null) radioSistema.AttivaLogicaRadio();
 
         staParlando = false;
+        
+        // 7. L'NPC SI ALZA E VA VIA
         Alzati();
     }
 
@@ -225,7 +232,7 @@ public class NPCWander : MonoBehaviour
             if (playerObj != null) targetGiocatore = playerObj.transform;
             else 
             {
-                 InterazioneGiocatore scriptPlayer = FindFirstObjectByType<InterazioneGiocatore>();
+                 InterazioneGiocatore scriptPlayer = Object.FindFirstObjectByType<InterazioneGiocatore>();
                  if(scriptPlayer != null) targetGiocatore = scriptPlayer.transform;
             }
         }

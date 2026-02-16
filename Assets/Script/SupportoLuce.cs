@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class SupportoLuce : MonoBehaviour
 {    
@@ -15,7 +16,6 @@ public class SupportoLuce : MonoBehaviour
 
     [HideInInspector] public bool luceGiaPosizionata = false;
 
-    // --- AGGIUNTA EVIDENZIATORE ---
     private Evidenziatore evidenziatore;
 
     void Start()
@@ -24,7 +24,6 @@ public class SupportoLuce : MonoBehaviour
         if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
         audioSource.spatialBlend = 1.0f; 
 
-        // Trova l'evidenziatore
         evidenziatore = GetComponent<Evidenziatore>();
         if (evidenziatore == null) evidenziatore = GetComponentInChildren<Evidenziatore>();
 
@@ -48,13 +47,11 @@ public class SupportoLuce : MonoBehaviour
 
         if (faseLuci)
         {
-            // Se devi ancora piazzarla e hai la luce in mano, si illumina!
             if (!luceGiaPosizionata && hoLuceInMano) evidenziatore.Accendi();
             else evidenziatore.Spegni();
         }
         else if (faseRevisione)
         {
-            // In regia, si illumina se hai una luce diversa in mano e vuoi fare uno scambio
             if (hoLuceInMano && luceGiaPosizionata && inv.oggettoInMano != luceMontataQui) evidenziatore.Accendi();
             else evidenziatore.Spegni();
         }
@@ -122,11 +119,48 @@ public class SupportoLuce : MonoBehaviour
             luceGiaPosizionata = true;
             
             MontaggioLuceCinematica cinematica = GetComponent<MontaggioLuceCinematica>();
-            if (cinematica != null) cinematica.AvviaCinematicaMontaggio(luceAttivata, titoloOlogramma, descOlogramma);
-            else if (suonoPiazzamento != null) audioSource.PlayOneShot(suonoPiazzamento);
+            if (cinematica != null) 
+            {
+                cinematica.AvviaCinematicaMontaggio(luceAttivata, titoloOlogramma, descOlogramma);
+                
+                // --- AVVIA LA MAGIA PER NASCONDERE L'OGGETTO IN MANO ---
+                StartCoroutine(NascondiLuceInManoDuranteCinematica(inventario));
+            }
+            else if (suonoPiazzamento != null) 
+            {
+                audioSource.PlayOneShot(suonoPiazzamento);
+            }
             
             VerificaCompletamentoLuci();
         }
+    }
+
+    // --- NUOVA COROUTINE PER GESTIRE LA VISIBILITÀ ---
+    IEnumerator NascondiLuceInManoDuranteCinematica(InventarioGiocatore inv)
+    {
+        // 1. Trova la telecamera del giocatore per sapere quando finirà la cutscene
+        Camera cameraGiocatore = inv.GetComponentInChildren<Camera>(true);
+
+        // 2. Trova i "Renderer" (disegnatori 3D) dell'oggetto in mano e li spegne
+        Renderer[] renderersInMano = inv.GetComponentsInChildren<Renderer>();
+        foreach (Renderer r in renderersInMano) r.enabled = false;
+
+        // 3. Diamo il tempo alla cinematica di iniziare e disabilitare la camera del giocatore
+        yield return new WaitForSeconds(0.2f);
+
+        // 4. Aspetta pazientemente finché la camera del giocatore non torna attiva
+        if (cameraGiocatore != null)
+        {
+            yield return new WaitUntil(() => cameraGiocatore.gameObject.activeInHierarchy && cameraGiocatore.enabled);
+        }
+        else
+        {
+            // Fallback di sicurezza: se non trova la camera, aspetta 4 secondi
+            yield return new WaitForSeconds(4f);
+        }
+
+        // 5. Cinematica finita! Riaccende l'oggetto in mano per il prossimo stativo
+        foreach (Renderer r in renderersInMano) r.enabled = true;
     }
 
     void VerificaCompletamentoLuci()

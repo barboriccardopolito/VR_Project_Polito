@@ -20,10 +20,8 @@ public class SelettoreOggetti : MonoBehaviour
     [Header("Impostazioni Task")]
     public GameManager.Reparto taskRichiesta;
     
-    // --- NOVITA': COLLEGAMENTO ALL'NPC ---
     [Tooltip("Trascina qui l'NPC che gestisce questo reparto per aspettare che finisca di parlare")]
     public NPC_Staff npcDiRiferimento;
-    // ------------------------------------
 
     [Header("Oggetti Selezionabili (I Pivot)")]
     public OggettoRaccolta[] oggetti;
@@ -206,12 +204,10 @@ public class SelettoreOggetti : MonoBehaviour
 
         bool hoOggettoInMano = (inv != null && inv.haUnOggetto);
         
-        // Controlla se abbiamo un NPC assegnato e se gli abbiamo già parlato
         bool npcHaParlato = (npcDiRiferimento == null || npcDiRiferimento.haGiaParlato);
 
         if (taskAttiva)
         {
-            // ORA LA REGOLA È: si accende se è la sua task, SE HAI LE MANI VUOTE, e SE L'NPC HA GIA' PARLATO!
             if (!hoOggettoInMano && npcHaParlato) 
                 evidenziatore.Accendi();
             else 
@@ -231,6 +227,7 @@ public class SelettoreOggetti : MonoBehaviour
     public void EntraInSelezione()
     {
         if (inSelezione) return;
+
         inSelezione = true;
         possoUscire = false;
         
@@ -382,19 +379,33 @@ public class SelettoreOggetti : MonoBehaviour
 
         BloccaGiocatore(false);
 
+        StartCoroutine(EseguiScambioERiattiva());
+    }
+
+    IEnumerator EseguiScambioERiattiva()
+    {
+        InventarioGiocatore inv = Object.FindFirstObjectByType<InventarioGiocatore>();
+
+        // 2. FASE DI RESTITUZIONE
+        if (inv != null && inv.haUnOggetto)
+        {
+            if (GameManager.instance != null)
+            {
+                // Salviamo l'informazione nel GameManager (se necessario)
+                GameManager.instance.RestituisciOggettoAlTavolo(inv.oggettoInMano);
+            }
+            
+            // LA MAGIA È QUI: RilasciaOggetto riaccende fisicamente l'oggetto sul tavolo!
+            inv.RilasciaOggetto();
+            
+            yield return new WaitForEndOfFrame(); 
+        }
+
+        // 3. FASE DI RACCOLTA
         try 
         {
             if (oggetti[indiceAttuale] != null && oggetti[indiceAttuale].gameObject.activeInHierarchy)
             {
-                if (scriptInterazione != null)
-                {
-                    InventarioGiocatore inv = scriptInterazione.GetComponent<InventarioGiocatore>();
-                    if (inv != null && inv.haUnOggetto && GameManager.instance != null)
-                    {
-                        GameManager.instance.RestituisciOggettoAlTavolo(inv.oggettoInMano);
-                    }
-                }
-
                 oggetti[indiceAttuale].EseguiRaccolta();
                 oggetti[indiceAttuale].transform.localPosition = posOriginali[indiceAttuale];
                 oggetti[indiceAttuale].transform.localRotation = rotOriginali[indiceAttuale];
@@ -405,14 +416,11 @@ public class SelettoreOggetti : MonoBehaviour
             Debug.LogWarning("Errore durante la raccolta: " + e.Message);
         }
 
-        StartCoroutine(RiattivaInterazioneRitardata());
-    }
-
-    IEnumerator RiattivaInterazioneRitardata()
-    {
         yield return new WaitUntil(() => !Input.GetKey(KeyCode.E));
         yield return new WaitForSeconds(0.1f);
-        if (scriptInterazione != null) scriptInterazione.enabled = true;
+        
+        InterazioneGiocatore interazione = Object.FindFirstObjectByType<InterazioneGiocatore>();
+        if (interazione != null) interazione.enabled = true;
     }
 
     void AggiornaSchedaTecnica()

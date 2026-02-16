@@ -106,7 +106,7 @@ public class SpostamentoCamera : MonoBehaviour
             {
                 if (lenteMontataQui != "") GameManager.instance.RestituisciOggettoAlTavolo(lenteMontataQui);
                 ResettaVisualeLenti(); 
-                PiazzaLente();         
+                PiazzaLente();        
             }
             else 
             {
@@ -131,6 +131,8 @@ public class SpostamentoCamera : MonoBehaviour
             if (cinematica != null && lenteDaAnimare != null)
             {
                 cinematica.AvviaCinematicaMontaggio(lenteDaAnimare);
+                // --- MAGIA: Nasconde la lente dalla mano mentre guardi l'animazione ---
+                StartCoroutine(NascondiOggettoInMano(inventario));
             }
             else
             {
@@ -138,11 +140,33 @@ public class SpostamentoCamera : MonoBehaviour
             }
 
             lenteMontata = true;
-            
-            // LA RIGA CHE SVUOTAVA LE MANI ERA QUI, ORA NON C'E' PIU'!
-
             Debug.Log($"<color=yellow>Lente montata su {gameObject.name}. Ora controlla lo schermo!</color>");
         }
+    }
+
+    // --- NUOVA COROUTINE PER NASCONDERE L'OGGETTO IN MANO DURANTE IL MIRINO ---
+    IEnumerator NascondiOggettoInMano(InventarioGiocatore inv)
+    {
+        Camera camGioc = inv.GetComponentInChildren<Camera>(true);
+        Renderer[] renderersInMano = inv.GetComponentsInChildren<Renderer>();
+        
+        // Spegne l'oggetto in mano
+        foreach (Renderer r in renderersInMano) r.enabled = false;
+
+        yield return new WaitForSeconds(0.2f);
+
+        // Aspetta finché il giocatore non torna padrone della sua visuale
+        if (camGioc != null)
+        {
+            yield return new WaitUntil(() => camGioc.gameObject.activeInHierarchy && camGioc.enabled);
+        }
+        else
+        {
+            yield return new WaitForSeconds(3f);
+        }
+
+        // Riaccende l'oggetto in mano
+        foreach (Renderer r in renderersInMano) r.enabled = true;
     }
 
     void EntraControlloSchermo()
@@ -152,6 +176,10 @@ public class SpostamentoCamera : MonoBehaviour
         
         if (mioCollider != null) mioCollider.enabled = false;
         BloccaGiocatore(true);
+
+        // Assicurati che il giocatore non veda la lente in mano anche nel mirino statico
+        InventarioGiocatore inv = FindFirstObjectByType<InventarioGiocatore>();
+        if (inv != null && inv.haUnOggetto) StartCoroutine(NascondiOggettoInMano(inv));
 
         if (cameraGiocatore != null) cameraGiocatore.enabled = false;
         if (cameraDallAlto != null) cameraDallAlto.gameObject.SetActive(true);
@@ -266,7 +294,6 @@ public class SpostamentoCamera : MonoBehaviour
         }
     }
 
-    // --- NUOVA LOGICA EVIDENZIATORE ---
     void GestisciEvidenziatore()
     {
         if (evidenziatore == null || GameManager.instance == null) return;
