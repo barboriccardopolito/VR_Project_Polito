@@ -1,29 +1,9 @@
 fileFormatVersion: 2
-guid: faf303f15ccd898469f22161100c3bb4
+guid: 2a1973625fc5b5549b1f18d29f348c2a
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects:
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: TrashCan(Black)
-    second: {fileID: 2100000, guid: 8fa3b7e6fc738794483b32a33641cc9b, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: TrashCan(Blue)
-    second: {fileID: 2100000, guid: 6b0f8b8357006c74a84e689df0b8e92f, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: TrashCan(Green)
-    second: {fileID: 2100000, guid: d8ab4b837c573a649b4a3a81b80f8c92, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: TrashCan(Grey)
-    second: {fileID: 2100000, guid: 98b840014446ea5499e68b36adaf219b, type: 2}
+  externalObjects: {}
   materials:
     materialImportMode: 2
     materialName: 0

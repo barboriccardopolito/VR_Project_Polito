@@ -3,7 +3,12 @@ guid: 8acb0186f0eedd74b803314a904058d3
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Alarme_incendie2Mat
+    second: {fileID: 2100000, guid: e00b63fccc2905f41b7942ffb804947b, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

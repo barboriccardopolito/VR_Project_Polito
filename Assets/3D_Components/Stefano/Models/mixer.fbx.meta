@@ -3,7 +3,27 @@ guid: 152cf0f9c9e010d4eab67b63a13d9c68
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: gomma nera
+    second: {fileID: 2100000, guid: 6a451b78942ace84e931907b7f55607e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: metallo g chiaro
+    second: {fileID: 2100000, guid: 8dbcdd18c34e88a45b772c90f743837e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: plastica nera
+    second: {fileID: 2100000, guid: 745c8be14eef0be459039a0726dd923f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: schermo
+    second: {fileID: 2100000, guid: d715a0a8e2ecaa64f8f2cc9d9015de31, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

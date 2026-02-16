@@ -3,7 +3,17 @@ guid: 5adb956fec9491547957a449f72fdead
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Cabinet1
+    second: {fileID: 2100000, guid: 745c8be14eef0be459039a0726dd923f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Cristal1
+    second: {fileID: 2100000, guid: e3f0aa45966837a4f93b0c6c612c82f6, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

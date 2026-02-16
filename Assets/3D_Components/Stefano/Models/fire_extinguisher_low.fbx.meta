@@ -3,7 +3,12 @@ guid: 7da3017e1725b324f86f8034bffb8e3b
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: fire_ext_txtr
+    second: {fileID: 2100000, guid: dd37da6b69a07b14bb5f838e843645e8, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

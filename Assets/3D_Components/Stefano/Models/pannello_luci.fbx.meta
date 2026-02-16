@@ -3,7 +3,17 @@ guid: 01418fc265983b84796f78f063bf4683
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Metallo g chiaro
+    second: {fileID: 2100000, guid: 6a451b78942ace84e931907b7f55607e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: gomma Nera
+    second: {fileID: 2100000, guid: b4658442c27e9e2428ea98d3c96cdff9, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

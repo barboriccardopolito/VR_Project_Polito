@@ -23,7 +23,7 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Metallo nero
-    second: {fileID: 2100000, guid: 91f11e8fd1de0a245a3b2b37464a8ee5, type: 2}
+    second: {fileID: 2100000, guid: 8dbcdd18c34e88a45b772c90f743837e, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
