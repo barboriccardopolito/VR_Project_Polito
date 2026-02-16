@@ -6,10 +6,10 @@ public class NPCWander : MonoBehaviour
 {
     [Header("Componenti")]
     public Animator animator;
-    public GameObject oggettoRadioFisico; // La radio fisica sul tavolo/cintura
+    public GameObject oggettoRadioFisico; 
 
     [Header("Posizioni")]
-    public Transform puntoDiUscitaSedia; // Trascina qui l'oggetto vuoto "sicuro"
+    public Transform puntoDiUscitaSedia; 
 
     [Header("Movimento")]
     public float raggioMovimento = 3f;
@@ -17,11 +17,11 @@ public class NPCWander : MonoBehaviour
     public float tempoAttesaMax = 5f;
 
     [Header("Audio Dialoghi")]
-    public AudioClip[] clipsIntroduzione; // Intro_01 a Intro_06 (PRIMA di premere R)
+    public AudioClip[] clipsIntroduzione; 
     
     [Header("--- TUTORIAL RADIO ---")]
-    public GameObject promptTastoR;       // Trascina qui la scritta "Premi R"
-    public AudioClip clipConsegnaRadio;   // La frase "Ottimo, ecco a te..." (DOPO aver premuto R)
+    public GameObject promptTastoR;       
+    public AudioClip clipConsegnaRadio;   
 
     private AudioSource audioSource;
     private NavMeshAgent agent;
@@ -37,22 +37,18 @@ public class NPCWander : MonoBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
         
-        // Setup Audio
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
-        audioSource.spatialBlend = 1.0f; // Audio 3D
+        audioSource.spatialBlend = 1.0f; 
 
-        // Se non abbiamo assegnato il punto di uscita, usiamo la posizione attuale come fallback
         if (puntoDiUscitaSedia == null) puntoDiUscitaSedia = transform; 
         puntoIniziale = puntoDiUscitaSedia.position; 
 
         timer = tempoAttesaMin;
-        radioSistema = FindObjectOfType<RadioSistema>();
+        radioSistema = FindFirstObjectByType<RadioSistema>();
 
-        // Assicuriamoci che la scritta tutorial sia spenta all'inizio
         if (promptTastoR != null) promptTastoR.SetActive(false);
 
-        // Se il giocatore ha già la radio, l'NPC parte già in piedi che cammina
         if (radioSistema != null && radioSistema.haLaRadio)
             StartInPiedi();
         else
@@ -123,13 +119,12 @@ public class NPCWander : MonoBehaviour
         if (staParlando || (radioSistema != null && radioSistema.haLaRadio)) return;
 
         staParlando = true;
-
         StartCoroutine(SequenzaDialogo());
     }
 
-IEnumerator SequenzaDialogo()
+    IEnumerator SequenzaDialogo()
     {
-        // 1. NPC fa l'introduzione (es. "Ti serve questa per comunicare")
+        // 1. INTRODUZIONE
         if (clipsIntroduzione != null)
         {
             foreach (AudioClip clip in clipsIntroduzione)
@@ -144,30 +139,38 @@ IEnumerator SequenzaDialogo()
             }
         }
 
-        // 2. CONSEGNA FISICA DELLA RADIO
-        // La radio scompare dal tavolo/cintura e appare in mano al giocatore
+        // --- 2. VISUALE LAVAGNA ---
+        FocusLavagna lavagna = FindFirstObjectByType<FocusLavagna>();
+        if (lavagna != null && lavagna.cameraLavagna != null) // Assicuriamoci che esista!
+        {
+            lavagna.AvviaInquadratura();
+            yield return new WaitForSeconds(0.5f); 
+            
+            // Aspetta finché il focus è attivo (si spegnerà quando premi E)
+            yield return new WaitWhile(() => lavagna.isFocusAttivo);
+        }
+        else
+        {
+            Debug.LogWarning("Script FocusLavagna non trovato o Telecamera Lavagna non assegnata! Salto la scena della lavagna.");
+        }
+        // ----------------------------------
+
+        // 3. CONSEGNA FISICA DELLA RADIO
         if (radioSistema != null) radioSistema.MostraRadioVisivamente();
         if (oggettoRadioFisico != null) oggettoRadioFisico.SetActive(false);
 
-        // 3. TUTORIAL: TEST DELLA RADIO
+        // 4. TUTORIAL: TEST DELLA RADIO
         if (promptTastoR != null)
         {
-            // Mostra la scritta "PREMI R PER TESTARE"
             promptTastoR.SetActive(true);
-
-            // Il gioco aspetta qui finché non premi fisicamente R
             yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.R));
-
-            // Nascondi scritta
             promptTastoR.SetActive(false);
             
-            // Suona il BIP dalla radio del giocatore
             if (radioSistema != null) radioSistema.SuonaBipTest();
-            
-            yield return new WaitForSeconds(0.5f); // Piccola pausa naturale dopo il bip
+            yield return new WaitForSeconds(0.5f); 
         }
 
-        // 4. RISPOSTA NPC ("Perfetto, la radio funziona...")
+        // 5. RISPOSTA NPC
         if (clipConsegnaRadio != null)
         {
             audioSource.Stop();
@@ -176,14 +179,10 @@ IEnumerator SequenzaDialogo()
             yield return new WaitForSeconds(clipConsegnaRadio.length);
         }
 
-        Debug.Log("NPC: 'Consegna completata e testata.'");
-
-        // 5. ATTIVAZIONE FINALE
-        // Segna la task della Produzione come completata nel GameManager
+        // 6. ATTIVAZIONE FINALE E CHIUSURA TASK
         if (GameManager.instance != null) 
             GameManager.instance.CompletaTask(GameManager.Reparto.Produzione);
 
-        // ORA la radio diventa attiva (haLaRadio = true) e fa partire la voce della Fotografia
         if (radioSistema != null) radioSistema.AttivaLogicaRadio();
 
         staParlando = false;
@@ -204,7 +203,7 @@ IEnumerator SequenzaDialogo()
             }
             
             agent.enabled = true;
-            MuoviNPC(); // Parte subito
+            MuoviNPC(); 
         }
     }
 
@@ -226,7 +225,7 @@ IEnumerator SequenzaDialogo()
             if (playerObj != null) targetGiocatore = playerObj.transform;
             else 
             {
-                 InterazioneGiocatore scriptPlayer = FindObjectOfType<InterazioneGiocatore>();
+                 InterazioneGiocatore scriptPlayer = FindFirstObjectByType<InterazioneGiocatore>();
                  if(scriptPlayer != null) targetGiocatore = scriptPlayer.transform;
             }
         }

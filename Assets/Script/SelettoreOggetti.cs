@@ -19,6 +19,11 @@ public class SelettoreOggetti : MonoBehaviour
 
     [Header("Impostazioni Task")]
     public GameManager.Reparto taskRichiesta;
+    
+    // --- NOVITA': COLLEGAMENTO ALL'NPC ---
+    [Tooltip("Trascina qui l'NPC che gestisce questo reparto per aspettare che finisca di parlare")]
+    public NPC_Staff npcDiRiferimento;
+    // ------------------------------------
 
     [Header("Oggetti Selezionabili (I Pivot)")]
     public OggettoRaccolta[] oggetti;
@@ -43,13 +48,10 @@ public class SelettoreOggetti : MonoBehaviour
     [Range(0f, 1f)] public float altezzaMassimaBarre = 0.9f;
     private Coroutine coroutineAnimazioneBarre;
 
-    // --- NUOVA SEZIONE: PALLINI CAROSELLO ---
     [Header("UI - Indicatori Carosello")]
-    [Tooltip("Trascina qui le immagini dei pallini nell'ordine corretto (da sinistra a destra)")]
     public Image[] palliniIndicatori;
     public Color colorePallinoAttivo = Color.white;
-    public Color colorePallinoInattivo = new Color(1f, 1f, 1f, 0.3f); // Bianco semi-trasparente
-    // ----------------------------------------
+    public Color colorePallinoInattivo = new Color(1f, 1f, 1f, 0.3f); 
 
     [Header("Effetto Macchina Da Scrivere")]
     public float velocitaScrittura = 0.03f;
@@ -68,6 +70,8 @@ public class SelettoreOggetti : MonoBehaviour
     private Canvas sfondoCanvas;
     private Image immagineSfondo;
     private float targetAlphaSfondo = 0f;
+
+    private Evidenziatore evidenziatore;
 
     void Start()
     {
@@ -110,6 +114,9 @@ public class SelettoreOggetti : MonoBehaviour
         if (barra3) { barra3.type = Image.Type.Filled; barra3.fillMethod = Image.FillMethod.Vertical; }
 
         ImpostaColoriBarre();
+
+        evidenziatore = GetComponent<Evidenziatore>();
+        if (evidenziatore == null) evidenziatore = GetComponentInChildren<Evidenziatore>();
     }
 
     void ImpostaColoriBarre()
@@ -159,13 +166,74 @@ public class SelettoreOggetti : MonoBehaviour
         return GameManager.instance != null && (GameManager.instance.taskAttuale == taskRichiesta || GameManager.instance.taskAttuale == GameManager.Reparto.Regia); 
     }
 
+    void Update()
+    {
+        GestisciAnimazione();
+        GestisciEvidenziatore(); 
+
+        if (!inSelezione) return;
+
+        if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)) CambiaSelezione(1);
+        else if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow)) CambiaSelezione(-1);
+
+        float mouseX = Input.GetAxis("Mouse X") * sensibilitaMouse;
+        float mouseY = Input.GetAxis("Mouse Y") * sensibilitaMouse;
+        rotazioneOggettoCorrente.x += mouseY;
+        rotazioneOggettoCorrente.y -= mouseX;
+
+        if (Input.GetKeyDown(KeyCode.E) && possoUscire)
+        {
+            ScegliOggetto();
+        }
+    }
+
+    void GestisciEvidenziatore()
+    {
+        if (evidenziatore == null || GameManager.instance == null) return;
+
+        if (inSelezione)
+        {
+            evidenziatore.Spegni();
+            return;
+        }
+
+        bool taskAttiva = (GameManager.instance.taskAttuale == taskRichiesta);
+        bool faseRevisione = (GameManager.instance.taskAttuale == GameManager.Reparto.Regia);
+
+        InventarioGiocatore inv = null;
+        if (giocatore != null) inv = giocatore.GetComponent<InventarioGiocatore>();
+        else inv = FindFirstObjectByType<InventarioGiocatore>();
+
+        bool hoOggettoInMano = (inv != null && inv.haUnOggetto);
+        
+        // Controlla se abbiamo un NPC assegnato e se gli abbiamo già parlato
+        bool npcHaParlato = (npcDiRiferimento == null || npcDiRiferimento.haGiaParlato);
+
+        if (taskAttiva)
+        {
+            // ORA LA REGOLA È: si accende se è la sua task, SE HAI LE MANI VUOTE, e SE L'NPC HA GIA' PARLATO!
+            if (!hoOggettoInMano && npcHaParlato) 
+                evidenziatore.Accendi();
+            else 
+                evidenziatore.Spegni(); 
+        }
+        else if (faseRevisione)
+        {
+            if (!hoOggettoInMano) evidenziatore.Accendi();
+            else evidenziatore.Spegni();
+        }
+        else
+        {
+            evidenziatore.Spegni();
+        }
+    }
+
     public void EntraInSelezione()
     {
         if (inSelezione) return;
         inSelezione = true;
         possoUscire = false;
         
-        // Cerca il primo oggetto attivo per non puntare al vuoto
         indiceAttuale = 0;
         for (int i = 0; i < oggetti.Length; i++)
         {
@@ -195,7 +263,7 @@ public class SelettoreOggetti : MonoBehaviour
 
         if (pannelloSchedaUI != null) pannelloSchedaUI.SetActive(true);
         AggiornaSchedaTecnica();
-        AggiornaPallini(); // <-- Aggiorna la grafica dei pallini all'apertura
+        AggiornaPallini(); 
         
         if (coroutineAnimazioneBarre != null) StopCoroutine(coroutineAnimazioneBarre);
         coroutineAnimazioneBarre = StartCoroutine(AnimaBarreContestuali());
@@ -210,26 +278,6 @@ public class SelettoreOggetti : MonoBehaviour
     { 
         yield return new WaitForSeconds(0.5f); 
         possoUscire = true; 
-    }
-
-    void Update()
-    {
-        GestisciAnimazione();
-
-        if (!inSelezione) return;
-
-        if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)) CambiaSelezione(1);
-        else if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow)) CambiaSelezione(-1);
-
-        float mouseX = Input.GetAxis("Mouse X") * sensibilitaMouse;
-        float mouseY = Input.GetAxis("Mouse Y") * sensibilitaMouse;
-        rotazioneOggettoCorrente.x += mouseY;
-        rotazioneOggettoCorrente.y -= mouseX;
-
-        if (Input.GetKeyDown(KeyCode.E) && possoUscire)
-        {
-            ScegliOggetto();
-        }
     }
 
     void GestisciAnimazione()
@@ -276,10 +324,9 @@ public class SelettoreOggetti : MonoBehaviour
 
         rotazioneOggettoCorrente = Vector2.zero;
         AggiornaSchedaTecnica();
-        AggiornaPallini(); // <-- Aggiorna i pallini quando scorri
+        AggiornaPallini(); 
     }
 
-    // --- NUOVA LOGICA: GESTIONE GRAFICA PALLINI ---
     void AggiornaPallini()
     {
         if (palliniIndicatori == null || palliniIndicatori.Length == 0) return;
@@ -288,8 +335,6 @@ public class SelettoreOggetti : MonoBehaviour
         {
             if (palliniIndicatori[i] != null)
             {
-                // Se l'oggetto associato a questo pallino non c'è sul tavolo (es. l'hai già in mano), 
-                // nascondi il pallino completamente!
                 if (i < oggetti.Length && (oggetti[i] == null || !oggetti[i].gameObject.activeInHierarchy))
                 {
                     palliniIndicatori[i].gameObject.SetActive(false);
@@ -298,7 +343,6 @@ public class SelettoreOggetti : MonoBehaviour
                 {
                     palliniIndicatori[i].gameObject.SetActive(true);
                     
-                    // Se è l'indice attuale, accendilo. Altrimenti, rendilo trasparente.
                     if (i == indiceAttuale)
                         palliniIndicatori[i].color = colorePallinoAttivo;
                     else

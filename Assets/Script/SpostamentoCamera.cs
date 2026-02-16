@@ -138,7 +138,8 @@ public class SpostamentoCamera : MonoBehaviour
             }
 
             lenteMontata = true;
-            inventario.RimuoviOggetto();
+            
+            // LA RIGA CHE SVUOTAVA LE MANI ERA QUI, ORA NON C'E' PIU'!
 
             Debug.Log($"<color=yellow>Lente montata su {gameObject.name}. Ora controlla lo schermo!</color>");
         }

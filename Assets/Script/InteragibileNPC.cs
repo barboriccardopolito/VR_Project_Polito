@@ -46,7 +46,6 @@ public class InteragibileNPC : MonoBehaviour
                     devoIlluminarmi = true;
             }
 
-            // --- LA MODIFICA: Se sta parlando, forziamo lo spegnimento della luce! ---
             if (staParlando) devoIlluminarmi = false;
 
             if (devoIlluminarmi) evidenziatore.Accendi(); else evidenziatore.Spegni();
@@ -64,7 +63,9 @@ public class InteragibileNPC : MonoBehaviour
         if (tipoReparto == GameManager.Reparto.Produzione) 
         { 
             NPCWander produzioneScript = GetComponent<NPCWander>();
-            StartCoroutine(GestisciStatoParlato(4.5f)); 
+            
+            // IL TRUCCO È QUI: Gli passo 'true' per dirgli che questa è la fine dell'intro!
+            StartCoroutine(GestisciStatoParlato(4.5f));            
             if (produzioneScript != null) produzioneScript.InterazioneConPlayer(); 
             else GameManager.instance.CompletaTask(tipoReparto);
             return;
@@ -80,7 +81,7 @@ public class InteragibileNPC : MonoBehaviour
             }
             if (RegiaManager.instance.previewInCorso) {
                 if (staffScript != null) {
-                    StartCoroutine(GestisciStatoParlato(3f)); 
+                    StartCoroutine(GestisciStatoParlato(3f, false)); 
                     staffScript.ReazioneCiak(() => { RegiaManager.instance.AvviaCiak(); });
                 }
                 else RegiaManager.instance.AvviaCiak();
@@ -89,35 +90,29 @@ public class InteragibileNPC : MonoBehaviour
         }
 
         // --- GESTIONE REPARTI TECNICI (Fotografia, Luci, Fonico) ---
-        
-        // 1. Se non è il turno di questo NPC
         if (!èIlMioTurno)
         {
             Debug.Log($"<color=yellow>[{tipoReparto}]:</color> Non disturbare ora. Non è il mio turno.");
             if (staffScript != null && staffScript.audioNonEIlMioTurno != null)
             {
-                StartCoroutine(GestisciStatoParlato(staffScript.audioNonEIlMioTurno.length));
+                StartCoroutine(GestisciStatoParlato(staffScript.audioNonEIlMioTurno.length, false));
                 staffScript.GetComponent<AudioSource>().PlayOneShot(staffScript.audioNonEIlMioTurno);
             }
             return;
         }
 
-        // 2. Se è il turno, gestiamo il dialogo
         if (staffScript != null)
         {
             InterazioneGiocatore player = FindFirstObjectByType<InterazioneGiocatore>();
             if (player != null) staffScript.AttivaInterazione(player.transform);
 
-            // A) Primo dialogo: Ti assegna la task
             if (!staffScript.haGiaParlato)
             {
-                StartCoroutine(GestisciStatoParlato(4.5f)); 
+                StartCoroutine(GestisciStatoParlato(4.5f, false)); 
                 staffScript.AvviaDialogoIniziale();
                 Debug.Log($"[{tipoReparto}] Briefing iniziale avviato. Ora vai al tavolo!");
                 return; 
             }
-            
-            // B) Dialogo successivo: Ti ricorda solo di lavorare (NON prende oggetti)
             else
             {
                 string promemoria = "Vai al tavolo e prendi l'attrezzatura!";
@@ -126,21 +121,34 @@ public class InteragibileNPC : MonoBehaviour
                 if (tipoReparto == GameManager.Reparto.Fonico) promemoria = "Piazza il microfono sull'asta!";
                 
                 Debug.Log($"<color=orange>[{tipoReparto}]:</color> {promemoria}");
-                
-                // Opzionale: Se hai un audio generico di "reclamo", suonalo qui
             }
         }
         else
         {
-            // Fallback se non c'è lo script staff
             Debug.Log($"[Info]: {messaggioTask}");
         }
     }
 
-    public IEnumerator GestisciStatoParlato(float durata)
+    // --- COROUTINE AGGIORNATA ---
+    // Ho aggiunto la variabile "lanciaLavagna" per sapere se dobbiamo inquadrare la sceneggiatura a fine timer
+    public IEnumerator GestisciStatoParlato(float durata, bool lanciaLavagna = false)
     {
         staParlando = true;
-        yield return new WaitForSeconds(durata);
+        yield return new WaitForSeconds(durata); // Aspetta che finisca di parlare
         staParlando = false;
+
+        // Se è la produzione che ha finito di parlare, lancia la telecamera sulla lavagna!
+        if (lanciaLavagna)
+        {
+            FocusLavagna scriptLavagna = Object.FindFirstObjectByType<FocusLavagna>();
+            if (scriptLavagna != null)
+            {
+                scriptLavagna.AvviaInquadratura();
+            }
+            else
+            {
+                Debug.LogWarning("Script FocusLavagna non trovato nella scena! Assicurati di averlo messo sulla lavagna.");
+            }
+        }
     }
 }

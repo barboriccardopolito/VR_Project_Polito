@@ -50,6 +50,9 @@ public class NPC_Staff : MonoBehaviour
     private bool staParlando = false;
     private Transform targetGiocatore;
 
+    // --- NUOVO: RIFERIMENTO FRECCIA ---
+    private Evidenziatore evidenziatore;
+
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -59,10 +62,16 @@ public class NPC_Staff : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
         audioSource.spatialBlend = 1.0f; 
+
+        // Trova lo script dell'evidenziatore attaccato all'NPC
+        evidenziatore = GetComponent<Evidenziatore>();
+        if (evidenziatore == null) evidenziatore = GetComponentInChildren<Evidenziatore>();
     }
 
     void Update()
     {
+        GestisciEvidenziatore(); // <--- Controllo costante della freccia
+
         if (animator != null && agent != null) animator.SetFloat("Speed", agent.velocity.magnitude);
 
         if (staParlando)
@@ -82,6 +91,26 @@ public class NPC_Staff : MonoBehaviour
             MuoviNPC();
             timer = 0;
             tempoAttesaMax = UnityEngine.Random.Range(tempoAttesaMin, tempoAttesaMax + 2f);
+        }
+    }
+
+    // --- NUOVA LOGICA FRECCIA SULL'NPC ---
+    void GestisciEvidenziatore()
+    {
+        if (evidenziatore == null || GameManager.instance == null) return;
+
+        bool isMioTurno = (GameManager.instance.taskAttuale == ruoloNPC);
+
+        // La freccia dell'NPC è accesa SOLO SE:
+        // 1. È il momento del suo reparto (es. Fotografia)
+        // 2. NON gli ho ancora parlato (haGiaParlato è falso)
+        if (isMioTurno && !haGiaParlato)
+        {
+            evidenziatore.Accendi();
+        }
+        else
+        {
+            evidenziatore.Spegni();
         }
     }
 
@@ -117,8 +146,11 @@ public class NPC_Staff : MonoBehaviour
         }
 
         if (haGiaParlato) return;
+        
+        // Appena imposto questa a true, l'Update spegnerà la freccia istantaneamente!
         haGiaParlato = true; 
         staParlando = true;  
+        
         CancelInvoke("FineInterazione");
         StartCoroutine(SequenzaDialogo());
     }
@@ -142,10 +174,9 @@ public class NPC_Staff : MonoBehaviour
         FineInterazione();
     }
 
-
-    public void ReazioneConsegnaLente(string nomeOggetto) { /* Logica uguale... */ GestisciReazione(nomeOggetto, "Grandangolo", "Cinematografica", audioGrandangolo, audioCinema, audioStandard); }
-    public void ReazioneConsegnaLuce(string nomeOggetto) { /* Logica uguale... */ GestisciReazione(nomeOggetto, "Fresnel", "Softbox", audioFresnel, audioSoftbox, audioArtistica); }
-    public void ReazioneConsegnaMicrofono(string nomeOggetto) { /* Logica uguale... */ GestisciReazione(nomeOggetto, "Lavalier", "Boom", audioLavalier, audioBoom, audioAmbisonic); }
+    public void ReazioneConsegnaLente(string nomeOggetto) { GestisciReazione(nomeOggetto, "Grandangolo", "Cinematografica", audioGrandangolo, audioCinema, audioStandard); }
+    public void ReazioneConsegnaLuce(string nomeOggetto) { GestisciReazione(nomeOggetto, "Fresnel", "Softbox", audioFresnel, audioSoftbox, audioArtistica); }
+    public void ReazioneConsegnaMicrofono(string nomeOggetto) { GestisciReazione(nomeOggetto, "Lavalier", "Boom", audioLavalier, audioBoom, audioAmbisonic); }
 
     void GestisciReazione(string nome, string key1, string key2, AudioClip clip1, AudioClip clip2, AudioClip clipDef)
     {

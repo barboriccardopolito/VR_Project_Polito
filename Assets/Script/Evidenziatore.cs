@@ -2,55 +2,94 @@ using UnityEngine;
 
 public class Evidenziatore : MonoBehaviour
 {
-    [Header("Impostazioni")]
-    public bool AccendiAllAvvio = false;
-    public float velocitaPulsazione = 2f;
-    public float dimensioneMin = 0.8f;
-    public float dimensioneMax = 1.2f;
-
-    [Header("Visuale")]
-    public SpriteRenderer anelloGrafico;
+    [Header("Configurazione Freccia 2D")]
+    [Tooltip("Trascina qui il Prefab della tua freccia 2D (Sprite)")]
+    public GameObject prefabFreccia;
     
+    [Header("Posizione e Animazione")]
+    [Tooltip("Quanto in alto sopra l'oggetto deve stare la freccia")]
+    public float altezzaBase = 1.2f; 
+    [Tooltip("Velocità del galleggiamento su e giù")]
+    public float velocitaAnimazione = 3f;
+    [Tooltip("Quanto si muove su e giù")]
+    public float ampiezzaAnimazione = 0.15f;
+
+    private GameObject frecciaIstata;
     private bool isAttivo = false;
-    private Vector3 scalaIniziale;
+    private Collider targetCollider;
+    private Renderer targetRenderer;
+    private Camera cameraPrincipale;
 
     void Start()
     {
-        if (anelloGrafico == null)
-            anelloGrafico = GetComponentInChildren<SpriteRenderer>();
+        targetCollider = GetComponent<Collider>();
+        targetRenderer = GetComponent<Renderer>();
+        cameraPrincipale = Camera.main;
 
-        if (anelloGrafico != null) scalaIniziale = anelloGrafico.transform.localScale;
-
-        if (AccendiAllAvvio) Accendi();
-        else Spegni();
-    }
-
-    void Update()
-    {
-        if (isAttivo && anelloGrafico != null)
-        {
-            float scala = Mathf.Lerp(dimensioneMin, dimensioneMax, (Mathf.Sin(Time.time * velocitaPulsazione) + 1f) / 2f);
-            anelloGrafico.transform.localScale = scalaIniziale * scala;
-            
-            anelloGrafico.transform.Rotate(Vector3.forward * 10 * Time.deltaTime);
-        }
+        // Pulizia per sicurezza se avevi vecchi projector
+        Projector oldProjector = GetComponent<Projector>();
+        if (oldProjector != null) oldProjector.enabled = false;
+        Projector childProjector = GetComponentInChildren<Projector>();
+        if (childProjector != null) childProjector.enabled = false;
     }
 
     public void Accendi()
     {
-        if (anelloGrafico != null)
+        if (isAttivo) return; 
+
+        if (prefabFreccia == null)
         {
-            anelloGrafico.enabled = true;
-            isAttivo = true;
+            Debug.LogWarning($"Manca il Prefab della freccia sull'oggetto: {gameObject.name}");
+            return;
         }
+
+        if (frecciaIstata == null)
+        {
+            frecciaIstata = Instantiate(prefabFreccia);
+            // Togliamo collider allo sprite per evitare bug col raggio visivo
+            Collider[] colliders = frecciaIstata.GetComponentsInChildren<Collider>();
+            foreach (Collider c in colliders) Destroy(c);
+        }
+        
+        frecciaIstata.SetActive(true);
+        isAttivo = true;
     }
 
     public void Spegni()
     {
-        if (anelloGrafico != null)
+        if (!isAttivo) return;
+
+        if (frecciaIstata != null)
         {
-            anelloGrafico.enabled = false;
-            isAttivo = false;
+            frecciaIstata.SetActive(false);
         }
+        isAttivo = false;
+    }
+
+    void LateUpdate()
+    {
+        if (!isAttivo || frecciaIstata == null) return;
+
+        // 1. Calcola l'altezza per farla galleggiare morbidamente
+        Vector3 centroOggetto = transform.position;
+        if (targetCollider != null) centroOggetto = targetCollider.bounds.center;
+        else if (targetRenderer != null) centroOggetto = targetRenderer.bounds.center;
+
+        float animazioneY = Mathf.Sin(Time.time * velocitaAnimazione) * ampiezzaAnimazione;
+        frecciaIstata.transform.position = centroOggetto + Vector3.up * (altezzaBase + animazioneY);
+
+        // 2. EFFETTO BILLBOARD (Guarda sempre in faccia la telecamera)
+        if (cameraPrincipale == null) cameraPrincipale = Camera.main;
+        
+        if (cameraPrincipale != null)
+        {
+            // Allinea la faccia della freccia con lo schermo della telecamera
+            frecciaIstata.transform.forward = -cameraPrincipale.transform.forward;
+        }
+    }
+
+    void OnDestroy()
+    {
+        if (frecciaIstata != null) Destroy(frecciaIstata);
     }
 }
