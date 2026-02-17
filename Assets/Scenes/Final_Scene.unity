@@ -2794,7 +2794,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8305889699410020000, guid: 5cfbed3bf86589c4e9de849b811cf3b0, type: 3}
       propertyPath: InitialModule.startSize.scalar
-      value: 0.01
+      value: 0.007
       objectReference: {fileID: 0}
     - target: {fileID: 8305889699410020000, guid: 5cfbed3bf86589c4e9de849b811cf3b0, type: 3}
       propertyPath: InitialModule.startSpeed.scalar
@@ -4428,7 +4428,7 @@ Transform:
   m_GameObject: {fileID: 106480282}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.2743109, z: -0, w: 0.9616411}
-  m_LocalPosition: {x: 16.615, y: 1.558, z: -9.257}
+  m_LocalPosition: {x: 16.589, y: 1.558, z: -9.273}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5329,7 +5329,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8305889699410020000, guid: 5cfbed3bf86589c4e9de849b811cf3b0, type: 3}
       propertyPath: InitialModule.startSize.scalar
-      value: 0.01
+      value: 0.007
       objectReference: {fileID: 0}
     - target: {fileID: 8305889699410020000, guid: 5cfbed3bf86589c4e9de849b811cf3b0, type: 3}
       propertyPath: InitialModule.startSpeed.scalar
@@ -7678,7 +7678,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8305889699410020000, guid: 5cfbed3bf86589c4e9de849b811cf3b0, type: 3}
       propertyPath: InitialModule.startSize.scalar
-      value: 0.01
+      value: 0.007
       objectReference: {fileID: 0}
     - target: {fileID: 8305889699410020000, guid: 5cfbed3bf86589c4e9de849b811cf3b0, type: 3}
       propertyPath: InitialModule.startSpeed.scalar
@@ -14070,7 +14070,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8305889699410020000, guid: 5cfbed3bf86589c4e9de849b811cf3b0, type: 3}
       propertyPath: InitialModule.startSize.scalar
-      value: 0.01
+      value: 0.007
       objectReference: {fileID: 0}
     - target: {fileID: 8305889699410020000, guid: 5cfbed3bf86589c4e9de849b811cf3b0, type: 3}
       propertyPath: InitialModule.startSpeed.scalar
@@ -18926,9 +18926,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 802757af5dc6b6d4582cc87b32fdacc3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SupportoLuce
-  modelloSoftbox: {fileID: 0}
-  modelloFresnel: {fileID: 0}
-  modelloArtistica: {fileID: 0}
+  cameraGiocatore: {fileID: 1823688466}
+  cameraInquadratura: {fileID: 106480287}
+  velocitaTransizione: 2.5
+  giocatore: {fileID: 858305082}
+  nomiScriptDaDisabilitare:
+  - PlayerMovement
+  - MouseLook
+  modelloSoftbox: {fileID: 479504178}
+  modelloFresnel: {fileID: 2003397047}
+  modelloArtistica: {fileID: 1203189331}
   suonoPiazzamento: {fileID: 8300000, guid: 34f28ffdb9b09e349a8db3168b253a32, type: 3}
   luceGiaPosizionata: 0
 --- !u!114 &619271147
@@ -19772,7 +19779,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8305889699410020000, guid: 5cfbed3bf86589c4e9de849b811cf3b0, type: 3}
       propertyPath: InitialModule.startSize.scalar
-      value: 0.01
+      value: 0.007
       objectReference: {fileID: 0}
     - target: {fileID: 8305889699410020000, guid: 5cfbed3bf86589c4e9de849b811cf3b0, type: 3}
       propertyPath: InitialModule.startSpeed.scalar
@@ -20701,7 +20708,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8305889699410020000, guid: 5cfbed3bf86589c4e9de849b811cf3b0, type: 3}
       propertyPath: InitialModule.startSize.scalar
-      value: 0.01
+      value: 0.007
       objectReference: {fileID: 0}
     - target: {fileID: 8305889699410020000, guid: 5cfbed3bf86589c4e9de849b811cf3b0, type: 3}
       propertyPath: InitialModule.startSpeed.scalar
@@ -27052,7 +27059,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8305889699410020000, guid: 5cfbed3bf86589c4e9de849b811cf3b0, type: 3}
       propertyPath: InitialModule.startSize.scalar
-      value: 0.01
+      value: 0.007
       objectReference: {fileID: 0}
     - target: {fileID: 8305889699410020000, guid: 5cfbed3bf86589c4e9de849b811cf3b0, type: 3}
       propertyPath: InitialModule.startSpeed.scalar
@@ -28882,7 +28889,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8305889699410020000, guid: 5cfbed3bf86589c4e9de849b811cf3b0, type: 3}
       propertyPath: InitialModule.startSize.scalar
-      value: 0.01
+      value: 0.007
       objectReference: {fileID: 0}
     - target: {fileID: 8305889699410020000, guid: 5cfbed3bf86589c4e9de849b811cf3b0, type: 3}
       propertyPath: InitialModule.startSpeed.scalar
@@ -29530,7 +29537,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8305889699410020000, guid: 5cfbed3bf86589c4e9de849b811cf3b0, type: 3}
       propertyPath: InitialModule.startSize.scalar
-      value: 0.01
+      value: 0.007
       objectReference: {fileID: 0}
     - target: {fileID: 8305889699410020000, guid: 5cfbed3bf86589c4e9de849b811cf3b0, type: 3}
       propertyPath: InitialModule.startSpeed.scalar
@@ -29857,6 +29864,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SpostamentoCamera
   cameraDallAlto: {fileID: 368937900}
   cameraGiocatore: {fileID: 1823688466}
+  velocitaTransizione: 3
   cameraMirino: {fileID: 1979893943}
   fpsSchermo: 60
   velocitaSpostamento: 3
@@ -33880,6 +33888,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73ce508ae3f08944184e90aaae44a1f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SupportoMicrofono
+  cameraGiocatore: {fileID: 1823688466}
+  cameraInquadratura: {fileID: 1294790731}
+  velocitaTransizione: 2.5
+  giocatore: {fileID: 858305082}
+  nomiScriptDaDisabilitare:
+  - PlayerMovement
+  - MouseLook
   tipoMicrofonoAccettato: Ambisonic
   modelloBoom: {fileID: 2042488812}
   modelloAmbisonic: {fileID: 725268388}
@@ -40841,6 +40856,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SpostamentoCamera
   cameraDallAlto: {fileID: 1566441513}
   cameraGiocatore: {fileID: 1823688466}
+  velocitaTransizione: 3
   cameraMirino: {fileID: 390905901}
   fpsSchermo: 60
   velocitaSpostamento: 3
@@ -43964,7 +43980,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8305889699410020000, guid: 5cfbed3bf86589c4e9de849b811cf3b0, type: 3}
       propertyPath: InitialModule.startSize.scalar
-      value: 0.01
+      value: 0.007
       objectReference: {fileID: 0}
     - target: {fileID: 8305889699410020000, guid: 5cfbed3bf86589c4e9de849b811cf3b0, type: 3}
       propertyPath: InitialModule.startSpeed.scalar
@@ -47305,6 +47321,38 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 766253594}
     m_Modifications:
+    - target: {fileID: 773373357481255, guid: 6ee21961739450e41a13fd1520b7bb05, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: fc7f2dceac5ba46b1b3deeea1bb08e69, type: 2}
+    - target: {fileID: 1330373381967988583, guid: 6ee21961739450e41a13fd1520b7bb05, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1432301024108095084, guid: 6ee21961739450e41a13fd1520b7bb05, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2881316873308103640, guid: 6ee21961739450e41a13fd1520b7bb05, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 7e6357ecb1c863a4a8b865a0425d1f8e, type: 2}
+    - target: {fileID: 4917562888544691598, guid: 6ee21961739450e41a13fd1520b7bb05, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: acece2361905c7941a9d682005e87333, type: 2}
+    - target: {fileID: 7395698608455637677, guid: 6ee21961739450e41a13fd1520b7bb05, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7939788083720464655, guid: 6ee21961739450e41a13fd1520b7bb05, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 5bb7f9c1db005b5429e001f1e36a8f8d, type: 2}
+    - target: {fileID: 7975139826163647737, guid: 6ee21961739450e41a13fd1520b7bb05, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2793303755702619998, guid: 0ce6927e94b185548a0f4eb17d620735, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.6
@@ -47370,38 +47418,6 @@ PrefabInstance:
       value: Untagged
       objectReference: {fileID: 0}
     - target: {fileID: 8066372312764326827, guid: 0ce6927e94b185548a0f4eb17d620735, type: 3}
-      propertyPath: m_StaticEditorFlags
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 773373357481255, guid: 6ee21961739450e41a13fd1520b7bb05, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: fc7f2dceac5ba46b1b3deeea1bb08e69, type: 2}
-    - target: {fileID: 1330373381967988583, guid: 6ee21961739450e41a13fd1520b7bb05, type: 3}
-      propertyPath: m_StaticEditorFlags
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1432301024108095084, guid: 6ee21961739450e41a13fd1520b7bb05, type: 3}
-      propertyPath: m_StaticEditorFlags
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2881316873308103640, guid: 6ee21961739450e41a13fd1520b7bb05, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 7e6357ecb1c863a4a8b865a0425d1f8e, type: 2}
-    - target: {fileID: 4917562888544691598, guid: 6ee21961739450e41a13fd1520b7bb05, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: acece2361905c7941a9d682005e87333, type: 2}
-    - target: {fileID: 7395698608455637677, guid: 6ee21961739450e41a13fd1520b7bb05, type: 3}
-      propertyPath: m_StaticEditorFlags
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7939788083720464655, guid: 6ee21961739450e41a13fd1520b7bb05, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 5bb7f9c1db005b5429e001f1e36a8f8d, type: 2}
-    - target: {fileID: 7975139826163647737, guid: 6ee21961739450e41a13fd1520b7bb05, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 0
       objectReference: {fileID: 0}
@@ -57996,6 +58012,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73ce508ae3f08944184e90aaae44a1f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SupportoMicrofono
+  cameraGiocatore: {fileID: 1022932690}
+  cameraInquadratura: {fileID: 1823688466}
+  velocitaTransizione: 2.5
+  giocatore: {fileID: 858305082}
+  nomiScriptDaDisabilitare:
+  - PlayerMovement
+  - MouseLook
   tipoMicrofonoAccettato: Boom
   modelloBoom: {fileID: 2042488812}
   modelloAmbisonic: {fileID: 725268388}
@@ -58643,7 +58666,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8305889699410020000, guid: 5cfbed3bf86589c4e9de849b811cf3b0, type: 3}
       propertyPath: InitialModule.startSize.scalar
-      value: 0.01
+      value: 0.007
       objectReference: {fileID: 0}
     - target: {fileID: 8305889699410020000, guid: 5cfbed3bf86589c4e9de849b811cf3b0, type: 3}
       propertyPath: InitialModule.startSpeed.scalar
@@ -62236,6 +62259,38 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1920670968}
     m_Modifications:
+    - target: {fileID: 773373357481255, guid: 6ee21961739450e41a13fd1520b7bb05, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: fc7f2dceac5ba46b1b3deeea1bb08e69, type: 2}
+    - target: {fileID: 1330373381967988583, guid: 6ee21961739450e41a13fd1520b7bb05, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1432301024108095084, guid: 6ee21961739450e41a13fd1520b7bb05, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2881316873308103640, guid: 6ee21961739450e41a13fd1520b7bb05, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: fc7f2dceac5ba46b1b3deeea1bb08e69, type: 2}
+    - target: {fileID: 4917562888544691598, guid: 6ee21961739450e41a13fd1520b7bb05, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: acece2361905c7941a9d682005e87333, type: 2}
+    - target: {fileID: 7395698608455637677, guid: 6ee21961739450e41a13fd1520b7bb05, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7939788083720464655, guid: 6ee21961739450e41a13fd1520b7bb05, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 5bb7f9c1db005b5429e001f1e36a8f8d, type: 2}
+    - target: {fileID: 7975139826163647737, guid: 6ee21961739450e41a13fd1520b7bb05, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 86994087455260644, guid: 0ce6927e94b185548a0f4eb17d620735, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -62325,38 +62380,6 @@ PrefabInstance:
       value: Untagged
       objectReference: {fileID: 0}
     - target: {fileID: 8066372312764326827, guid: 0ce6927e94b185548a0f4eb17d620735, type: 3}
-      propertyPath: m_StaticEditorFlags
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 773373357481255, guid: 6ee21961739450e41a13fd1520b7bb05, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: fc7f2dceac5ba46b1b3deeea1bb08e69, type: 2}
-    - target: {fileID: 1330373381967988583, guid: 6ee21961739450e41a13fd1520b7bb05, type: 3}
-      propertyPath: m_StaticEditorFlags
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1432301024108095084, guid: 6ee21961739450e41a13fd1520b7bb05, type: 3}
-      propertyPath: m_StaticEditorFlags
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2881316873308103640, guid: 6ee21961739450e41a13fd1520b7bb05, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: fc7f2dceac5ba46b1b3deeea1bb08e69, type: 2}
-    - target: {fileID: 4917562888544691598, guid: 6ee21961739450e41a13fd1520b7bb05, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: acece2361905c7941a9d682005e87333, type: 2}
-    - target: {fileID: 7395698608455637677, guid: 6ee21961739450e41a13fd1520b7bb05, type: 3}
-      propertyPath: m_StaticEditorFlags
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7939788083720464655, guid: 6ee21961739450e41a13fd1520b7bb05, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 5bb7f9c1db005b5429e001f1e36a8f8d, type: 2}
-    - target: {fileID: 7975139826163647737, guid: 6ee21961739450e41a13fd1520b7bb05, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 0
       objectReference: {fileID: 0}
@@ -64331,7 +64354,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8305889699410020000, guid: 5cfbed3bf86589c4e9de849b811cf3b0, type: 3}
       propertyPath: InitialModule.startSize.scalar
-      value: 0.01
+      value: 0.007
       objectReference: {fileID: 0}
     - target: {fileID: 8305889699410020000, guid: 5cfbed3bf86589c4e9de849b811cf3b0, type: 3}
       propertyPath: InitialModule.startSpeed.scalar
@@ -66579,9 +66602,6 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 8490849190315756187, guid: 1caa624666c52bd49a149aac61fb8751, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 3462232357534464265}
-    - targetCorrespondingSourceObject: {fileID: 8490849190315756187, guid: 1caa624666c52bd49a149aac61fb8751, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 3462232357534464266}
     - targetCorrespondingSourceObject: {fileID: 8490849190315756187, guid: 1caa624666c52bd49a149aac61fb8751, type: 3}
       insertIndex: -1
@@ -66606,23 +66626,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 8490849190315756187, guid: 1caa624666c52bd49a149aac61fb8751, type: 3}
   m_PrefabInstance: {fileID: 3462232357534464262}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &3462232357534464265
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3462232357534464264}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 802757af5dc6b6d4582cc87b32fdacc3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SupportoLuce
-  modelloSoftbox: {fileID: 776447423}
-  modelloFresnel: {fileID: 403618929}
-  modelloArtistica: {fileID: 577007306}
-  suonoPiazzamento: {fileID: 8300000, guid: 34f28ffdb9b09e349a8db3168b253a32, type: 3}
-  luceGiaPosizionata: 0
 --- !u!65 &3462232357534464266
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -66672,6 +66675,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 802757af5dc6b6d4582cc87b32fdacc3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SupportoLuce
+  cameraGiocatore: {fileID: 1823688466}
+  cameraInquadratura: {fileID: 2146731739}
+  velocitaTransizione: 2.5
+  giocatore: {fileID: 858305082}
+  nomiScriptDaDisabilitare:
+  - PlayerMovement
+  - MouseLook
   modelloSoftbox: {fileID: 776447423}
   modelloFresnel: {fileID: 403618929}
   modelloArtistica: {fileID: 577007306}
@@ -68281,6 +68291,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SpostamentoCamera
   cameraDallAlto: {fileID: 1864836943}
   cameraGiocatore: {fileID: 1823688466}
+  velocitaTransizione: 3
   cameraMirino: {fileID: 444561955}
   fpsSchermo: 60
   velocitaSpostamento: 3

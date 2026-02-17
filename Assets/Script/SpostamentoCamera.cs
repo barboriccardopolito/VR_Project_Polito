@@ -7,6 +7,11 @@ public class SpostamentoCamera : MonoBehaviour
     public Camera cameraDallAlto; 
     public Camera cameraGiocatore; 
     
+    [Header("Transizione Visuale")]
+    [Tooltip("Velocità del volo della telecamera (più è alto, più è veloce)")]
+    public float velocitaTransizione = 2.5f;
+    private bool inTransizione = false;
+
     [Header("Schermo Mirino")]
     public Camera cameraMirino;
     [Tooltip("Frequenza di aggiornamento dello schermo sulla telecamera (es. 60 FPS per fluidità massima)")]
@@ -74,7 +79,6 @@ public class SpostamentoCamera : MonoBehaviour
 
         NascondiTutteLeLenti();
 
-        // Avvia l'aggiornamento forzato a 60 FPS del mirino
         if (cameraMirino != null)
         {
             cameraMirino.enabled = false; 
@@ -97,7 +101,8 @@ public class SpostamentoCamera : MonoBehaviour
 
     public void Interagisci()
     {
-        if (GameManager.instance == null) return;
+        // Se la telecamera sta "volando", blocchiamo i click per non rompere l'animazione
+        if (inTransizione || GameManager.instance == null) return;
 
         InventarioGiocatore inventario = Object.FindFirstObjectByType<InventarioGiocatore>();
         bool hoLenteInMano = (inventario != null && inventario.haUnOggetto && inventario.categoriaInMano == OggettoRaccolta.TipoOggetto.Lente);
@@ -111,7 +116,7 @@ public class SpostamentoCamera : MonoBehaviour
             }
             else if (lenteMontata && !schermoControllato)
             {
-                if (!inControlloSchermo) EntraControlloSchermo();
+                if (!inControlloSchermo) StartCoroutine(TransizioneEntrata(false));
             }
             else if (lenteMontata && schermoControllato)
             {
@@ -133,7 +138,7 @@ public class SpostamentoCamera : MonoBehaviour
             }
             else 
             {
-                if (!inModalitaSpostamento) EntraInModalitaSpostamento();
+                if (!inModalitaSpostamento) StartCoroutine(TransizioneEntrata(true));
             }
         }
     }
@@ -162,7 +167,6 @@ public class SpostamentoCamera : MonoBehaviour
             }
 
             lenteMontata = true;
-            Debug.Log($"<color=yellow>Lente montata su {gameObject.name}. Ora controlla lo schermo!</color>");
         }
     }
 
@@ -187,36 +191,113 @@ public class SpostamentoCamera : MonoBehaviour
         foreach (Renderer r in renderersInMano) r.enabled = true;
     }
 
-    void EntraControlloSchermo()
+    // --- LA MAGIA DEL VOLO IN ENTRATA ---
+    IEnumerator TransizioneEntrata(bool modalitaSpostamento)
     {
-        inControlloSchermo = true;
-        possoUscire = false;
-        
+        inTransizione = true;
         if (mioCollider != null) mioCollider.enabled = false;
         BloccaGiocatore(true);
 
         InventarioGiocatore inv = Object.FindFirstObjectByType<InventarioGiocatore>();
         if (inv != null && inv.haUnOggetto) StartCoroutine(NascondiOggettoInMano(inv));
 
-        if (cameraGiocatore != null) cameraGiocatore.enabled = false;
-        if (cameraDallAlto != null) cameraDallAlto.gameObject.SetActive(true);
+        // 1. Salviamo la posizione e il FOV finale dove deve arrivare la telecamera
+        Vector3 targetLocalPos = cameraDallAlto.transform.localPosition;
+        Quaternion targetLocalRot = cameraDallAlto.transform.localRotation;
+        float targetFov = cameraDallAlto.fieldOfView;
 
-        StartCoroutine(TimerSbloccoUscita());
+        // 2. "Teletrasportiamo" la camera invisibile sulla faccia del giocatore
+        cameraDallAlto.transform.position = cameraGiocatore.transform.position;
+        cameraDallAlto.transform.rotation = cameraGiocatore.transform.rotation;
+        float startFov = cameraGiocatore.fieldOfView;
+        cameraDallAlto.fieldOfView = startFov;
+
+        Vector3 startLocalPos = cameraDallAlto.transform.localPosition;
+        Quaternion startLocalRot = cameraDallAlto.transform.localRotation;
+
+        // Spegniamo gli occhi del giocatore e accendiamo la telecamera "volante"
+        cameraGiocatore.enabled = false;
+        cameraDallAlto.gameObject.SetActive(true);
+
+        // 3. Il Volo Matematico (Lerp + SmoothStep)
+        float t = 0f;
+        while (t < 1f)
+        {
+            t += Time.deltaTime * velocitaTransizione;
+            float smooth = Mathf.SmoothStep(0f, 1f, t); // Rende la curva morbida all'inizio e alla fine
+            
+            cameraDallAlto.transform.localPosition = Vector3.Lerp(startLocalPos, targetLocalPos, smooth);
+            cameraDallAlto.transform.localRotation = Quaternion.Lerp(startLocalRot, targetLocalRot, smooth);
+            cameraDallAlto.fieldOfView = Mathf.Lerp(startFov, targetFov, smooth); // Effetto Zoom fluido
+            
+            yield return null;
+        }
+
+        // Assicuriamoci che arrivi ESATTAMENTE al millimetro
+        cameraDallAlto.transform.localPosition = targetLocalPos;
+        cameraDallAlto.transform.localRotation = targetLocalRot;
+        cameraDallAlto.fieldOfView = targetFov;
+
+        if (modalitaSpostamento) inModalitaSpostamento = true;
+        else inControlloSchermo = true;
+
+        possoUscire = true;
+        inTransizione = false;
     }
 
-    void EsciControlloSchermo()
+    // --- LA MAGIA DEL VOLO IN USCITA ---
+    IEnumerator TransizioneUscita(bool modalitaSpostamento)
     {
-        inControlloSchermo = false;
+        inTransizione = true;
+        if (modalitaSpostamento) inModalitaSpostamento = false;
+        else inControlloSchermo = false;
+        
         possoUscire = false;
 
-        if (cameraDallAlto != null) cameraDallAlto.gameObject.SetActive(false);
-        if (cameraGiocatore != null) cameraGiocatore.enabled = true;
+        // 1. Salviamo il punto di partenza (Mirino) e dove dobbiamo arrivare (Giocatore)
+        Vector3 startLocalPos = cameraDallAlto.transform.localPosition;
+        Quaternion startLocalRot = cameraDallAlto.transform.localRotation;
+        float startFov = cameraDallAlto.fieldOfView;
+
+        Vector3 startWorldPos = cameraDallAlto.transform.position;
+        Quaternion startWorldRot = cameraDallAlto.transform.rotation;
+        
+        // 2. Voliamo indietro
+        float t = 0f;
+        while(t < 1f)
+        {
+            t += Time.deltaTime * velocitaTransizione;
+            float smooth = Mathf.SmoothStep(0f, 1f, t);
+            
+            cameraDallAlto.transform.position = Vector3.Lerp(startWorldPos, cameraGiocatore.transform.position, smooth);
+            cameraDallAlto.transform.rotation = Quaternion.Lerp(startWorldRot, cameraGiocatore.transform.rotation, smooth);
+            cameraDallAlto.fieldOfView = Mathf.Lerp(startFov, cameraGiocatore.fieldOfView, smooth);
+            
+            yield return null;
+        }
+
+        // 3. Stacco impercettibile e riattiviamo gli occhi del giocatore
+        cameraDallAlto.gameObject.SetActive(false);
+        cameraGiocatore.enabled = true;
+
+        // Riportiamo la telecamera al suo posto originale in modo che sia pronta per il prossimo uso
+        cameraDallAlto.transform.localPosition = startLocalPos;
+        cameraDallAlto.transform.localRotation = startLocalRot;
+        cameraDallAlto.fieldOfView = startFov;
 
         if (mioCollider != null) mioCollider.enabled = true;
 
-        schermoControllato = true;
-        VerificaCompletamentoFotografia();
+        if (!modalitaSpostamento) 
+        {
+            schermoControllato = true;
+            VerificaCompletamentoFotografia();
+        }
+        else
+        {
+            if (GameManager.instance != null) GameManager.instance.cameraPosizionata = true;
+        }
 
+        inTransizione = false;
         StartCoroutine(SbloccoComandiRitardato());
     }
 
@@ -236,7 +317,6 @@ public class SpostamentoCamera : MonoBehaviour
             if (inv != null) inv.RimuoviOggetto();
 
             if (GameManager.instance != null) GameManager.instance.CompletaTask(GameManager.Reparto.Fotografia);
-            Debug.Log("<color=green>Tutte le camere sono pronte! Task Fotografia COMPLETATA!</color>");
         }
     }
 
@@ -303,15 +383,14 @@ public class SpostamentoCamera : MonoBehaviour
         {
             GestisciMovimento(); 
             GestisciRotazione(); 
-            if (Input.GetKeyDown(KeyCode.E) && possoUscire) EsciDaModalitaSpostamento();
+            if (Input.GetKeyDown(KeyCode.E) && possoUscire && !inTransizione) StartCoroutine(TransizioneUscita(true));
         }
         else if (inControlloSchermo)
         {
-            if (Input.GetKeyDown(KeyCode.E) && possoUscire) EsciControlloSchermo();
+            if (Input.GetKeyDown(KeyCode.E) && possoUscire && !inTransizione) StartCoroutine(TransizioneUscita(false));
         }
     }
 
-    // --- FUNZIONE PER SPIARE IL REGISTA ---
     private bool ControllaIntroRegista()
     {
         InteragibileNPC[] tuttiNPC = Object.FindObjectsByType<InteragibileNPC>(FindObjectsSortMode.None);
@@ -326,12 +405,11 @@ public class SpostamentoCamera : MonoBehaviour
         return false;
     }
 
-    // --- LOGICA EVIDENZIATORE AGGIORNATA ---
     void GestisciEvidenziatore()
     {
         if (evidenziatore == null || GameManager.instance == null) return;
 
-        if (inModalitaSpostamento || inControlloSchermo)
+        if (inModalitaSpostamento || inControlloSchermo || inTransizione)
         {
             evidenziatore.Spegni();
             return;
@@ -354,10 +432,9 @@ public class SpostamentoCamera : MonoBehaviour
         }
         else if (faseRevisione)
         {
-            // Seleziona la logica in base a se il regista ha finito o no
             if (!ControllaIntroRegista()) 
             {
-                evidenziatore.Spegni(); // NIENTE frecce finché non finisce di parlare!
+                evidenziatore.Spegni();
             }
             else 
             {
@@ -373,41 +450,6 @@ public class SpostamentoCamera : MonoBehaviour
         {
             evidenziatore.Spegni();
         }
-    }
-
-    void EntraInModalitaSpostamento()
-    {
-        inModalitaSpostamento = true;
-        possoUscire = false;
-        
-        if (mioCollider != null) mioCollider.enabled = false;
-        BloccaGiocatore(true);
-
-        if (cameraGiocatore != null) cameraGiocatore.enabled = false;
-        if (cameraDallAlto != null) cameraDallAlto.gameObject.SetActive(true);
-
-        StartCoroutine(TimerSbloccoUscita());
-    }
-
-    IEnumerator TimerSbloccoUscita()
-    {
-        yield return new WaitForSeconds(0.5f);
-        possoUscire = true;
-    }
-
-    void EsciDaModalitaSpostamento()
-    {
-        inModalitaSpostamento = false;
-        possoUscire = false;
-
-        if (cameraDallAlto != null) cameraDallAlto.gameObject.SetActive(false);
-        if (cameraGiocatore != null) cameraGiocatore.enabled = true;
-
-        if (mioCollider != null) mioCollider.enabled = true;
-
-        if (GameManager.instance != null) GameManager.instance.cameraPosizionata = true;
-
-        StartCoroutine(SbloccoComandiRitardato());
     }
 
     void GestisciMovimento()
@@ -485,27 +527,5 @@ public class SpostamentoCamera : MonoBehaviour
         yield return new WaitUntil(() => !Input.GetKey(KeyCode.E));
         yield return new WaitForSeconds(0.1f);
         BloccaGiocatore(false);
-    }
-
-    void OnDrawGizmosSelected()
-    {
-        if (usaLimiti)
-        {
-            Gizmos.color = new Color(0f, 1f, 1f, 0.8f);
-
-            float centroX = (minX + maxX) / 2f;
-            float centroZ = (minZ + maxZ) / 2f;
-
-            float larghezzaX = Mathf.Abs(maxX - minX);
-            float lunghezzaZ = Mathf.Abs(maxZ - minZ);
-
-            Vector3 centroGizmo = new Vector3(centroX, transform.position.y, centroZ);
-            Vector3 dimensioneGizmo = new Vector3(larghezzaX, 0.05f, lunghezzaZ); 
-
-            Gizmos.DrawWireCube(centroGizmo, dimensioneGizmo);
-
-            Gizmos.color = new Color(0f, 1f, 1f, 0.1f);
-            Gizmos.DrawCube(centroGizmo, dimensioneGizmo);
-        }
     }
 }
