@@ -185,6 +185,20 @@ public class SelettoreOggetti : MonoBehaviour
         }
     }
 
+    private bool ControllaIntroRegista()
+    {
+        InteragibileNPC[] tuttiNPC = Object.FindObjectsByType<InteragibileNPC>(FindObjectsSortMode.None);
+        foreach (InteragibileNPC npc in tuttiNPC)
+        {
+            if (npc.tipoReparto == GameManager.Reparto.Regia)
+            {
+                NPC_Staff staff = npc.GetComponent<NPC_Staff>();
+                if (staff != null) return staff.haGiaParlato;
+            }
+        }
+        return false;
+    }
+
     void GestisciEvidenziatore()
     {
         if (evidenziatore == null || GameManager.instance == null) return;
@@ -198,10 +212,7 @@ public class SelettoreOggetti : MonoBehaviour
         bool taskAttiva = (GameManager.instance.taskAttuale == taskRichiesta);
         bool faseRevisione = (GameManager.instance.taskAttuale == GameManager.Reparto.Regia);
 
-        InventarioGiocatore inv = null;
-        if (giocatore != null) inv = giocatore.GetComponent<InventarioGiocatore>();
-        else inv = FindFirstObjectByType<InventarioGiocatore>();
-
+        InventarioGiocatore inv = Object.FindFirstObjectByType<InventarioGiocatore>();
         bool hoOggettoInMano = (inv != null && inv.haUnOggetto);
         
         bool npcHaParlato = (npcDiRiferimento == null || npcDiRiferimento.haGiaParlato);
@@ -215,7 +226,8 @@ public class SelettoreOggetti : MonoBehaviour
         }
         else if (faseRevisione)
         {
-            if (!hoOggettoInMano) evidenziatore.Accendi();
+            // ORA SI ACCENDE SOLO SE IL REGISTA HA FINITO DI PARLARE
+            if (ControllaIntroRegista() && !hoOggettoInMano) evidenziatore.Accendi();
             else evidenziatore.Spegni();
         }
         else
@@ -382,22 +394,45 @@ public class SelettoreOggetti : MonoBehaviour
         StartCoroutine(EseguiScambioERiattiva());
     }
 
+    // --- NUOVA FUNZIONE: Pulizia dei supporti sul set ---
+    void SvuotaSupportiInScena()
+    {
+        if (taskRichiesta == GameManager.Reparto.Luci)
+        {
+            SupportoLuce[] supporti = Object.FindObjectsByType<SupportoLuce>(FindObjectsSortMode.None);
+            foreach (SupportoLuce s in supporti) s.ResettaSupporto();
+        }
+        else if (taskRichiesta == GameManager.Reparto.Fotografia)
+        {
+            SpostamentoCamera[] camere = Object.FindObjectsByType<SpostamentoCamera>(FindObjectsSortMode.None);
+            foreach (SpostamentoCamera c in camere) c.ResettaVisualeLenti();
+        }
+        else if (taskRichiesta == GameManager.Reparto.Fonico)
+        {
+            // Metodo sicuro per il microfono (cerca classi con 'Microfono' nel nome e lancia il reset)
+            MonoBehaviour[] tutti = Object.FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None);
+            foreach (MonoBehaviour mb in tutti)
+            {
+                if (mb.GetType().Name.Contains("Microfono"))
+                {
+                    mb.SendMessage("ResettaSupporto", SendMessageOptions.DontRequireReceiver);
+                }
+            }
+        }
+    }
+
     IEnumerator EseguiScambioERiattiva()
     {
         InventarioGiocatore inv = Object.FindFirstObjectByType<InventarioGiocatore>();
 
+        // 1. LA MAGIA: Appena confermi la scelta, tutti i supporti (luci, camere o aste) si smontano!
+        SvuotaSupportiInScena();
+
         // 2. FASE DI RESTITUZIONE
         if (inv != null && inv.haUnOggetto)
         {
-            if (GameManager.instance != null)
-            {
-                // Salviamo l'informazione nel GameManager (se necessario)
-                GameManager.instance.RestituisciOggettoAlTavolo(inv.oggettoInMano);
-            }
-            
-            // LA MAGIA È QUI: RilasciaOggetto riaccende fisicamente l'oggetto sul tavolo!
+            if (GameManager.instance != null) GameManager.instance.RestituisciOggettoAlTavolo(inv.oggettoInMano);
             inv.RilasciaOggetto();
-            
             yield return new WaitForEndOfFrame(); 
         }
 

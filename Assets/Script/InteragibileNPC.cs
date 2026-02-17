@@ -34,6 +34,7 @@ public class InteragibileNPC : MonoBehaviour
 
             if (tipoReparto == GameManager.Reparto.Regia) 
             {
+                // In regia, si illumina per chiamarti a fare l'intro o per darti il Ciak
                 if (faseRevisione) devoIlluminarmi = true;
             }
             else if (tipoReparto == GameManager.Reparto.Produzione)
@@ -46,6 +47,7 @@ public class InteragibileNPC : MonoBehaviour
                     devoIlluminarmi = true;
             }
 
+            // Se sta già parlando spegniamo la freccia
             if (staParlando) devoIlluminarmi = false;
 
             if (devoIlluminarmi) evidenziatore.Accendi(); else evidenziatore.Spegni();
@@ -63,29 +65,33 @@ public class InteragibileNPC : MonoBehaviour
         if (tipoReparto == GameManager.Reparto.Produzione) 
         { 
             NPCWander produzioneScript = GetComponent<NPCWander>();
-            
-            // IL TRUCCO È QUI: Gli passo 'true' per dirgli che questa è la fine dell'intro!
-            StartCoroutine(GestisciStatoParlato(4.5f));            
+            StartCoroutine(GestisciStatoParlato(4.5f)); 
             if (produzioneScript != null) produzioneScript.InterazioneConPlayer(); 
             else GameManager.instance.CompletaTask(tipoReparto);
             return;
         }
 
-        // --- GESTIONE REGIA (Ciak finale) ---
+        // --- GESTIONE REGIA (Nuovo Flusso con Blocco Interazioni) ---
         if (tipoReparto == GameManager.Reparto.Regia && èIlMioTurno) 
         { 
-            if (!RegiaManager.instance.previewInCorso && !RegiaManager.instance.registrazioneInCorso) {
-                RegiaManager.instance.AttivaPreview();
-                GameManager.instance.MandaAttoriInScena();
-                return;
-            }
-            if (RegiaManager.instance.previewInCorso) {
-                if (staffScript != null) {
-                    StartCoroutine(GestisciStatoParlato(3f, false)); 
-                    staffScript.ReazioneCiak(() => { RegiaManager.instance.AvviaCiak(); });
+            if (staffScript != null)
+            {
+                // 1. Prima volta: Ti fa l'introduzione e blocca il set
+                if (!staffScript.haGiaParlato)
+                {
+                    StartCoroutine(GestisciIntroRegista(staffScript));
+                    return;
                 }
-                else RegiaManager.instance.AvviaCiak();
-                return;
+                // 2. Seconda volta: Ciak Finale (se la preview è attiva)
+                else
+                {
+                    if (RegiaManager.instance != null && RegiaManager.instance.previewInCorso) 
+                    {
+                        StartCoroutine(GestisciStatoParlato(3f, false)); 
+                        staffScript.ReazioneCiak(() => { RegiaManager.instance.AvviaCiak(); });
+                    }
+                    return;
+                }
             }
         }
 
@@ -103,7 +109,7 @@ public class InteragibileNPC : MonoBehaviour
 
         if (staffScript != null)
         {
-            InterazioneGiocatore player = FindFirstObjectByType<InterazioneGiocatore>();
+            InterazioneGiocatore player = Object.FindFirstObjectByType<InterazioneGiocatore>();
             if (player != null) staffScript.AttivaInterazione(player.transform);
 
             if (!staffScript.haGiaParlato)
@@ -129,26 +135,56 @@ public class InteragibileNPC : MonoBehaviour
         }
     }
 
-    // --- COROUTINE AGGIORNATA ---
-    // Ho aggiunto la variabile "lanciaLavagna" per sapere se dobbiamo inquadrare la sceneggiatura a fine timer
     public IEnumerator GestisciStatoParlato(float durata, bool lanciaLavagna = false)
     {
         staParlando = true;
-        yield return new WaitForSeconds(durata); // Aspetta che finisca di parlare
+        yield return new WaitForSeconds(durata); 
         staParlando = false;
 
-        // Se è la produzione che ha finito di parlare, lancia la telecamera sulla lavagna!
         if (lanciaLavagna)
         {
             FocusLavagna scriptLavagna = Object.FindFirstObjectByType<FocusLavagna>();
-            if (scriptLavagna != null)
+            if (scriptLavagna != null) scriptLavagna.AvviaInquadratura();
+        }
+    }
+
+    // --- NUOVA COROUTINE ESCLUSIVA PER IL REGISTA ---
+    private IEnumerator GestisciIntroRegista(NPC_Staff regista)
+    {
+        staParlando = true;
+
+        // 1. Spegne temporaneamente la capacità di interagire con gli oggetti/tavoli/NPC
+        InterazioneGiocatore playerInteract = Object.FindFirstObjectByType<InterazioneGiocatore>();
+        if (playerInteract != null) playerInteract.enabled = false;
+
+        // 2. Ruota il regista verso di te
+        if (playerInteract != null) regista.AttivaInterazione(playerInteract.transform);
+        
+        // 3. Fa partire l'audio
+        regista.AvviaDialogoIniziale();
+
+        // 4. Calcola in automatico quanto dura l'audio per sapere quanto aspettare
+        float durataIntro = 3f; 
+        if (regista.clipsIntroduzione != null && regista.clipsIntroduzione.Length > 0)
+        {
+            durataIntro = 0f;
+            foreach (AudioClip clip in regista.clipsIntroduzione)
             {
-                scriptLavagna.AvviaInquadratura();
-            }
-            else
-            {
-                Debug.LogWarning("Script FocusLavagna non trovato nella scena! Assicurati di averlo messo sulla lavagna.");
+                if (clip != null) durataIntro += clip.length + 0.2f;
             }
         }
+
+        // Aspetta pazientemente la fine del discorso
+        yield return new WaitForSeconds(durataIntro);
+
+        // 5. Riaccende le interazioni del giocatore (ora puoi modificare tutto!)
+        if (playerInteract != null) playerInteract.enabled = true;
+        staParlando = false;
+
+        // 6. Attiva la modalità revisione e manda in scena gli attori
+        if (RegiaManager.instance != null) RegiaManager.instance.AttivaPreview();
+        if (GameManager.instance != null) GameManager.instance.MandaAttoriInScena();
+
+        Debug.Log("<color=cyan>[Regia]</color> Introduzione completata! Attori sul set. Sblocca modifiche.");
     }
 }

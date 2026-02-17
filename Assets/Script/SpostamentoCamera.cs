@@ -9,6 +9,9 @@ public class SpostamentoCamera : MonoBehaviour
     
     [Header("Schermo Mirino")]
     public Camera cameraMirino;
+    [Tooltip("Frequenza di aggiornamento dello schermo sulla telecamera (es. 60 FPS per fluidità massima)")]
+    public float fpsSchermo = 60f;
+    private WaitForSeconds attesaFrameMirino;
 
     [Header("Movimento (Solo Regia)")]
     public float velocitaSpostamento = 3.0f;
@@ -70,13 +73,33 @@ public class SpostamentoCamera : MonoBehaviour
         if (testaCamera != null) rotInizialeTesta = testaCamera.localRotation;
 
         NascondiTutteLeLenti();
+
+        // Avvia l'aggiornamento forzato a 60 FPS del mirino
+        if (cameraMirino != null)
+        {
+            cameraMirino.enabled = false; 
+            attesaFrameMirino = new WaitForSeconds(1f / fpsSchermo);
+            StartCoroutine(AggiornaSchermoMirino());
+        }
+    }
+
+    IEnumerator AggiornaSchermoMirino()
+    {
+        while (true)
+        {
+            if (cameraMirino != null)
+            {
+                cameraMirino.Render();
+            }
+            yield return attesaFrameMirino;
+        }
     }
 
     public void Interagisci()
     {
         if (GameManager.instance == null) return;
 
-        InventarioGiocatore inventario = FindFirstObjectByType<InventarioGiocatore>();
+        InventarioGiocatore inventario = Object.FindFirstObjectByType<InventarioGiocatore>();
         bool hoLenteInMano = (inventario != null && inventario.haUnOggetto && inventario.categoriaInMano == OggettoRaccolta.TipoOggetto.Lente);
         string nomeLenteInMano = hoLenteInMano ? inventario.oggettoInMano : "";
 
@@ -117,7 +140,7 @@ public class SpostamentoCamera : MonoBehaviour
 
     void PiazzaLente()
     {
-        InventarioGiocatore inventario = FindFirstObjectByType<InventarioGiocatore>();
+        InventarioGiocatore inventario = Object.FindFirstObjectByType<InventarioGiocatore>();
 
         if (inventario != null && inventario.haUnOggetto && inventario.categoriaInMano == OggettoRaccolta.TipoOggetto.Lente)
         {
@@ -131,7 +154,6 @@ public class SpostamentoCamera : MonoBehaviour
             if (cinematica != null && lenteDaAnimare != null)
             {
                 cinematica.AvviaCinematicaMontaggio(lenteDaAnimare);
-                // --- MAGIA: Nasconde la lente dalla mano mentre guardi l'animazione ---
                 StartCoroutine(NascondiOggettoInMano(inventario));
             }
             else
@@ -144,18 +166,15 @@ public class SpostamentoCamera : MonoBehaviour
         }
     }
 
-    // --- NUOVA COROUTINE PER NASCONDERE L'OGGETTO IN MANO DURANTE IL MIRINO ---
     IEnumerator NascondiOggettoInMano(InventarioGiocatore inv)
     {
         Camera camGioc = inv.GetComponentInChildren<Camera>(true);
         Renderer[] renderersInMano = inv.GetComponentsInChildren<Renderer>();
         
-        // Spegne l'oggetto in mano
         foreach (Renderer r in renderersInMano) r.enabled = false;
 
         yield return new WaitForSeconds(0.2f);
 
-        // Aspetta finché il giocatore non torna padrone della sua visuale
         if (camGioc != null)
         {
             yield return new WaitUntil(() => camGioc.gameObject.activeInHierarchy && camGioc.enabled);
@@ -165,7 +184,6 @@ public class SpostamentoCamera : MonoBehaviour
             yield return new WaitForSeconds(3f);
         }
 
-        // Riaccende l'oggetto in mano
         foreach (Renderer r in renderersInMano) r.enabled = true;
     }
 
@@ -177,8 +195,7 @@ public class SpostamentoCamera : MonoBehaviour
         if (mioCollider != null) mioCollider.enabled = false;
         BloccaGiocatore(true);
 
-        // Assicurati che il giocatore non veda la lente in mano anche nel mirino statico
-        InventarioGiocatore inv = FindFirstObjectByType<InventarioGiocatore>();
+        InventarioGiocatore inv = Object.FindFirstObjectByType<InventarioGiocatore>();
         if (inv != null && inv.haUnOggetto) StartCoroutine(NascondiOggettoInMano(inv));
 
         if (cameraGiocatore != null) cameraGiocatore.enabled = false;
@@ -205,7 +222,7 @@ public class SpostamentoCamera : MonoBehaviour
 
     void VerificaCompletamentoFotografia()
     {
-        SpostamentoCamera[] tutteLeCamere = FindObjectsByType<SpostamentoCamera>(FindObjectsSortMode.None);
+        SpostamentoCamera[] tutteLeCamere = Object.FindObjectsByType<SpostamentoCamera>(FindObjectsSortMode.None);
         bool tutteFatte = true;
 
         foreach (SpostamentoCamera cam in tutteLeCamere)
@@ -215,7 +232,7 @@ public class SpostamentoCamera : MonoBehaviour
 
         if (tutteFatte)
         {
-            InventarioGiocatore inv = FindFirstObjectByType<InventarioGiocatore>();
+            InventarioGiocatore inv = Object.FindFirstObjectByType<InventarioGiocatore>();
             if (inv != null) inv.RimuoviOggetto();
 
             if (GameManager.instance != null) GameManager.instance.CompletaTask(GameManager.Reparto.Fotografia);
@@ -294,6 +311,22 @@ public class SpostamentoCamera : MonoBehaviour
         }
     }
 
+    // --- FUNZIONE PER SPIARE IL REGISTA ---
+    private bool ControllaIntroRegista()
+    {
+        InteragibileNPC[] tuttiNPC = Object.FindObjectsByType<InteragibileNPC>(FindObjectsSortMode.None);
+        foreach (InteragibileNPC npc in tuttiNPC)
+        {
+            if (npc.tipoReparto == GameManager.Reparto.Regia)
+            {
+                NPC_Staff staff = npc.GetComponent<NPC_Staff>();
+                if (staff != null) return staff.haGiaParlato;
+            }
+        }
+        return false;
+    }
+
+    // --- LOGICA EVIDENZIATORE AGGIORNATA ---
     void GestisciEvidenziatore()
     {
         if (evidenziatore == null || GameManager.instance == null) return;
@@ -307,7 +340,7 @@ public class SpostamentoCamera : MonoBehaviour
         bool faseFotografia = (GameManager.instance.taskAttuale == GameManager.Reparto.Fotografia);
         bool faseRevisione = (GameManager.instance.taskAttuale == GameManager.Reparto.Regia);
         
-        InventarioGiocatore inv = FindFirstObjectByType<InventarioGiocatore>();
+        InventarioGiocatore inv = Object.FindFirstObjectByType<InventarioGiocatore>();
         bool hoLenteInMano = (inv != null && inv.haUnOggetto && inv.categoriaInMano == OggettoRaccolta.TipoOggetto.Lente);
         bool hoManiVuote = (inv == null || !inv.haUnOggetto);
         string nomeLenteInMano = hoLenteInMano ? inv.oggettoInMano : "";
@@ -316,21 +349,25 @@ public class SpostamentoCamera : MonoBehaviour
         {
             if (!lenteMontata && hoLenteInMano) 
                 evidenziatore.Accendi(); 
-            else if (lenteMontata && !schermoControllato) 
-                evidenziatore.Accendi(); 
-            else if (lenteMontata && schermoControllato && hoLenteInMano && nomeLenteInMano != lenteMontataQui) 
-                evidenziatore.Accendi();
             else 
                 evidenziatore.Spegni(); 
         }
         else if (faseRevisione)
         {
-            if (hoManiVuote) 
-                evidenziatore.Accendi();
-            else if (hoLenteInMano && nomeLenteInMano != lenteMontataQui) 
-                evidenziatore.Accendi();
+            // Seleziona la logica in base a se il regista ha finito o no
+            if (!ControllaIntroRegista()) 
+            {
+                evidenziatore.Spegni(); // NIENTE frecce finché non finisce di parlare!
+            }
             else 
-                evidenziatore.Spegni();
+            {
+                if (hoManiVuote) 
+                    evidenziatore.Accendi();
+                else if (hoLenteInMano && nomeLenteInMano != lenteMontataQui) 
+                    evidenziatore.Accendi();
+                else 
+                    evidenziatore.Spegni();
+            }
         }
         else 
         {
