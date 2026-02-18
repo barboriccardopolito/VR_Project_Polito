@@ -8,12 +8,12 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Metallo Nero
-    second: {fileID: 2100000, guid: 8dbcdd18c34e88a45b772c90f743837e, type: 2}
+    second: {fileID: 2100000, guid: 150ce5be732cc3b48bea512ab661eefc, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Plastica grigia
-    second: {fileID: 2100000, guid: 735d23473c5cc6848a4db8057e336772, type: 2}
+    second: {fileID: 2100000, guid: b8c4da02914eeee499c0605985f016f9, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
