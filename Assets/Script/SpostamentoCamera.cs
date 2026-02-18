@@ -8,13 +8,13 @@ public class SpostamentoCamera : MonoBehaviour
     public Camera cameraGiocatore; 
     
     [Header("Transizione Visuale")]
-    [Tooltip("Velocità del volo della telecamera (più è alto, più è veloce)")]
+    [Tooltip("Velocità del volo della telecamera")]
     public float velocitaTransizione = 2.5f;
     private bool inTransizione = false;
 
     [Header("Schermo Mirino")]
     public Camera cameraMirino;
-    [Tooltip("Frequenza di aggiornamento dello schermo sulla telecamera (es. 60 FPS per fluidità massima)")]
+    [Tooltip("Frequenza aggiornamento schermo (es. 60)")]
     public float fpsSchermo = 60f;
     private WaitForSeconds attesaFrameMirino;
 
@@ -42,7 +42,7 @@ public class SpostamentoCamera : MonoBehaviour
     public GameObject giocatore; 
     public string[] nomiScriptDaDisabilitare; 
 
-    [Header("Modelli Lenti (Opzionali)")]
+    [Header("Modelli Lenti")]
     public GameObject modelloGrandangolo;
     public GameObject modelloCinematografica;
     public GameObject modelloStandard;
@@ -91,17 +91,38 @@ public class SpostamentoCamera : MonoBehaviour
     {
         while (true)
         {
-            if (cameraMirino != null)
-            {
-                cameraMirino.Render();
-            }
+            if (cameraMirino != null) cameraMirino.Render();
             yield return attesaFrameMirino;
+        }
+    }
+
+    // --- FUNZIONE PER NASCONDERE RADIO E OGGETTI IN MANO ---
+    void ImpostaVisibilitaOggetti(bool visibile)
+    {
+        // 1. Nascondi Inventario
+        InventarioGiocatore inv = Object.FindFirstObjectByType<InventarioGiocatore>();
+        if (inv != null)
+        {
+            Renderer[] rends = inv.GetComponentsInChildren<Renderer>();
+            foreach (Renderer r in rends) r.enabled = visibile;
+        }
+
+        // 2. Nascondi Radio (Cerca qualsiasi oggetto che contenga "Radio" nel nome addosso al player)
+        if (giocatore != null)
+        {
+            Renderer[] tuttiRends = giocatore.GetComponentsInChildren<Renderer>();
+            foreach (Renderer r in tuttiRends)
+            {
+                if (r.gameObject.name.Contains("Radio") || r.gameObject.name.Contains("Walkie"))
+                {
+                    r.enabled = visibile;
+                }
+            }
         }
     }
 
     public void Interagisci()
     {
-        // Se la telecamera sta "volando", blocchiamo i click per non rompere l'animazione
         if (inTransizione || GameManager.instance == null) return;
 
         InventarioGiocatore inventario = Object.FindFirstObjectByType<InventarioGiocatore>();
@@ -159,7 +180,8 @@ public class SpostamentoCamera : MonoBehaviour
             if (cinematica != null && lenteDaAnimare != null)
             {
                 cinematica.AvviaCinematicaMontaggio(lenteDaAnimare);
-                StartCoroutine(NascondiOggettoInMano(inventario));
+                // Usiamo la nuova funzione anche qui per sicurezza
+                StartCoroutine(NascondiOggettiTemporaneo());
             }
             else
             {
@@ -170,43 +192,26 @@ public class SpostamentoCamera : MonoBehaviour
         }
     }
 
-    IEnumerator NascondiOggettoInMano(InventarioGiocatore inv)
+    IEnumerator NascondiOggettiTemporaneo()
     {
-        Camera camGioc = inv.GetComponentInChildren<Camera>(true);
-        Renderer[] renderersInMano = inv.GetComponentsInChildren<Renderer>();
-        
-        foreach (Renderer r in renderersInMano) r.enabled = false;
-
-        yield return new WaitForSeconds(0.2f);
-
-        if (camGioc != null)
-        {
-            yield return new WaitUntil(() => camGioc.gameObject.activeInHierarchy && camGioc.enabled);
-        }
-        else
-        {
-            yield return new WaitForSeconds(3f);
-        }
-
-        foreach (Renderer r in renderersInMano) r.enabled = true;
+        ImpostaVisibilitaOggetti(false);
+        yield return new WaitForSeconds(3.5f);
+        ImpostaVisibilitaOggetti(true);
     }
 
-    // --- LA MAGIA DEL VOLO IN ENTRATA ---
     IEnumerator TransizioneEntrata(bool modalitaSpostamento)
     {
         inTransizione = true;
         if (mioCollider != null) mioCollider.enabled = false;
         BloccaGiocatore(true);
+        
+        // Spegni Radio e Oggetto in mano PRIMA di partire
+        ImpostaVisibilitaOggetti(false);
 
-        InventarioGiocatore inv = Object.FindFirstObjectByType<InventarioGiocatore>();
-        if (inv != null && inv.haUnOggetto) StartCoroutine(NascondiOggettoInMano(inv));
-
-        // 1. Salviamo la posizione e il FOV finale dove deve arrivare la telecamera
         Vector3 targetLocalPos = cameraDallAlto.transform.localPosition;
         Quaternion targetLocalRot = cameraDallAlto.transform.localRotation;
         float targetFov = cameraDallAlto.fieldOfView;
 
-        // 2. "Teletrasportiamo" la camera invisibile sulla faccia del giocatore
         cameraDallAlto.transform.position = cameraGiocatore.transform.position;
         cameraDallAlto.transform.rotation = cameraGiocatore.transform.rotation;
         float startFov = cameraGiocatore.fieldOfView;
@@ -215,25 +220,22 @@ public class SpostamentoCamera : MonoBehaviour
         Vector3 startLocalPos = cameraDallAlto.transform.localPosition;
         Quaternion startLocalRot = cameraDallAlto.transform.localRotation;
 
-        // Spegniamo gli occhi del giocatore e accendiamo la telecamera "volante"
         cameraGiocatore.enabled = false;
         cameraDallAlto.gameObject.SetActive(true);
 
-        // 3. Il Volo Matematico (Lerp + SmoothStep)
         float t = 0f;
         while (t < 1f)
         {
             t += Time.deltaTime * velocitaTransizione;
-            float smooth = Mathf.SmoothStep(0f, 1f, t); // Rende la curva morbida all'inizio e alla fine
+            float smooth = Mathf.SmoothStep(0f, 1f, t);
             
             cameraDallAlto.transform.localPosition = Vector3.Lerp(startLocalPos, targetLocalPos, smooth);
             cameraDallAlto.transform.localRotation = Quaternion.Lerp(startLocalRot, targetLocalRot, smooth);
-            cameraDallAlto.fieldOfView = Mathf.Lerp(startFov, targetFov, smooth); // Effetto Zoom fluido
+            cameraDallAlto.fieldOfView = Mathf.Lerp(startFov, targetFov, smooth);
             
             yield return null;
         }
 
-        // Assicuriamoci che arrivi ESATTAMENTE al millimetro
         cameraDallAlto.transform.localPosition = targetLocalPos;
         cameraDallAlto.transform.localRotation = targetLocalRot;
         cameraDallAlto.fieldOfView = targetFov;
@@ -245,7 +247,6 @@ public class SpostamentoCamera : MonoBehaviour
         inTransizione = false;
     }
 
-    // --- LA MAGIA DEL VOLO IN USCITA ---
     IEnumerator TransizioneUscita(bool modalitaSpostamento)
     {
         inTransizione = true;
@@ -254,7 +255,6 @@ public class SpostamentoCamera : MonoBehaviour
         
         possoUscire = false;
 
-        // 1. Salviamo il punto di partenza (Mirino) e dove dobbiamo arrivare (Giocatore)
         Vector3 startLocalPos = cameraDallAlto.transform.localPosition;
         Quaternion startLocalRot = cameraDallAlto.transform.localRotation;
         float startFov = cameraDallAlto.fieldOfView;
@@ -262,7 +262,6 @@ public class SpostamentoCamera : MonoBehaviour
         Vector3 startWorldPos = cameraDallAlto.transform.position;
         Quaternion startWorldRot = cameraDallAlto.transform.rotation;
         
-        // 2. Voliamo indietro
         float t = 0f;
         while(t < 1f)
         {
@@ -276,14 +275,15 @@ public class SpostamentoCamera : MonoBehaviour
             yield return null;
         }
 
-        // 3. Stacco impercettibile e riattiviamo gli occhi del giocatore
         cameraDallAlto.gameObject.SetActive(false);
         cameraGiocatore.enabled = true;
 
-        // Riportiamo la telecamera al suo posto originale in modo che sia pronta per il prossimo uso
         cameraDallAlto.transform.localPosition = startLocalPos;
         cameraDallAlto.transform.localRotation = startLocalRot;
         cameraDallAlto.fieldOfView = startFov;
+
+        // Riaccendi Radio e Oggetto in mano SOLO ORA
+        ImpostaVisibilitaOggetti(true);
 
         if (mioCollider != null) mioCollider.enabled = true;
 
@@ -351,6 +351,25 @@ public class SpostamentoCamera : MonoBehaviour
         if (cameraMirino != null) cameraMirino.fieldOfView = nuovoFov;
 
         return lenteAttivata; 
+    }
+
+    public void ResettaVisualeLenti()
+    {
+        if (lenteMontata && !string.IsNullOrEmpty(lenteMontataQui) && GameManager.instance != null)
+        {
+            GameManager.instance.RestituisciOggettoAlTavolo(lenteMontataQui);
+        }
+
+        NascondiTutteLeLenti();
+        lenteMontata = false;
+        schermoControllato = false;
+        lenteMontataQui = "";
+        
+        if (GameManager.instance != null)
+        {
+            if (cameraDallAlto != null) cameraDallAlto.fieldOfView = GameManager.instance.fovStandard;
+            if (cameraMirino != null) cameraMirino.fieldOfView = GameManager.instance.fovStandard;
+        }
     }
 
     void NascondiTutteLeLenti()
@@ -423,7 +442,6 @@ public class SpostamentoCamera : MonoBehaviour
             }
             else 
             {
-                // CONTROLLO CORRETTO PER CAMERE VUOTE/PIENE
                 if (hoManiVuote) 
                     evidenziatore.Accendi();
                 else if (hoLenteInMano && (!lenteMontata || nomeLenteInMano != lenteMontataQui)) 
@@ -435,26 +453,6 @@ public class SpostamentoCamera : MonoBehaviour
         else 
         {
             evidenziatore.Spegni();
-        }
-    }
-
-    public void ResettaVisualeLenti()
-    {
-        // Quando la camera si azzera, butta la lente sul tavolo
-        if (lenteMontata && !string.IsNullOrEmpty(lenteMontataQui) && GameManager.instance != null)
-        {
-            GameManager.instance.RestituisciOggettoAlTavolo(lenteMontataQui);
-        }
-
-        NascondiTutteLeLenti();
-        lenteMontata = false;
-        schermoControllato = false;
-        lenteMontataQui = "";
-        
-        if (GameManager.instance != null)
-        {
-            if (cameraDallAlto != null) cameraDallAlto.fieldOfView = GameManager.instance.fovStandard;
-            if (cameraMirino != null) cameraMirino.fieldOfView = GameManager.instance.fovStandard;
         }
     }
 

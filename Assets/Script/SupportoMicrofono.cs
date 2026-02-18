@@ -7,7 +7,6 @@ public class SupportoMicrofono : MonoBehaviour
 
     [Header("Transizione Visuale")]
     public Camera cameraGiocatore;
-    [Tooltip("La telecamera fissa che inquadra questo stativo per la cutscene")]
     public Camera cameraInquadratura;
     public float velocitaTransizione = 2.5f;
 
@@ -17,7 +16,6 @@ public class SupportoMicrofono : MonoBehaviour
     private bool inTransizione = false;
 
     [Header("Impostazioni Asta")]
-    [Tooltip("Scrivi 'Boom' o 'Ambisonic' per forzare quest'asta ad accettare SOLO quel microfono. Lascia vuoto per accettarli tutti.")]
     public string tipoMicrofonoAccettato = "";
 
     [Header("Modelli 3D Figli")]
@@ -165,17 +163,36 @@ public class SupportoMicrofono : MonoBehaviour
             gm.supportoPiazzato = true; 
             gm.ApplicaEffettoMicrofono(nomeMic);
 
-            StartCoroutine(GestisciVoloECinematica(micAttivato, titoloOlogramma, descOlogramma, inventario));
+            StartCoroutine(GestisciVoloECinematica(micAttivato, titoloOlogramma, descOlogramma));
         }
     }
 
-    IEnumerator GestisciVoloECinematica(GameObject mic, string titolo, string desc, InventarioGiocatore inv)
+    // --- NUOVA FUNZIONE VISIBILITÀ ---
+    void ImpostaVisibilitaOggetti(bool visibile)
+    {
+        InventarioGiocatore inv = Object.FindFirstObjectByType<InventarioGiocatore>();
+        if (inv != null)
+        {
+            Renderer[] rends = inv.GetComponentsInChildren<Renderer>();
+            foreach (Renderer r in rends) r.enabled = visibile;
+        }
+        if (giocatore != null)
+        {
+            Renderer[] tuttiRends = giocatore.GetComponentsInChildren<Renderer>();
+            foreach (Renderer r in tuttiRends)
+            {
+                if (r.gameObject.name.Contains("Radio") || r.gameObject.name.Contains("Walkie")) r.enabled = visibile;
+            }
+        }
+    }
+
+    IEnumerator GestisciVoloECinematica(GameObject mic, string titolo, string desc)
     {
         inTransizione = true;
         BloccaGiocatore(true);
 
-        Renderer[] renderersInMano = inv.GetComponentsInChildren<Renderer>();
-        foreach (Renderer r in renderersInMano) r.enabled = false;
+        // SPEGNI TUTTO (Radio inclusa)
+        ImpostaVisibilitaOggetti(false);
 
         if (cameraInquadratura != null && cameraGiocatore != null)
         {
@@ -236,8 +253,12 @@ public class SupportoMicrofono : MonoBehaviour
             yield return new WaitForSeconds(3.5f);
         }
 
-        foreach (Renderer r in renderersInMano) r.enabled = true;
-        inv.RimuoviOggetto();
+        // TOGLI L'OGGETTO USATO E RIACCENDI IL RESTO
+        InventarioGiocatore invFinale = Object.FindFirstObjectByType<InventarioGiocatore>();
+        if (invFinale != null) invFinale.RimuoviOggetto();
+
+        // RIACCENDI TUTTO (La radio torna visibile)
+        ImpostaVisibilitaOggetti(true);
         
         if (GameManager.instance.taskAttuale == GameManager.Reparto.Fonico)
             GameManager.instance.CompletaTask(GameManager.Reparto.Fonico); 

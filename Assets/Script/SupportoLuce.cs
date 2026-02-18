@@ -7,7 +7,6 @@ public class SupportoLuce : MonoBehaviour
 
     [Header("Transizione Visuale")]
     public Camera cameraGiocatore;
-    [Tooltip("La telecamera fissa che inquadra questo stativo per la cutscene")]
     public Camera cameraInquadratura;
     public float velocitaTransizione = 2.5f;
 
@@ -154,17 +153,36 @@ public class SupportoLuce : MonoBehaviour
         if (luceAttivata != null)
         {
             luceGiaPosizionata = true;
-            StartCoroutine(GestisciVoloECinematica(luceAttivata, titoloOlogramma, descOlogramma, inventario));
+            StartCoroutine(GestisciVoloECinematica(luceAttivata, titoloOlogramma, descOlogramma));
         }
     }
 
-    IEnumerator GestisciVoloECinematica(GameObject luce, string titolo, string desc, InventarioGiocatore inv)
+    // --- NUOVA FUNZIONE VISIBILITÀ ---
+    void ImpostaVisibilitaOggetti(bool visibile)
+    {
+        InventarioGiocatore inv = Object.FindFirstObjectByType<InventarioGiocatore>();
+        if (inv != null)
+        {
+            Renderer[] rends = inv.GetComponentsInChildren<Renderer>();
+            foreach (Renderer r in rends) r.enabled = visibile;
+        }
+        if (giocatore != null)
+        {
+            Renderer[] tuttiRends = giocatore.GetComponentsInChildren<Renderer>();
+            foreach (Renderer r in tuttiRends)
+            {
+                if (r.gameObject.name.Contains("Radio") || r.gameObject.name.Contains("Walkie")) r.enabled = visibile;
+            }
+        }
+    }
+
+    IEnumerator GestisciVoloECinematica(GameObject luce, string titolo, string desc)
     {
         inTransizione = true;
         BloccaGiocatore(true);
 
-        Renderer[] renderersInMano = inv.GetComponentsInChildren<Renderer>();
-        foreach (Renderer r in renderersInMano) r.enabled = false;
+        // SPEGNI TUTTO PRIMA DI PARTIRE
+        ImpostaVisibilitaOggetti(false);
 
         if (cameraInquadratura != null && cameraGiocatore != null)
         {
@@ -225,7 +243,8 @@ public class SupportoLuce : MonoBehaviour
             yield return new WaitForSeconds(3.5f);
         }
 
-        foreach (Renderer r in renderersInMano) r.enabled = true;
+        // RIACCENDI TUTTO
+        ImpostaVisibilitaOggetti(true);
         VerificaCompletamentoLuci();
         BloccaGiocatore(false);
         inTransizione = false;
