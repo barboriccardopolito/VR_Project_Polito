@@ -353,21 +353,6 @@ public class SpostamentoCamera : MonoBehaviour
         return lenteAttivata; 
     }
 
-    public void ResettaVisualeLenti()
-    {
-        NascondiTutteLeLenti();
-        lenteMontata = false;
-        schermoControllato = false;
-
-        if (GameManager.instance != null) GameManager.instance.lenteSceltaFinale = "";
-        
-        if (GameManager.instance != null)
-        {
-            if (cameraDallAlto != null) cameraDallAlto.fieldOfView = GameManager.instance.fovStandard;
-            if (cameraMirino != null) cameraMirino.fieldOfView = GameManager.instance.fovStandard;
-        }
-    }
-
     void NascondiTutteLeLenti()
     {
         if (modelloGrandangolo) modelloGrandangolo.SetActive(false);
@@ -438,9 +423,10 @@ public class SpostamentoCamera : MonoBehaviour
             }
             else 
             {
+                // CONTROLLO CORRETTO PER CAMERE VUOTE/PIENE
                 if (hoManiVuote) 
                     evidenziatore.Accendi();
-                else if (hoLenteInMano && nomeLenteInMano != lenteMontataQui) 
+                else if (hoLenteInMano && (!lenteMontata || nomeLenteInMano != lenteMontataQui)) 
                     evidenziatore.Accendi();
                 else 
                     evidenziatore.Spegni();
@@ -449,6 +435,26 @@ public class SpostamentoCamera : MonoBehaviour
         else 
         {
             evidenziatore.Spegni();
+        }
+    }
+
+    public void ResettaVisualeLenti()
+    {
+        // Quando la camera si azzera, butta la lente sul tavolo
+        if (lenteMontata && !string.IsNullOrEmpty(lenteMontataQui) && GameManager.instance != null)
+        {
+            GameManager.instance.RestituisciOggettoAlTavolo(lenteMontataQui);
+        }
+
+        NascondiTutteLeLenti();
+        lenteMontata = false;
+        schermoControllato = false;
+        lenteMontataQui = "";
+        
+        if (GameManager.instance != null)
+        {
+            if (cameraDallAlto != null) cameraDallAlto.fieldOfView = GameManager.instance.fovStandard;
+            if (cameraMirino != null) cameraMirino.fieldOfView = GameManager.instance.fovStandard;
         }
     }
 
