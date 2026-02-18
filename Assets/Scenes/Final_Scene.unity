@@ -60517,6 +60517,14 @@ MonoBehaviour:
   volumeGrandangolo: {fileID: 1701555575}
   volumeCinematografica: {fileID: 853378335}
   volumeDistorta: {fileID: 1724366768}
+  luciGeneraliCapannone:
+  - {fileID: 1971267642}
+  - {fileID: 639574401}
+  - {fileID: 676475592}
+  audioSourceRegia: {fileID: 0}
+  suonoBlackout: {fileID: 8300000, guid: e6c11e4f66a0ba740a543bd9f9472fa7, type: 3}
+  suonoAccensioneFaro: {fileID: 8300000, guid: c76508f01a4e86940b05cd9a8611634d, type: 3}
+  suonoCiak: {fileID: 0}
   previewInCorso: 0
   registrazioneInCorso: 0
 --- !u!4 &1966362844

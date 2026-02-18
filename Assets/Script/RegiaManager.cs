@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic; // Fondamentale per usare le List<>
 
 public class RegiaManager : MonoBehaviour
 {
@@ -17,11 +18,19 @@ public class RegiaManager : MonoBehaviour
     [Header("Camere del Set")]
     public Camera[] camereSet; 
 
-    // --- NUOVI SLOT PER GLI EFFETTI VISIVI ---
     [Header("Effetti Post-Processing (Wow Factor)")]
     public GameObject volumeGrandangolo;
     public GameObject volumeCinematografica;
     public GameObject volumeDistorta;
+
+    // --- NUOVA SEZIONE: IL GRANDE CIAK ---
+    [Header("Sequenza Finale (Luci e Audio)")]
+    [Tooltip("Trascina qui tutti i GameObjects dei faretti sul soffitto (così spegniamo sia la luce che il materiale emissivo)")]
+    public GameObject[] luciGeneraliCapannone; 
+    public AudioSource audioSourceRegia;
+    public AudioClip suonoBlackout;
+    public AudioClip suonoAccensioneFaro;
+    public AudioClip suonoCiak;
 
     [Header("Stato del Sistema")]
     public bool previewInCorso = false;
@@ -37,6 +46,9 @@ public class RegiaManager : MonoBehaviour
     void Start()
     {
         textureMiriniOriginali = new RenderTexture[camereSet.Length];
+
+        // Creiamo un AudioSource se ti dimentichi di assegnarlo
+        if (audioSourceRegia == null) audioSourceRegia = gameObject.AddComponent<AudioSource>();
 
         for (int i = 0; i < camereSet.Length; i++)
         {
@@ -98,15 +110,61 @@ public class RegiaManager : MonoBehaviour
         StartCoroutine(SequenzaRegistrazione());
     }
 
+    // --- LA MAGIA INIZIA QUI ---
     IEnumerator SequenzaRegistrazione()
     {
         Debug.Log("<color=red>--- REC: INIZIO REGISTRAZIONE ---</color>");
 
         if (camereSet == null || camereSet.Length == 0) yield break;
         
-        if (gestoreRecitazione != null) gestoreRecitazione.AvviaCiakUnico();
         if (mainCameraPlayer) mainCameraPlayer.enabled = false; 
 
+        // 1. CERCHIAMO LE LUCI PIAZZATE DAL GIOCATORE
+        List<Light> luciDelSet = new List<Light>();
+        if (GameManager.instance != null && GameManager.instance.supportiLuciFisici != null)
+        {
+            foreach (GameObject supporto in GameManager.instance.supportiLuciFisici)
+            {
+                SupportoLuce scriptLuce = supporto.GetComponent<SupportoLuce>();
+                if (scriptLuce != null && scriptLuce.luceGiaPosizionata)
+                {
+                    // Raccoglie le luci accese dentro questo supporto
+                    Light[] luci = supporto.GetComponentsInChildren<Light>(false); 
+                    luciDelSet.AddRange(luci);
+                }
+            }
+        }
+
+        // 2. IL BLACKOUT (Tonfo sordo e buio totale)
+        if (audioSourceRegia != null && suonoBlackout != null) audioSourceRegia.PlayOneShot(suonoBlackout);
+        
+        foreach (GameObject luceCap in luciGeneraliCapannone) { if (luceCap != null) luceCap.SetActive(false); }
+        foreach (Light l in luciDelSet) { if (l != null) l.enabled = false; }
+
+        // Suspense nel buio...
+        yield return new WaitForSeconds(2.0f);
+
+        // 3. ACCENSIONE PROGRESSIVA DEI FARI (Clack... Clack...)
+        foreach (Light l in luciDelSet)
+        {
+            if (l != null)
+            {
+                l.enabled = true;
+                if (audioSourceRegia != null && suonoAccensioneFaro != null) audioSourceRegia.PlayOneShot(suonoAccensioneFaro);
+                yield return new WaitForSeconds(0.8f); 
+            }
+        }
+
+        yield return new WaitForSeconds(1.0f);
+
+        // 4. IL CIAK!
+        if (audioSourceRegia != null && suonoCiak != null) audioSourceRegia.PlayOneShot(suonoCiak);
+        yield return new WaitForSeconds(1.5f); // Lascia il tempo per far finire l'audio del ciak
+
+        // 5. AZIONE! (Partono gli attori)
+        if (gestoreRecitazione != null) gestoreRecitazione.AvviaCiakUnico();
+
+        // 6. CAMBIO CAMERE DURANTE LA SCENA
         for (int i = 0; i < camereSet.Length; i++)
         {
             for (int j = 0; j < camereSet.Length; j++) 
@@ -126,11 +184,13 @@ public class RegiaManager : MonoBehaviour
             
             if (GameManager.instance != null) ApplicaEffettiScelti(camAttuale);
 
+            // Tempo su ogni telecamera prima di staccare
             yield return new WaitForSeconds(4f); 
         }
 
         Debug.Log("<color=green>--- STOP! ---</color>");
         
+        // 7. FINE SCENA E TITOLI DI CODA
         if (gestoreRecitazione != null) gestoreRecitazione.FermaTutto();
         if (mainCameraPlayer) mainCameraPlayer.enabled = true;
 
@@ -148,10 +208,8 @@ public class RegiaManager : MonoBehaviour
         if (gestoreFinale != null) gestoreFinale.AvviaTitoliDiCoda();
     }
 
-    // --- FUNZIONE AGGIORNATA PER I VOLUMI ---
     void ApplicaEffettiScelti(Camera camDestinazione)
     {
-        // 1. Spegniamo tutti gli effetti speciali di default
         if (volumeGrandangolo) volumeGrandangolo.SetActive(false);
         if (volumeCinematografica) volumeCinematografica.SetActive(false);
         if (volumeDistorta) volumeDistorta.SetActive(false);
