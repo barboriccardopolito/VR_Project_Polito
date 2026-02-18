@@ -110,14 +110,14 @@ public class RegiaManager : MonoBehaviour
         StartCoroutine(SequenzaRegistrazione());
     }
 
-    // --- LA MAGIA INIZIA QUI ---
     IEnumerator SequenzaRegistrazione()
     {
         Debug.Log("<color=red>--- REC: INIZIO REGISTRAZIONE ---</color>");
 
         if (camereSet == null || camereSet.Length == 0) yield break;
         
-        if (mainCameraPlayer) mainCameraPlayer.enabled = false; 
+        // RIMOSSO LO SPEGNIMENTO DELLA CAMERA QUI! 
+        // Il giocatore resta attivo per vedere il blackout con i suoi occhi.
 
         // 1. CERCHIAMO LE LUCI PIAZZATE DAL GIOCATORE
         List<Light> luciDelSet = new List<Light>();
@@ -128,23 +128,21 @@ public class RegiaManager : MonoBehaviour
                 SupportoLuce scriptLuce = supporto.GetComponent<SupportoLuce>();
                 if (scriptLuce != null && scriptLuce.luceGiaPosizionata)
                 {
-                    // Raccoglie le luci accese dentro questo supporto
                     Light[] luci = supporto.GetComponentsInChildren<Light>(false); 
                     luciDelSet.AddRange(luci);
                 }
             }
         }
 
-        // 2. IL BLACKOUT (Tonfo sordo e buio totale)
+        // 2. IL BLACKOUT (Tonfo sordo e buio totale vissuto in prima persona!)
         if (audioSourceRegia != null && suonoBlackout != null) audioSourceRegia.PlayOneShot(suonoBlackout);
         
         foreach (GameObject luceCap in luciGeneraliCapannone) { if (luceCap != null) luceCap.SetActive(false); }
         foreach (Light l in luciDelSet) { if (l != null) l.enabled = false; }
 
-        // Suspense nel buio...
         yield return new WaitForSeconds(2.0f);
 
-        // 3. ACCENSIONE PROGRESSIVA DEI FARI (Clack... Clack...)
+        // 3. ACCENSIONE PROGRESSIVA DEI FARI (Sempre visto dal giocatore)
         foreach (Light l in luciDelSet)
         {
             if (l != null)
@@ -159,12 +157,15 @@ public class RegiaManager : MonoBehaviour
 
         // 4. IL CIAK!
         if (audioSourceRegia != null && suonoCiak != null) audioSourceRegia.PlayOneShot(suonoCiak);
-        yield return new WaitForSeconds(1.5f); // Lascia il tempo per far finire l'audio del ciak
+        yield return new WaitForSeconds(1.5f); 
 
         // 5. AZIONE! (Partono gli attori)
         if (gestoreRecitazione != null) gestoreRecitazione.AvviaCiakUnico();
 
-        // 6. CAMBIO CAMERE DURANTE LA SCENA
+        // -> SPEGNIAMO GLI OCCHI DEL GIOCATORE SOLO ORA CHE PARTONO LE CAMERE! <-
+        if (mainCameraPlayer) mainCameraPlayer.enabled = false; 
+
+        // 6. CAMBIO CAMERE DURANTE LA SCENA (Visione da Regista)
         for (int i = 0; i < camereSet.Length; i++)
         {
             for (int j = 0; j < camereSet.Length; j++) 
@@ -176,7 +177,7 @@ public class RegiaManager : MonoBehaviour
 
             Camera camAttuale = camereSet[i];
             
-            camAttuale.targetTexture = null; 
+            camAttuale.targetTexture = null; // Manda il flusso allo schermo intero
             camAttuale.enabled = true; 
 
             OttimizzaCamera optScript = camAttuale.GetComponent<OttimizzaCamera>();
@@ -184,7 +185,6 @@ public class RegiaManager : MonoBehaviour
             
             if (GameManager.instance != null) ApplicaEffettiScelti(camAttuale);
 
-            // Tempo su ogni telecamera prima di staccare
             yield return new WaitForSeconds(4f); 
         }
 
@@ -192,7 +192,7 @@ public class RegiaManager : MonoBehaviour
         
         // 7. FINE SCENA E TITOLI DI CODA
         if (gestoreRecitazione != null) gestoreRecitazione.FermaTutto();
-        if (mainCameraPlayer) mainCameraPlayer.enabled = true;
+        if (mainCameraPlayer) mainCameraPlayer.enabled = true; // Riaccende gli occhi del giocatore
 
         for (int i = 0; i < camereSet.Length; i++) 
         {
