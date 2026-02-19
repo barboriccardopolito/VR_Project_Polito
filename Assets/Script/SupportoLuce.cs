@@ -157,21 +157,33 @@ public class SupportoLuce : MonoBehaviour
         }
     }
 
-    // --- NUOVA FUNZIONE VISIBILITÀ ---
     void ImpostaVisibilitaOggetti(bool visibile)
     {
         InventarioGiocatore inv = Object.FindFirstObjectByType<InventarioGiocatore>();
         if (inv != null)
         {
-            Renderer[] rends = inv.GetComponentsInChildren<Renderer>();
+            // Questa volta li spegniamo o accendiamo sempre e senza filtri, 
+            // così quando prendi un nuovo oggetto lo vedi!
+            Renderer[] rends = inv.GetComponentsInChildren<Renderer>(true);
             foreach (Renderer r in rends) r.enabled = visibile;
         }
+        
         if (giocatore != null)
         {
-            Renderer[] tuttiRends = giocatore.GetComponentsInChildren<Renderer>();
+            Renderer[] tuttiRends = giocatore.GetComponentsInChildren<Renderer>(true);
             foreach (Renderer r in tuttiRends)
             {
-                if (r.gameObject.name.Contains("Radio") || r.gameObject.name.Contains("Walkie")) r.enabled = visibile;
+                string n = r.gameObject.name.ToLower();
+                if (n.Contains("radio") || n.Contains("walkie")) r.enabled = visibile;
+            }
+        }
+        if (cameraGiocatore != null)
+        {
+            Renderer[] tuttiRends = cameraGiocatore.GetComponentsInChildren<Renderer>(true);
+            foreach (Renderer r in tuttiRends)
+            {
+                string n = r.gameObject.name.ToLower();
+                if (n.Contains("radio") || n.Contains("walkie")) r.enabled = visibile;
             }
         }
     }
@@ -181,7 +193,6 @@ public class SupportoLuce : MonoBehaviour
         inTransizione = true;
         BloccaGiocatore(true);
 
-        // SPEGNI TUTTO PRIMA DI PARTIRE
         ImpostaVisibilitaOggetti(false);
 
         if (cameraInquadratura != null && cameraGiocatore != null)
@@ -243,9 +254,13 @@ public class SupportoLuce : MonoBehaviour
             yield return new WaitForSeconds(3.5f);
         }
 
-        // RIACCENDI TUTTO
+        // 1. Riaccendiamo SEMPRE i renderer (così sono pronti per i futuri oggetti in mano)
         ImpostaVisibilitaOggetti(true);
+        
+        // 2. Chiamiamo la verifica (che, nello stesso frame, svuota le mani se hai finito le luci)
+        // Visto che avviene tutto in un istante, non c'è il glitch del fantasma visibile!
         VerificaCompletamentoLuci();
+        
         BloccaGiocatore(false);
         inTransizione = false;
     }

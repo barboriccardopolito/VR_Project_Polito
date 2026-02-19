@@ -1,6 +1,6 @@
 using UnityEngine;
 using System.Collections;
-using System.Collections.Generic; // Fondamentale per usare le List<>
+using System.Collections.Generic;
 
 public class RegiaManager : MonoBehaviour
 {
@@ -10,10 +10,12 @@ public class RegiaManager : MonoBehaviour
     public GestoreFinale gestoreFinale; 
     public GestoreRecitazione gestoreRecitazione; 
 
-    [Header("Setup Player")]
+    [Header("Setup Player & UI")]
     public Camera mainCameraPlayer;   
     public GameObject monitorSchermo; 
     public RenderTexture textureMonitor; 
+    [Tooltip("Trascina qui l'oggetto UI del mirino/puntatore del giocatore")]
+    public GameObject mirinoGiocatore; 
 
     [Header("Camere del Set")]
     public Camera[] camereSet; 
@@ -23,14 +25,17 @@ public class RegiaManager : MonoBehaviour
     public GameObject volumeCinematografica;
     public GameObject volumeDistorta;
 
-    // --- NUOVA SEZIONE: IL GRANDE CIAK ---
     [Header("Sequenza Finale (Luci e Audio)")]
-    [Tooltip("Trascina qui tutti i GameObjects dei faretti sul soffitto (così spegniamo sia la luce che il materiale emissivo)")]
     public GameObject[] luciGeneraliCapannone; 
     public AudioSource audioSourceRegia;
     public AudioClip suonoBlackout;
     public AudioClip suonoAccensioneFaro;
     public AudioClip suonoCiak;
+
+    // --- NUOVA IMPOSTAZIONE DEL TEMPO ---
+    [Header("Tempi Scena Finale")]
+    [Tooltip("Durata totale esatta della scena in secondi prima dei titoli di coda")]
+    public float durataScenaFinale = 26f;
 
     [Header("Stato del Sistema")]
     public bool previewInCorso = false;
@@ -47,13 +52,13 @@ public class RegiaManager : MonoBehaviour
     {
         textureMiriniOriginali = new RenderTexture[camereSet.Length];
 
-        // Creiamo un AudioSource se ti dimentichi di assegnarlo
         if (audioSourceRegia == null) audioSourceRegia = gameObject.AddComponent<AudioSource>();
 
         for (int i = 0; i < camereSet.Length; i++)
         {
             if (camereSet[i] != null)
             {
+                // Salviamo le texture originali dei mirini
                 textureMiriniOriginali[i] = camereSet[i].targetTexture;
                 camereSet[i].gameObject.SetActive(true);
                 camereSet[i].enabled = true;
@@ -116,10 +121,8 @@ public class RegiaManager : MonoBehaviour
 
         if (camereSet == null || camereSet.Length == 0) yield break;
         
-        // RIMOSSO LO SPEGNIMENTO DELLA CAMERA QUI! 
-        // Il giocatore resta attivo per vedere il blackout con i suoi occhi.
+        if (mirinoGiocatore != null) mirinoGiocatore.SetActive(false);
 
-        // 1. CERCHIAMO LE LUCI PIAZZATE DAL GIOCATORE
         List<Light> luciDelSet = new List<Light>();
         if (GameManager.instance != null && GameManager.instance.supportiLuciFisici != null)
         {
@@ -134,7 +137,6 @@ public class RegiaManager : MonoBehaviour
             }
         }
 
-        // 2. IL BLACKOUT (Tonfo sordo e buio totale vissuto in prima persona!)
         if (audioSourceRegia != null && suonoBlackout != null) audioSourceRegia.PlayOneShot(suonoBlackout);
         
         foreach (GameObject luceCap in luciGeneraliCapannone) { if (luceCap != null) luceCap.SetActive(false); }
@@ -142,7 +144,6 @@ public class RegiaManager : MonoBehaviour
 
         yield return new WaitForSeconds(2.0f);
 
-        // 3. ACCENSIONE PROGRESSIVA DEI FARI (Sempre visto dal giocatore)
         foreach (Light l in luciDelSet)
         {
             if (l != null)
@@ -155,17 +156,18 @@ public class RegiaManager : MonoBehaviour
 
         yield return new WaitForSeconds(1.0f);
 
-        // 4. IL CIAK!
         if (audioSourceRegia != null && suonoCiak != null) audioSourceRegia.PlayOneShot(suonoCiak);
         yield return new WaitForSeconds(1.5f); 
 
-        // 5. AZIONE! (Partono gli attori)
         if (gestoreRecitazione != null) gestoreRecitazione.AvviaCiakUnico();
 
-        // -> SPEGNIAMO GLI OCCHI DEL GIOCATORE SOLO ORA CHE PARTONO LE CAMERE! <-
         if (mainCameraPlayer) mainCameraPlayer.enabled = false; 
 
-        // 6. CAMBIO CAMERE DURANTE LA SCENA (Visione da Regista)
+        // --- CALCOLO MATEMATICO DEL TEMPO (26 Secondi Totali) ---
+        // Se hai 2 camere, farà 13 secondi per camera. Se ne hai 3, farà circa 8.6 secondi.
+        // In ogni caso, il totale prima della fine sarà esattamente 26 secondi!
+        float tempoPerOgniCamera = durataScenaFinale / camereSet.Length;
+
         for (int i = 0; i < camereSet.Length; i++)
         {
             for (int j = 0; j < camereSet.Length; j++) 
@@ -177,7 +179,7 @@ public class RegiaManager : MonoBehaviour
 
             Camera camAttuale = camereSet[i];
             
-            camAttuale.targetTexture = null; // Manda il flusso allo schermo intero
+            camAttuale.targetTexture = null; 
             camAttuale.enabled = true; 
 
             OttimizzaCamera optScript = camAttuale.GetComponent<OttimizzaCamera>();
@@ -185,14 +187,14 @@ public class RegiaManager : MonoBehaviour
             
             if (GameManager.instance != null) ApplicaEffettiScelti(camAttuale);
 
-            yield return new WaitForSeconds(4f); 
+            // Attende la fetta di tempo calcolata
+            yield return new WaitForSeconds(tempoPerOgniCamera); 
         }
 
-        Debug.Log("<color=green>--- STOP! ---</color>");
+        Debug.Log("<color=green>--- STOP! 26 SECONDI TRASCORSI ---</color>");
         
-        // 7. FINE SCENA E TITOLI DI CODA
         if (gestoreRecitazione != null) gestoreRecitazione.FermaTutto();
-        if (mainCameraPlayer) mainCameraPlayer.enabled = true; // Riaccende gli occhi del giocatore
+        if (mainCameraPlayer) mainCameraPlayer.enabled = true; 
 
         for (int i = 0; i < camereSet.Length; i++) 
         {

@@ -167,21 +167,31 @@ public class SupportoMicrofono : MonoBehaviour
         }
     }
 
-    // --- NUOVA FUNZIONE VISIBILITÀ ---
     void ImpostaVisibilitaOggetti(bool visibile)
     {
         InventarioGiocatore inv = Object.FindFirstObjectByType<InventarioGiocatore>();
         if (inv != null)
         {
-            Renderer[] rends = inv.GetComponentsInChildren<Renderer>();
+            Renderer[] rends = inv.GetComponentsInChildren<Renderer>(true);
             foreach (Renderer r in rends) r.enabled = visibile;
         }
+        
         if (giocatore != null)
         {
-            Renderer[] tuttiRends = giocatore.GetComponentsInChildren<Renderer>();
+            Renderer[] tuttiRends = giocatore.GetComponentsInChildren<Renderer>(true);
             foreach (Renderer r in tuttiRends)
             {
-                if (r.gameObject.name.Contains("Radio") || r.gameObject.name.Contains("Walkie")) r.enabled = visibile;
+                string n = r.gameObject.name.ToLower();
+                if (n.Contains("radio") || n.Contains("walkie")) r.enabled = visibile;
+            }
+        }
+        if (cameraGiocatore != null)
+        {
+            Renderer[] tuttiRends = cameraGiocatore.GetComponentsInChildren<Renderer>(true);
+            foreach (Renderer r in tuttiRends)
+            {
+                string n = r.gameObject.name.ToLower();
+                if (n.Contains("radio") || n.Contains("walkie")) r.enabled = visibile;
             }
         }
     }
@@ -191,7 +201,6 @@ public class SupportoMicrofono : MonoBehaviour
         inTransizione = true;
         BloccaGiocatore(true);
 
-        // SPEGNI TUTTO (Radio inclusa)
         ImpostaVisibilitaOggetti(false);
 
         if (cameraInquadratura != null && cameraGiocatore != null)
@@ -253,16 +262,16 @@ public class SupportoMicrofono : MonoBehaviour
             yield return new WaitForSeconds(3.5f);
         }
 
-        // TOGLI L'OGGETTO USATO E RIACCENDI IL RESTO
+        // 1. RIACCENDIAMO SEMPRE i Renderer
+        ImpostaVisibilitaOggetti(true);
+
+        // 2. TOGLIAMO l'oggetto (così il giocatore si ritrova con le mani vuote ma pronte al prossimo oggetto)
         InventarioGiocatore invFinale = Object.FindFirstObjectByType<InventarioGiocatore>();
         if (invFinale != null) invFinale.RimuoviOggetto();
 
-        // RIACCENDI TUTTO (La radio torna visibile)
-        ImpostaVisibilitaOggetti(true);
-        
         if (GameManager.instance.taskAttuale == GameManager.Reparto.Fonico)
             GameManager.instance.CompletaTask(GameManager.Reparto.Fonico); 
-
+        
         BloccaGiocatore(false);
         inTransizione = false;
     }

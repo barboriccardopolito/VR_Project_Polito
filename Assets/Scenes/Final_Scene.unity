@@ -12356,7 +12356,7 @@ GameObject:
   - component: {fileID: 368937899}
   - component: {fileID: 368937898}
   m_Layer: 0
-  m_Name: Camera
+  m_Name: Camera_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12785,7 +12785,7 @@ GameObject:
   - component: {fileID: 390905900}
   - component: {fileID: 390905899}
   m_Layer: 0
-  m_Name: Camera_3
+  m_Name: Camera_1_Mirino
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14575,7 +14575,7 @@ GameObject:
   - component: {fileID: 444561954}
   - component: {fileID: 444561953}
   m_Layer: 0
-  m_Name: Camera_1
+  m_Name: Camera_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -17983,6 +17983,7 @@ MonoBehaviour:
   testoTitoli: {fileID: 1823554543}
   pannelloNero: {fileID: 764083097}
   velocitaScorrimento: 100
+  puntoDiPartenzaY: -550
   puntoDiArrestoY: 2000
   nomeScenaMenu: MenuPrincipale
 --- !u!1001 &584698732
@@ -19653,11 +19654,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 802757af5dc6b6d4582cc87b32fdacc3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SupportoLuce
-  cameraGiocatore: {fileID: 0}
-  cameraInquadratura: {fileID: 0}
+  cameraGiocatore: {fileID: 1823688466}
+  cameraInquadratura: {fileID: 106480287}
   velocitaTransizione: 2.5
-  giocatore: {fileID: 0}
-  nomiScriptDaDisabilitare: []
+  giocatore: {fileID: 858305082}
+  nomiScriptDaDisabilitare:
+  - PlayerMovement
+  - MouseLook
   modelloSoftbox: {fileID: 479504178}
   modelloFresnel: {fileID: 2003397047}
   modelloArtistica: {fileID: 1203189331}
@@ -19686,7 +19689,7 @@ MonoBehaviour:
   - MouseLook
   - PlayerMovement
   distanzaSfondo: 0.4
-  opacitaSfondo: 0.85
+  opacitaSfondo: 0.5
   velocitaFadeSfondo: 5
   pannelloSchedaUI: {fileID: 552187646}
   testoTitolo: {fileID: 552187645}
@@ -24889,9 +24892,9 @@ MonoBehaviour:
   taskRichiesta: 3
   npcDiRiferimento: {fileID: 1409844409}
   oggetti:
-  - {fileID: 1626749274}
-  - {fileID: 928182470}
   - {fileID: 1764701388}
+  - {fileID: 928182470}
+  - {fileID: 1626749274}
   distanzaSfondo: 2
   sensibilitaMouse: 8
   velocitaAnimazione: 12
@@ -26303,7 +26306,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2dfe2ae846b55704683df9e390071262, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
-  taskAttuale: 0
+  taskAttuale: 2
   visualizzatoreObiettivo: {fileID: 1412070064}
   gestoreSchermi: {fileID: 1776337951}
   lenteSceltaFinale: 
@@ -31402,6 +31405,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NewMonoBehaviourScript
   modelloLavalierAddosso: {fileID: 0}
   suonoMontaggioLavalier: {fileID: 0}
+  battutaNormale: {fileID: 0}
+  battutaReazioneMicrofono: {fileID: 0}
   isMicrofonato: 0
 --- !u!114 &961740463
 MonoBehaviour:
@@ -33740,6 +33745,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NewMonoBehaviourScript
   modelloLavalierAddosso: {fileID: 0}
   suonoMontaggioLavalier: {fileID: 0}
+  battutaNormale: {fileID: 0}
+  battutaReazioneMicrofono: {fileID: 0}
   isMicrofonato: 0
 --- !u!114 &1011705718
 MonoBehaviour:
@@ -35472,7 +35479,7 @@ MonoBehaviour:
   velocitaTransizione: 2.5
   giocatore: {fileID: 858305082}
   nomiScriptDaDisabilitare:
-  - PlayeMovement
+  - PlayerMovement
   - MouseLook
   tipoMicrofonoAccettato: Ambisonic
   modelloBoom: {fileID: 2042488812}
@@ -35614,7 +35621,7 @@ MonoBehaviour:
   - PlayerMovement
   - MouseLook
   distanzaSfondo: 1.5
-  opacitaSfondo: 0.9
+  opacitaSfondo: 0.5
   velocitaFadeSfondo: 5
   pannelloSchedaUI: {fileID: 1355664202}
   testoTitolo: {fileID: 1355664201}
@@ -38584,7 +38591,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1177421253}
   m_LocalRotation: {x: 0.023675602, y: 0.9875028, z: 0.03034542, w: 0.1528297}
-  m_LocalPosition: {x: 0, y: 0, z: 1292}
+  m_LocalPosition: {x: 0, y: 0, z: 987}
   m_LocalScale: {x: 0.8000002, y: 0.79999983, z: 0.80000025}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -38593,7 +38600,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: -3.466, y: 162.149, z: 1.806}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 491, y: 674.4}
+  m_AnchoredPosition: {x: 268, y: 659}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1177421255
@@ -50500,7 +50507,7 @@ GameObject:
   - component: {fileID: 1566441512}
   - component: {fileID: 1566441511}
   m_Layer: 0
-  m_Name: Camera
+  m_Name: Camera_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -53971,7 +53978,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5766871148682481652, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.431
+      value: 0.97200006
       objectReference: {fileID: 0}
     - target: {fileID: 5766871148682481652, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
       propertyPath: m_LocalPosition.z
@@ -54044,15 +54051,6 @@ PrefabInstance:
       addedObject: {fileID: 1707318493}
     - targetCorrespondingSourceObject: {fileID: 7632886891723049378, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1707318485}
-    - targetCorrespondingSourceObject: {fileID: 7632886891723049378, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1707318501}
-    - targetCorrespondingSourceObject: {fileID: 7632886891723049378, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1707318500}
-    - targetCorrespondingSourceObject: {fileID: 7632886891723049378, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 1707318505}
     - targetCorrespondingSourceObject: {fileID: 7632886891723049378, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
       insertIndex: -1
@@ -54068,22 +54066,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 7632886891723049378, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
   m_PrefabInstance: {fileID: 1707318482}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1707318485
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1707318484}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea107da0f3558b7428c1276e6bfc3560, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InteragibileNPC
-  tipoReparto: 5
-  radioDaAttivare: {fileID: 0}
-  messaggioTask: Portaci il caffe!
-  staParlando: 0
 --- !u!114 &1707318493
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -54098,61 +54080,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AttoreMicrofonabile
   modelloLavalierAddosso: {fileID: 733045903}
   suonoMontaggioLavalier: {fileID: 8300000, guid: 4ca12a628a7e6dc418b1868c768ebc93, type: 3}
+  battutaNormale: {fileID: 8300000, guid: 581b44280eacb4640912cee1c0a30dd8, type: 3}
+  battutaReazioneMicrofono: {fileID: 0}
   isMicrofonato: 0
---- !u!195 &1707318500
-NavMeshAgent:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1707318484}
-  m_Enabled: 1
-  m_AgentTypeID: 0
-  m_Radius: 0.5000001
-  m_Speed: 3.5
-  m_Acceleration: 8
-  avoidancePriority: 50
-  m_AngularSpeed: 120
-  m_StoppingDistance: 0
-  m_AutoTraverseOffMeshLink: 1
-  m_AutoBraking: 1
-  m_AutoRepath: 1
-  m_Height: 2
-  m_BaseOffset: 1
-  m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
---- !u!114 &1707318501
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1707318484}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5b390728bec2234b965b8e41ecd7de7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NPC_Staff
-  ruoloNPC: 5
-  animator: {fileID: 1023075707}
-  raggioMovimento: 5
-  tempoAttesaMin: 3
-  tempoAttesaMax: 8
-  clipsIntroduzione:
-  - {fileID: 8300000, guid: 581b44280eacb4640912cee1c0a30dd8, type: 3}
-  audioTaskCompletata: {fileID: 0}
-  audioNonEIlMioTurno: {fileID: 0}
-  audioCiak: {fileID: 0}
-  audioGrandangolo: {fileID: 0}
-  audioStandard: {fileID: 0}
-  audioCinema: {fileID: 0}
-  audioFresnel: {fileID: 0}
-  audioSoftbox: {fileID: 0}
-  audioArtistica: {fileID: 0}
-  audioLavalier: {fileID: 0}
-  audioBoom: {fileID: 0}
-  audioAmbisonic: {fileID: 0}
-  haGiaParlato: 0
 --- !u!82 &1707318505
 AudioSource:
   m_ObjectHideFlags: 0
@@ -54160,7 +54090,7 @@ AudioSource:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1707318484}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
@@ -56745,9 +56675,9 @@ MonoBehaviour:
   taskRichiesta: 2
   npcDiRiferimento: {fileID: 684401561}
   oggetti:
-  - {fileID: 1869121437}
   - {fileID: 54905543}
   - {fileID: 981295419}
+  - {fileID: 1869121437}
   distanzaSfondo: 0.8
   sensibilitaMouse: 5
   velocitaAnimazione: 8
@@ -57322,7 +57252,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5766871148682481652, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.407
+      value: 0.948
       objectReference: {fileID: 0}
     - target: {fileID: 5766871148682481652, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
       propertyPath: m_LocalPosition.z
@@ -57396,15 +57326,6 @@ PrefabInstance:
       addedObject: {fileID: 1789673022}
     - targetCorrespondingSourceObject: {fileID: 7632886891723049378, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1789673021}
-    - targetCorrespondingSourceObject: {fileID: 7632886891723049378, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1789673030}
-    - targetCorrespondingSourceObject: {fileID: 7632886891723049378, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1789673029}
-    - targetCorrespondingSourceObject: {fileID: 7632886891723049378, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 1789673034}
     - targetCorrespondingSourceObject: {fileID: 7632886891723049378, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
       insertIndex: -1
@@ -57423,22 +57344,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5766871148682481652, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
   m_PrefabInstance: {fileID: 1789673018}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1789673021
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1789673019}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea107da0f3558b7428c1276e6bfc3560, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InteragibileNPC
-  tipoReparto: 5
-  radioDaAttivare: {fileID: 0}
-  messaggioTask: Portaci il caffe!
-  staParlando: 0
 --- !u!114 &1789673022
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -57453,61 +57358,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AttoreMicrofonabile
   modelloLavalierAddosso: {fileID: 1718058136}
   suonoMontaggioLavalier: {fileID: 8300000, guid: 4ca12a628a7e6dc418b1868c768ebc93, type: 3}
+  battutaNormale: {fileID: 8300000, guid: b9448eaf7e76aff43b5763e6dc22ce24, type: 3}
+  battutaReazioneMicrofono: {fileID: 0}
   isMicrofonato: 0
---- !u!195 &1789673029
-NavMeshAgent:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1789673019}
-  m_Enabled: 1
-  m_AgentTypeID: 0
-  m_Radius: 0.5000001
-  m_Speed: 3.5
-  m_Acceleration: 8
-  avoidancePriority: 50
-  m_AngularSpeed: 120
-  m_StoppingDistance: 0
-  m_AutoTraverseOffMeshLink: 1
-  m_AutoBraking: 1
-  m_AutoRepath: 1
-  m_Height: 2
-  m_BaseOffset: 1
-  m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
---- !u!114 &1789673030
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1789673019}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5b390728bec2234b965b8e41ecd7de7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NPC_Staff
-  ruoloNPC: 5
-  animator: {fileID: 740110232}
-  raggioMovimento: 5
-  tempoAttesaMin: 3
-  tempoAttesaMax: 8
-  clipsIntroduzione:
-  - {fileID: 8300000, guid: b9448eaf7e76aff43b5763e6dc22ce24, type: 3}
-  audioTaskCompletata: {fileID: 0}
-  audioNonEIlMioTurno: {fileID: 0}
-  audioCiak: {fileID: 0}
-  audioGrandangolo: {fileID: 0}
-  audioStandard: {fileID: 0}
-  audioCinema: {fileID: 0}
-  audioFresnel: {fileID: 0}
-  audioSoftbox: {fileID: 0}
-  audioArtistica: {fileID: 0}
-  audioLavalier: {fileID: 0}
-  audioBoom: {fileID: 0}
-  audioAmbisonic: {fileID: 0}
-  haGiaParlato: 0
 --- !u!82 &1789673034
 AudioSource:
   m_ObjectHideFlags: 0
@@ -59579,7 +59432,7 @@ GameObject:
   - component: {fileID: 1864836942}
   - component: {fileID: 1864836941}
   m_Layer: 0
-  m_Name: Camera
+  m_Name: Camera_3_mirino
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -61332,7 +61185,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SupportoMicrofono
   cameraGiocatore: {fileID: 1823688466}
-  cameraInquadratura: {fileID: 1294790731}
+  cameraInquadratura: {fileID: 1022932690}
   velocitaTransizione: 2.5
   giocatore: {fileID: 858305082}
   nomiScriptDaDisabilitare:
@@ -61477,7 +61330,7 @@ MonoBehaviour:
   - PlayerMovement
   - MouseLook
   distanzaSfondo: 1.5
-  opacitaSfondo: 0.9
+  opacitaSfondo: 0.5
   velocitaFadeSfondo: 5
   pannelloSchedaUI: {fileID: 1323135954}
   testoTitolo: {fileID: 1323135953}
@@ -62899,6 +62752,7 @@ MonoBehaviour:
   mainCameraPlayer: {fileID: 1823688466}
   monitorSchermo: {fileID: 1923019689}
   textureMonitor: {fileID: 8400000, guid: d5e7c497981261b4fa7f56c36d23a532, type: 2}
+  mirinoGiocatore: {fileID: 1540536556}
   camereSet:
   - {fileID: 444561955}
   - {fileID: 1979893943}
@@ -62914,6 +62768,7 @@ MonoBehaviour:
   suonoBlackout: {fileID: 8300000, guid: e6c11e4f66a0ba740a543bd9f9472fa7, type: 3}
   suonoAccensioneFaro: {fileID: 8300000, guid: c76508f01a4e86940b05cd9a8611634d, type: 3}
   suonoCiak: {fileID: 8300000, guid: b51c2763a59526a4d83b457bed15dfbf, type: 3}
+  durataScenaFinale: 26
   previewInCorso: 0
   registrazioneInCorso: 0
 --- !u!4 &1966362844
@@ -63306,6 +63161,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AttoreMicrofonabile
   modelloLavalierAddosso: {fileID: 0}
   suonoMontaggioLavalier: {fileID: 8300000, guid: 4ca12a628a7e6dc418b1868c768ebc93, type: 3}
+  battutaNormale: {fileID: 0}
+  battutaReazioneMicrofono: {fileID: 0}
   isMicrofonato: 0
 --- !u!114 &1979385601
 MonoBehaviour:
@@ -63468,7 +63325,7 @@ GameObject:
   - component: {fileID: 1979893942}
   - component: {fileID: 1979893941}
   m_Layer: 0
-  m_Name: Camera_2
+  m_Name: Camera_2_mirino
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -66158,6 +66015,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AttoreMicrofonabile
   modelloLavalierAddosso: {fileID: 0}
   suonoMontaggioLavalier: {fileID: 8300000, guid: 4ca12a628a7e6dc418b1868c768ebc93, type: 3}
+  battutaNormale: {fileID: 0}
+  battutaReazioneMicrofono: {fileID: 0}
   isMicrofonato: 0
 --- !u!114 &2055142299
 MonoBehaviour:
@@ -71102,11 +70961,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 802757af5dc6b6d4582cc87b32fdacc3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SupportoLuce
-  cameraGiocatore: {fileID: 0}
-  cameraInquadratura: {fileID: 0}
+  cameraGiocatore: {fileID: 1823688466}
+  cameraInquadratura: {fileID: 2146731739}
   velocitaTransizione: 2.5
-  giocatore: {fileID: 0}
-  nomiScriptDaDisabilitare: []
+  giocatore: {fileID: 858305082}
+  nomiScriptDaDisabilitare:
+  - PlayerMovement
+  - MouseLook
   modelloSoftbox: {fileID: 776447423}
   modelloFresnel: {fileID: 403618929}
   modelloArtistica: {fileID: 577007306}
@@ -71135,7 +70996,7 @@ MonoBehaviour:
   - MouseLook
   - PlayerMovement
   distanzaSfondo: 0.4
-  opacitaSfondo: 0.85
+  opacitaSfondo: 0.5
   velocitaFadeSfondo: 5
   pannelloSchedaUI: {fileID: 69024928}
   testoTitolo: {fileID: 69024927}
@@ -71758,7 +71619,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4394894545662648116}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 17.73, y: -0.036000013, z: -17.458}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -75439,5 +75300,5 @@ SceneRoots:
   - {fileID: 177156741233111357}
   - {fileID: 1560808967357523527}
   - {fileID: 1263174759}
-  - {fileID: 513192193}
   - {fileID: 3250969017592599491}
+  - {fileID: 513192193}

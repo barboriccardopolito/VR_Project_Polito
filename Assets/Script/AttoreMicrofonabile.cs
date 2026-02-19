@@ -5,10 +5,16 @@ public class AttoreMicrofonabile : MonoBehaviour
     [Header("Componenti")]
     public GameObject modelloLavalierAddosso;
     
-    [Header("Audio")]
+    [Header("Audio Montaggio")]
     public AudioClip suonoMontaggioLavalier;
-    private AudioSource audioSource;
+    
+    [Header("Voci Attore (Dialoghi)")]
+    [Tooltip("Cosa dice l'attore se ci parli normalmente (es. 'Ciao, sto ripassando il copione')")]
+    public AudioClip battutaNormale;
+    [Tooltip("Cosa dice appena gli monti il microfono (es. 'Ok, l'hai montato bene')")]
+    public AudioClip battutaReazioneMicrofono;
 
+    private AudioSource audioSource;
     [HideInInspector] public bool isMicrofonato = false;
     private Evidenziatore evidenziatore;
 
@@ -34,39 +40,40 @@ public class AttoreMicrofonabile : MonoBehaviour
     {
         if (evidenziatore == null || GameManager.instance == null) return;
 
-        bool faseFonico = (GameManager.instance.taskAttuale == GameManager.Reparto.Fonico);
-        
-        InventarioGiocatore inv = Object.FindFirstObjectByType<InventarioGiocatore>();
-        bool hoLavalierInMano = (inv != null && inv.haUnOggetto && inv.oggettoInMano.Contains("Lavalier"));
-
-        // L'attore si illumina SOLO se sei il fonico, hai il Lavalier in mano e non l'hai ancora microfonato
-        if (faseFonico && hoLavalierInMano && !isMicrofonato)
-        {
-            evidenziatore.Accendi();
-        }
-        else
-        {
-            evidenziatore.Spegni();
-        }
+        // Si illumina sempre per mostrare che ci puoi interagire
+        evidenziatore.Accendi();
     }
 
-    // Aggiungo il metodo standard Interagisci che usano gli altri tuoi script
+    // Se il raggio chiama Interagisci(), rimandiamo tutto al controllo principale
     public void Interagisci()
     {
-        ProvaAMicrofonare();
+        ProvaAMicrofonare(); 
     }
 
+    void FaiParlareAttore()
+    {
+        if (battutaNormale != null && !audioSource.isPlaying)
+        {
+            audioSource.PlayOneShot(battutaNormale);
+        }
+    }
+
+    // Qui dentro c'è il BLOCCO DI SICUREZZA
     public void ProvaAMicrofonare()
     {
-        // Controlliamo direttamente l'inventario del giocatore, non il GameManager!
+        // 1. Controlliamo chi sei e cosa hai in mano
         InventarioGiocatore inv = Object.FindFirstObjectByType<InventarioGiocatore>();
         bool hoLavalierInMano = (inv != null && inv.haUnOggetto && inv.oggettoInMano.Contains("Lavalier"));
+        bool faseFonico = (GameManager.instance != null && GameManager.instance.taskAttuale == GameManager.Reparto.Fonico);
 
-        if (!hoLavalierInMano) 
+        // 2. SE NON SEI IL FONICO O NON HAI IL LAVALIER IN MANO -> PARLA E BASTA!
+        if (!faseFonico || !hoLavalierInMano)
         {
-            return;
+            FaiParlareAttore();
+            return; // Blocca immediatamente la funzione, niente microfonaggio!
         }
 
+        // 3. SE INVECE È TUTTO OK E NON LO HAI ANCORA MICROFONATO:
         if (isMicrofonato) return;
 
         isMicrofonato = true;
@@ -77,6 +84,9 @@ public class AttoreMicrofonabile : MonoBehaviour
         if (suonoMontaggioLavalier != null)
             audioSource.PlayOneShot(suonoMontaggioLavalier);
 
+        if (battutaReazioneMicrofono != null)
+            audioSource.PlayOneShot(battutaReazioneMicrofono);
+
         if (GameManager.instance != null)
         {
             GameManager.instance.attoriMicrofonatiAttuali++;
@@ -84,7 +94,7 @@ public class AttoreMicrofonabile : MonoBehaviour
 
             if (GameManager.instance.attoriMicrofonatiAttuali >= GameManager.instance.attoriDaMicrofonare)
             {
-                inv.RimuoviOggetto(); // Consuma il Lavalier dalla mano solo quando hai finito con tutti
+                if (inv != null) inv.RimuoviOggetto(); 
                 GameManager.instance.CompletaTask(GameManager.Reparto.Fonico);
             }
         }
