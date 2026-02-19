@@ -5762,7 +5762,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 155300141}
-  m_LocalRotation: {x: 0.00000013201497, y: -0.00000006449409, z: 0.5733448, w: 0.81931424}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 2.7395844, y: 0.093749985, z: 2.739584}
   m_ConstrainProportionsScale: 0
@@ -10787,13 +10787,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 319042978}
-  m_LocalRotation: {x: 0.00000010989605, y: -0.00000008568167, z: 0.01984165, w: 0.9998031}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1381342330}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 2.274}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
@@ -24891,7 +24891,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3899585599875612649, guid: ac3b1c5c6479a6c4f82df179c9e2acae, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -5.056
+      value: -5.063
       objectReference: {fileID: 0}
     - target: {fileID: 3899585599875612649, guid: ac3b1c5c6479a6c4f82df179c9e2acae, type: 3}
       propertyPath: m_LocalRotation.w
@@ -24911,11 +24911,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3899585599875612649, guid: ac3b1c5c6479a6c4f82df179c9e2acae, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0.398
+      value: 0.417
       objectReference: {fileID: 0}
     - target: {fileID: 3899585599875612649, guid: ac3b1c5c6479a6c4f82df179c9e2acae, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 1.782
+      value: 1.637
       objectReference: {fileID: 0}
     - target: {fileID: 3899585599875612649, guid: ac3b1c5c6479a6c4f82df179c9e2acae, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -30496,6 +30496,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NewMonoBehaviourScript
   modelloLavalierAddosso: {fileID: 0}
   suonoMontaggioLavalier: {fileID: 0}
+  isMicrofonato: 0
 --- !u!114 &961740463
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -31539,13 +31540,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 995769474}
-  m_LocalRotation: {x: 0.00000006891786, y: -0.00000009301583, z: 0.0013705537, w: 0.99999905}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1381342330}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0.157}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
@@ -32585,6 +32586,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NewMonoBehaviourScript
   modelloLavalierAddosso: {fileID: 0}
   suonoMontaggioLavalier: {fileID: 0}
+  isMicrofonato: 0
 --- !u!114 &1011705718
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -33672,7 +33674,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3899585599875612649, guid: ac3b1c5c6479a6c4f82df179c9e2acae, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -4.241
+      value: -4.246
       objectReference: {fileID: 0}
     - target: {fileID: 3899585599875612649, guid: ac3b1c5c6479a6c4f82df179c9e2acae, type: 3}
       propertyPath: m_LocalRotation.w
@@ -33692,11 +33694,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3899585599875612649, guid: ac3b1c5c6479a6c4f82df179c9e2acae, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 4.584
+      value: 4.599
       objectReference: {fileID: 0}
     - target: {fileID: 3899585599875612649, guid: ac3b1c5c6479a6c4f82df179c9e2acae, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 2.67
+      value: 2.556
       objectReference: {fileID: 0}
     - target: {fileID: 3899585599875612649, guid: ac3b1c5c6479a6c4f82df179c9e2acae, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -43155,7 +43157,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1381342329}
   m_LocalRotation: {x: -0.004112217, y: 0.001621708, z: -0.02601831, w: 0.99965173}
-  m_LocalPosition: {x: 0, y: 0, z: 120}
+  m_LocalPosition: {x: 0, y: 0, z: 120.8}
   m_LocalScale: {x: 0.79999995, y: 0.79999983, z: 0.7999999}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -43168,7 +43170,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: -0.466, y: 0.198, z: -2.983}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 574, y: -1}
+  m_AnchoredPosition: {x: 568.9, y: -98.8}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1381342331
@@ -46378,7 +46380,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1475636033}
-  m_LocalRotation: {x: 0.00000013201497, y: -0.00000006449409, z: 0.5733448, w: 0.81931424}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 2.7395844, y: 0.093749985, z: 2.739584}
   m_ConstrainProportionsScale: 0
@@ -52713,6 +52715,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7632886891723049378, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1707318505}
+    - targetCorrespondingSourceObject: {fileID: 7632886891723049378, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1707318509}
   m_SourcePrefab: {fileID: 100100000, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
 --- !u!4 &1707318483 stripped
 Transform:
@@ -52752,8 +52757,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7af198d235eb9847810ed10804858a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AttoreMicrofonabile
-  modelloLavalierAddosso: {fileID: 0}
+  modelloLavalierAddosso: {fileID: 733045903}
   suonoMontaggioLavalier: {fileID: 8300000, guid: 4ca12a628a7e6dc418b1868c768ebc93, type: 3}
+  isMicrofonato: 0
 --- !u!195 &1707318500
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -52905,6 +52911,22 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &1707318509
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1707318484}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b023387528141c74aa2c607a479ebfd7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Evidenziatore
+  prefabFreccia: {fileID: 9159182182665402590, guid: 17e8bc1dd31b6bd4a84031aaa29f28b1, type: 3}
+  altezzaBase: 1.2
+  velocitaAnimazione: 3
+  ampiezzaAnimazione: 0.15
 --- !u!1001 &1709421757
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -56038,6 +56060,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7632886891723049378, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1789673038}
+    - targetCorrespondingSourceObject: {fileID: 7632886891723049378, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1789673041}
   m_SourcePrefab: {fileID: 100100000, guid: fb9ff583d192bcb48b28dfc7a3442409, type: 3}
 --- !u!1 &1789673019 stripped
 GameObject:
@@ -56077,8 +56102,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7af198d235eb9847810ed10804858a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AttoreMicrofonabile
-  modelloLavalierAddosso: {fileID: 0}
+  modelloLavalierAddosso: {fileID: 1718058136}
   suonoMontaggioLavalier: {fileID: 8300000, guid: 4ca12a628a7e6dc418b1868c768ebc93, type: 3}
+  isMicrofonato: 0
 --- !u!195 &1789673029
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -56253,6 +56279,22 @@ CapsuleCollider:
   m_Height: 1.8
   m_Direction: 1
   m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
+--- !u!114 &1789673041
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1789673019}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b023387528141c74aa2c607a479ebfd7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Evidenziatore
+  prefabFreccia: {fileID: 9159182182665402590, guid: 17e8bc1dd31b6bd4a84031aaa29f28b1, type: 3}
+  altezzaBase: 1.2
+  velocitaAnimazione: 3
+  ampiezzaAnimazione: 0.15
 --- !u!1 &1789863201 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 5adb956fec9491547957a449f72fdead, type: 3}
@@ -56617,7 +56659,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 35.507, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 177, y: -27}
+  m_AnchoredPosition: {x: 177, y: -145.9}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1812434728
@@ -61491,6 +61533,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AttoreMicrofonabile
   modelloLavalierAddosso: {fileID: 0}
   suonoMontaggioLavalier: {fileID: 8300000, guid: 4ca12a628a7e6dc418b1868c768ebc93, type: 3}
+  isMicrofonato: 0
 --- !u!114 &1979385601
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -63962,7 +64005,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2042424400}
-  m_LocalRotation: {x: 0.00000013201497, y: -0.00000006449409, z: 0.5733448, w: 0.81931424}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 2.7395844, y: 0.093749985, z: 2.739584}
   m_ConstrainProportionsScale: 0
@@ -64416,6 +64459,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AttoreMicrofonabile
   modelloLavalierAddosso: {fileID: 0}
   suonoMontaggioLavalier: {fileID: 8300000, guid: 4ca12a628a7e6dc418b1868c768ebc93, type: 3}
+  isMicrofonato: 0
 --- !u!114 &2055142299
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -66057,7 +66101,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 35.507, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 181, y: 22}
+  m_AnchoredPosition: {x: 181, y: -31.9}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2117797297
@@ -66987,7 +67031,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3899585599875612649, guid: ac3b1c5c6479a6c4f82df179c9e2acae, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -8.37
+      value: -8.373
       objectReference: {fileID: 0}
     - target: {fileID: 3899585599875612649, guid: ac3b1c5c6479a6c4f82df179c9e2acae, type: 3}
       propertyPath: m_LocalRotation.w
@@ -67007,11 +67051,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3899585599875612649, guid: ac3b1c5c6479a6c4f82df179c9e2acae, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -2.245
+      value: -2.236
       objectReference: {fileID: 0}
     - target: {fileID: 3899585599875612649, guid: ac3b1c5c6479a6c4f82df179c9e2acae, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 1.018
+      value: 0.951
       objectReference: {fileID: 0}
     - target: {fileID: 3899585599875612649, guid: ac3b1c5c6479a6c4f82df179c9e2acae, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
