@@ -13296,7 +13296,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.RenderPipelines.Core.Runtime::UnityEngine.Rendering.ProbeVolume
   mode: 0
-  size: {x: 24.634993, y: 23.614204, z: 36.89203}
+  size: {x: 24.634993, y: 23.614204, z: 36.892036}
   overrideRendererFilters: 0
   minRendererVolumeSize: 0.1
   objectLayerMask:
@@ -13336,7 +13336,7 @@ Transform:
   m_GameObject: {fileID: 414358793}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.6675553, y: 9.997556, z: -3.0799828}
+  m_LocalPosition: {x: 4.6675553, y: 9.997556, z: -3.079979}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -26536,7 +26536,7 @@ MonoBehaviour:
   haLaRadio: 0
   radioAddossoAlPlayer: {fileID: 792783636}
   audioSource: {fileID: 0}
-  suonoRicezione: {fileID: 8300000, guid: 03cb327afaeed0b4dacb95bc08f4cc9e, type: 3}
+  suonoRicezione: {fileID: 8300000, guid: 4489b190f7a51ca41ae1c196279f6959, type: 3}
   audioPreTask: []
   audioIntermedi:
   - {fileID: 8300000, guid: 0d436294c3e8bf6478e94b38dbb58286, type: 3}
@@ -39409,7 +39409,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: b514580f628de9f49a18a9b9b23077d6, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.2
+  m_Volume: 0.15
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -66273,7 +66273,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.15
   m_Pitch: 1
   Loop: 0
   Mute: 0
