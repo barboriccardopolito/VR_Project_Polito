@@ -3381,10 +3381,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::OggettoRaccolta
   categoria: 1
   nomeOggetto: Artistica
-  nomeTecnico: Tubo LED RGB Pixel
-  descrizioneTecnica: Emettitore a spettro cromatico completo. Ottimo per essere
-    usato come luce pratica in scena, per creare riflessi creativi o per dipingere
-    il fondale con colori saturi e drammatici.
+  nomeTecnico: Luce Fresnel
+  descrizioneTecnica: Emettitore freddo. Ottimo per essere usato come luce pratica
+    in scena, per creare riflessi creativi o per dipingere il fondale con colori
+    saturi e drammatici.
 --- !u!1001 &59483941
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9749,7 +9749,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3899585599875612649, guid: ac3b1c5c6479a6c4f82df179c9e2acae, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.716
+      value: 0.795
       objectReference: {fileID: 0}
     - target: {fileID: 3899585599875612649, guid: ac3b1c5c6479a6c4f82df179c9e2acae, type: 3}
       propertyPath: m_LocalRotation.w
@@ -9769,11 +9769,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3899585599875612649, guid: ac3b1c5c6479a6c4f82df179c9e2acae, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -0.666
+      value: -0.618
       objectReference: {fileID: 0}
     - target: {fileID: 3899585599875612649, guid: ac3b1c5c6479a6c4f82df179c9e2acae, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.199
+      value: -0.155
       objectReference: {fileID: 0}
     - target: {fileID: 3899585599875612649, guid: ac3b1c5c6479a6c4f82df179c9e2acae, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -12670,7 +12670,10 @@ PrefabInstance:
     - {fileID: 32099531273423943, guid: c48594852a87c6248a74092c9ebc824b, type: 3}
     - {fileID: 1328707057714007179, guid: c48594852a87c6248a74092c9ebc824b, type: 3}
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c48594852a87c6248a74092c9ebc824b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 789279834}
   m_SourcePrefab: {fileID: 100100000, guid: c48594852a87c6248a74092c9ebc824b, type: 3}
 --- !u!1 &388002805 stripped
 GameObject:
@@ -15681,7 +15684,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::OggettoRaccolta
   categoria: 0
   nomeOggetto: Grandangolo
-  nomeTecnico: Ottica Grandangolare 14mm
+  nomeTecnico: Ottica Grandangolare
   descrizioneTecnica: "Apertura f/2.8. Amplia drasticamente il campo visivo (FOV)
     esaltando la prospettiva. Ideale per stabilire l'ambientazione (establishing
     shot), girare in spazi ristretti o far apparire i soggetti pi\xF9 distanti dallo
@@ -16211,6 +16214,11 @@ Transform:
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3184312420960670015, guid: 4210609dc2c41884688847057e819d88, type: 3}
   m_PrefabInstance: {fileID: 8173063895297968968}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &533583167 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: c48594852a87c6248a74092c9ebc824b, type: 3}
+  m_PrefabInstance: {fileID: 384615516}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &536053052
 PrefabInstance:
@@ -21759,6 +21767,32 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: e6acef99f409f444d971e75df9946ac9, type: 3}
   m_PrefabInstance: {fileID: 674042318}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &674358421 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: ac68ceec3de4c514f9b953ba7b2933a8, type: 3}
+  m_PrefabInstance: {fileID: 919983535}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &674358423
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 674358421}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.3688267, y: 1, z: 2.2685387}
+  m_Center: {x: 0.027755914, y: 0, z: -0.09793364}
 --- !u!1 &674428747
 GameObject:
   m_ObjectHideFlags: 0
@@ -22741,7 +22775,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3899585599875612649, guid: ac3b1c5c6479a6c4f82df179c9e2acae, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.717
+      value: 0.785
       objectReference: {fileID: 0}
     - target: {fileID: 3899585599875612649, guid: ac3b1c5c6479a6c4f82df179c9e2acae, type: 3}
       propertyPath: m_LocalRotation.w
@@ -22761,11 +22795,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3899585599875612649, guid: ac3b1c5c6479a6c4f82df179c9e2acae, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -0.568
+      value: -0.518
       objectReference: {fileID: 0}
     - target: {fileID: 3899585599875612649, guid: ac3b1c5c6479a6c4f82df179c9e2acae, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.223
+      value: -0.204
       objectReference: {fileID: 0}
     - target: {fileID: 3899585599875612649, guid: ac3b1c5c6479a6c4f82df179c9e2acae, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -24916,6 +24950,27 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: c48594852a87c6248a74092c9ebc824b, type: 3}
   m_PrefabInstance: {fileID: 384615516}
   m_PrefabAsset: {fileID: 0}
+--- !u!65 &789279834
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 533583167}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 2.7199457, y: 1.8190233, z: 5.0678124}
+  m_Center: {x: 6.2109294, y: 1.7745509, z: 9.678126}
 --- !u!1 &792783636 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 9100363676666943866, guid: 66f1351cb4b720e48963992206088d60, type: 3}
@@ -26886,7 +26941,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::OggettoRaccolta
   categoria: 0
   nomeOggetto: Distorta
-  nomeTecnico: Obiettivo Fisheye 8mm
+  nomeTecnico: Ottica Distorta
   descrizioneTecnica: Apertura f/3.5. Lente ultra-grandangolare estrema che crea
     una forte distorsione sferica ai bordi dell'inquadratura. Utilizzata nel cinema
     per riprese surreali, soggettive alterate o sequenze d'azione ad alto impatto
@@ -28133,7 +28188,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: ac68ceec3de4c514f9b953ba7b2933a8, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 674358423}
   m_SourcePrefab: {fileID: 100100000, guid: ac68ceec3de4c514f9b953ba7b2933a8, type: 3}
 --- !u!4 &920099433 stripped
 Transform:
@@ -30972,10 +31030,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::OggettoRaccolta
   categoria: 1
   nomeOggetto: Softbox
-  nomeTecnico: Pannello LED Softbox
-  descrizioneTecnica: Luce diffusa con pannello a nido d'ape. Avvolge morbidamente
-    il soggetto attenuando le ombre e le imperfezioni del viso. La scelta perfetta
-    come "Fill Light" per i primi piani.
+  nomeTecnico: Luce SoftBox
+  descrizioneTecnica: Luce diffusa. Avvolge morbidamente il soggetto attenuando le
+    ombre e le imperfezioni del viso. La scelta perfetta come "Fill Light" per i
+    primi piani.
 --- !u!1 &991940136
 GameObject:
   m_ObjectHideFlags: 0
@@ -34331,11 +34389,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73ce508ae3f08944184e90aaae44a1f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SupportoMicrofono
-  cameraGiocatore: {fileID: 0}
-  cameraInquadratura: {fileID: 0}
+  cameraGiocatore: {fileID: 1823688466}
+  cameraInquadratura: {fileID: 1294790731}
   velocitaTransizione: 2.5
-  giocatore: {fileID: 0}
-  nomiScriptDaDisabilitare: []
+  giocatore: {fileID: 858305082}
+  nomiScriptDaDisabilitare:
+  - PlayeMovement
+  - MouseLook
   tipoMicrofonoAccettato: Ambisonic
   modelloBoom: {fileID: 2042488812}
   modelloAmbisonic: {fileID: 725268388}
@@ -37199,8 +37259,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.0000002, y: 1.9999999, z: 0.5000001}
-  m_Center: {x: 0, y: 0.9878766, z: 0.0000009536743}
+  m_Size: {x: 6.892942, y: 1.9999999, z: 0.5000001}
+  m_Center: {x: 2.0553904, y: 0.9878766, z: 0.0000009536743}
 --- !u!1 &1174321069
 GameObject:
   m_ObjectHideFlags: 0
@@ -39765,7 +39825,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::OggettoRaccolta
   categoria: 0
   nomeOggetto: Cinematografica
-  nomeTecnico: Ottica Anamorfica 50mm
+  nomeTecnico: Ottica Cinematografica
   descrizioneTecnica: "Apertura T1.5. Introduce il classico formato panoramico (letterbox)
     e una pasta visiva \"filmica\". Riduce la profondit\xE0 di campo sfocando lo
     sfondo in modo morbido (bokeh). \xC8 la scelta regina per primi piani intensi
@@ -40080,7 +40140,7 @@ Transform:
   m_GameObject: {fileID: 1291453595}
   serializedVersion: 2
   m_LocalRotation: {x: 0.35790217, y: -0.6098413, z: -0.6098405, w: 0.35790247}
-  m_LocalPosition: {x: 0.0058930134, y: -0.006190056, z: 0.0021972328}
+  m_LocalPosition: {x: 0.0076, y: -0.00714, z: 0.0022}
   m_LocalScale: {x: 0.01, y: 0.010000001, z: 0.009999999}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -42834,7 +42894,7 @@ Transform:
   m_GameObject: {fileID: 1366904718}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.93864316, z: -0, w: 0.34488982}
-  m_LocalPosition: {x: 2.188, y: 1.648, z: -0.872}
+  m_LocalPosition: {x: 2.095, y: 1.648, z: -0.762}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -43639,7 +43699,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3899585599875612649, guid: ac3b1c5c6479a6c4f82df179c9e2acae, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.685
+      value: 0.763
       objectReference: {fileID: 0}
     - target: {fileID: 3899585599875612649, guid: ac3b1c5c6479a6c4f82df179c9e2acae, type: 3}
       propertyPath: m_LocalRotation.w
@@ -43659,11 +43719,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3899585599875612649, guid: ac3b1c5c6479a6c4f82df179c9e2acae, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -0.636
+      value: -0.596
       objectReference: {fileID: 0}
     - target: {fileID: 3899585599875612649, guid: ac3b1c5c6479a6c4f82df179c9e2acae, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.207
+      value: -0.179
       objectReference: {fileID: 0}
     - target: {fileID: 3899585599875612649, guid: ac3b1c5c6479a6c4f82df179c9e2acae, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -50548,10 +50608,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::OggettoRaccolta
   categoria: 2
   nomeOggetto: Boom
-  nomeTecnico: Microfono Shotgun a Canna Lunga
+  nomeTecnico: Microfono Shotgun (Boom)
   descrizioneTecnica: Diagramma polare supercardioide. Altamente direzionale, eccellente
-    per isolare i dialoghi degli attori respingendo i rumori fuori campo. Richiede
-    operatore ad asta.
+    per isolare i dialoghi degli attori respingendo i rumori fuori campo.
 --- !u!4 &1628818070 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: d1f2f421eaad39b4182a8b7c2e6bb10a, type: 3}
@@ -58356,8 +58415,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::OggettoRaccolta
   categoria: 1
   nomeOggetto: Fresnel
-  nomeTecnico: Proiettore Fresnel 2K
-  descrizioneTecnica: Temperatura 5600K (Daylight). La lente a gradini produce un
+  nomeTecnico: Luce Fresnel
+  descrizioneTecnica: Temperatura 6570K (Daylight). La lente a gradini produce un
     fascio di luce duro e incisivo. Ideale come "Key Light" principale o per simulare
     l'ingresso della luce solare da una finestra.
 --- !u!1 &1869640465
@@ -59098,7 +59157,7 @@ Transform:
   m_GameObject: {fileID: 1896105309}
   serializedVersion: 2
   m_LocalRotation: {x: 0.33192116, y: -0.62436235, z: -0.62436247, w: 0.3319211}
-  m_LocalPosition: {x: 0.00647, y: -0.00678, z: 0.00204}
+  m_LocalPosition: {x: 0.00705, y: -0.00717, z: 0.00204}
   m_LocalScale: {x: 0.009999998, y: 0.010000001, z: 0.01}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -59602,11 +59661,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73ce508ae3f08944184e90aaae44a1f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SupportoMicrofono
-  cameraGiocatore: {fileID: 0}
-  cameraInquadratura: {fileID: 0}
+  cameraGiocatore: {fileID: 1823688466}
+  cameraInquadratura: {fileID: 1294790731}
   velocitaTransizione: 2.5
-  giocatore: {fileID: 0}
-  nomiScriptDaDisabilitare: []
+  giocatore: {fileID: 858305082}
+  nomiScriptDaDisabilitare:
+  - PlayerMovement
+  - MouseLook
   tipoMicrofonoAccettato: Boom
   modelloBoom: {fileID: 2042488812}
   modelloAmbisonic: {fileID: 725268388}
@@ -66254,8 +66315,8 @@ MonoBehaviour:
   intensitaMinima: 0
   durataScattoMin: 0.05
   durataScattoMax: 0.15
-  pausaTraScattiMin: 0.5
-  pausaTraScattiMax: 3
+  pausaTraScattiMin: 10
+  pausaTraScattiMax: 40
   probabilitaSpegnimento: 0.5
   audioSource: {fileID: 0}
   suonoScintilla: {fileID: 8300000, guid: 0bf8dcbc8f18103449bb4be3f13adfe5, type: 3}
