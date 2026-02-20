@@ -90,7 +90,6 @@ public class MontaggioLuceCinematica : MonoBehaviour
         AggiornaSchedaTecnica(nomeOlogramma, descOlogramma);
         StartCoroutine(AnimaBarreLuci());
         
-        // Avvia la nuova coroutine di avvitamento laterale
         StartCoroutine(EseguiAvvitamentoLaterale(luceFisica.transform));
     }
 
@@ -114,17 +113,13 @@ public class MontaggioLuceCinematica : MonoBehaviour
         }
     }
 
-    // --- NUOVA LOGICA DI ANIMAZIONE (AVVITAMENTO VERO) ---
     IEnumerator EseguiAvvitamentoLaterale(Transform luce)
     {
-        // 1. Salva posizione e rotazione perfette
         Vector3 posFinale = luce.position;
         Quaternion rotFinale = luce.rotation;
 
-        // L'asse su cui si muove (la destra del perno)
         Vector3 asseAvvitamento = puntoMontaggioLuce.right; 
         
-        // 2. Calcola la partenza spostata a destra
         Vector3 posIniziale = posFinale + (asseAvvitamento * distanzaPartenza);
 
         float timer = 0f;
@@ -133,23 +128,17 @@ public class MontaggioLuceCinematica : MonoBehaviour
             float t = timer / durataAnimazione;
             float tSmooth = Mathf.SmoothStep(0, 1, t);
 
-            // A) SPOSTAMENTO LINEARE
             luce.position = Vector3.Lerp(posIniziale, posFinale, tSmooth);
             
-            // B) AVVITAMENTO FISICO
-            // Calcoliamo quanti gradi mancano alla fine (es. parte da 360 e va a 0)
             float gradiCorrenti = Mathf.Lerp(gradiRotazioneTotale, 0, tSmooth);
 
-            // Prima allineiamo la luce dritta come se fosse già arrivata...
             luce.rotation = rotFinale;
-            // ...poi la costringiamo a ruotare attorno al suo asse orizzontale!
             luce.RotateAround(luce.position, asseAvvitamento, gradiCorrenti);
 
             timer += Time.deltaTime;
             yield return null;
         }
 
-        // Snap finale per togliere ogni minima imprecisione
         luce.position = posFinale;
         luce.rotation = rotFinale;
         puoUscire = true; 

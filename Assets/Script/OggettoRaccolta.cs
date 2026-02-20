@@ -47,14 +47,11 @@ public class OggettoRaccolta : MonoBehaviour
             }
 
             // --- LA MAGIA DELLO SPAZZINO ---
-            // Se siamo nella fase del Regista (o se stiamo semplicemente cambiando idea)
-            // smontiamo in automatico l'attrezzatura vecchia di questa stessa categoria!
             if (GameManager.instance != null && GameManager.instance.taskAttuale == GameManager.Reparto.Regia)
             {
                 SvuotaSupportiInScena(categoria);
             }
 
-            // 1. Il giocatore mette l'oggetto in mano
             inventario.RaccogliOggetto(nomeOggetto, categoria, gameObject);
             Debug.Log($"Hai raccolto: {nomeOggetto}");
 

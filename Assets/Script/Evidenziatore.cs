@@ -70,7 +70,6 @@ public class Evidenziatore : MonoBehaviour
     {
         if (!isAttivo || frecciaIstata == null) return;
 
-        // 1. Calcola l'altezza per farla galleggiare morbidamente
         Vector3 centroOggetto = transform.position;
         if (targetCollider != null) centroOggetto = targetCollider.bounds.center;
         else if (targetRenderer != null) centroOggetto = targetRenderer.bounds.center;
@@ -78,12 +77,10 @@ public class Evidenziatore : MonoBehaviour
         float animazioneY = Mathf.Sin(Time.time * velocitaAnimazione) * ampiezzaAnimazione;
         frecciaIstata.transform.position = centroOggetto + Vector3.up * (altezzaBase + animazioneY);
 
-        // 2. EFFETTO BILLBOARD (Guarda sempre in faccia la telecamera)
         if (cameraPrincipale == null) cameraPrincipale = Camera.main;
         
         if (cameraPrincipale != null)
         {
-            // Allinea la faccia della freccia con lo schermo della telecamera
             frecciaIstata.transform.forward = -cameraPrincipale.transform.forward;
         }
     }

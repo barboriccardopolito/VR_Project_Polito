@@ -107,7 +107,6 @@ public class SpostamentoCamera : MonoBehaviour
             foreach (Renderer r in rends) r.enabled = visibile;
         }
 
-        // 2. Nascondi Radio (Cerca qualsiasi oggetto che contenga "Radio" nel nome addosso al player)
         if (giocatore != null)
         {
             Renderer[] tuttiRends = giocatore.GetComponentsInChildren<Renderer>();
@@ -180,7 +179,6 @@ public class SpostamentoCamera : MonoBehaviour
             if (cinematica != null && lenteDaAnimare != null)
             {
                 cinematica.AvviaCinematicaMontaggio(lenteDaAnimare);
-                // Usiamo la nuova funzione anche qui per sicurezza
                 StartCoroutine(NascondiOggettiTemporaneo());
             }
             else
@@ -205,7 +203,6 @@ public class SpostamentoCamera : MonoBehaviour
         if (mioCollider != null) mioCollider.enabled = false;
         BloccaGiocatore(true);
         
-        // Spegni Radio e Oggetto in mano PRIMA di partire
         ImpostaVisibilitaOggetti(false);
 
         Vector3 targetLocalPos = cameraDallAlto.transform.localPosition;
@@ -282,7 +279,6 @@ public class SpostamentoCamera : MonoBehaviour
         cameraDallAlto.transform.localRotation = startLocalRot;
         cameraDallAlto.fieldOfView = startFov;
 
-        // Riaccendi Radio e Oggetto in mano SOLO ORA
         ImpostaVisibilitaOggetti(true);
 
         if (mioCollider != null) mioCollider.enabled = true;

@@ -4,7 +4,7 @@ public class OttimizzaCamera : MonoBehaviour
 {
     [Header("Impostazioni Performance")]
     [Range(1, 60)]
-    public int fpsDesiderati = 15; // 15 FPS sono perfetti per una telecamera di sicurezza
+    public int fpsDesiderati = 30;
 
     private Camera cam;
     private float timer;

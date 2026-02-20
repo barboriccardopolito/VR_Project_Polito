@@ -40,11 +40,9 @@ public class AttoreMicrofonabile : MonoBehaviour
     {
         if (evidenziatore == null || GameManager.instance == null) return;
 
-        // Si illumina sempre per mostrare che ci puoi interagire
         evidenziatore.Accendi();
     }
 
-    // Se il raggio chiama Interagisci(), rimandiamo tutto al controllo principale
     public void Interagisci()
     {
         ProvaAMicrofonare(); 
@@ -58,22 +56,18 @@ public class AttoreMicrofonabile : MonoBehaviour
         }
     }
 
-    // Qui dentro c'è il BLOCCO DI SICUREZZA
     public void ProvaAMicrofonare()
     {
-        // 1. Controlliamo chi sei e cosa hai in mano
         InventarioGiocatore inv = Object.FindFirstObjectByType<InventarioGiocatore>();
         bool hoLavalierInMano = (inv != null && inv.haUnOggetto && inv.oggettoInMano.Contains("Lavalier"));
         bool faseFonico = (GameManager.instance != null && GameManager.instance.taskAttuale == GameManager.Reparto.Fonico);
 
-        // 2. SE NON SEI IL FONICO O NON HAI IL LAVALIER IN MANO -> PARLA E BASTA!
         if (!faseFonico || !hoLavalierInMano)
         {
             FaiParlareAttore();
-            return; // Blocca immediatamente la funzione, niente microfonaggio!
+            return;
         }
 
-        // 3. SE INVECE È TUTTO OK E NON LO HAI ANCORA MICROFONATO:
         if (isMicrofonato) return;
 
         isMicrofonato = true;

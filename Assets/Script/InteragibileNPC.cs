@@ -34,7 +34,6 @@ public class InteragibileNPC : MonoBehaviour
 
             if (tipoReparto == GameManager.Reparto.Regia) 
             {
-                // In regia, si illumina per chiamarti a fare l'intro o per darti il Ciak
                 if (faseRevisione) devoIlluminarmi = true;
             }
             else if (tipoReparto == GameManager.Reparto.Produzione)
@@ -47,7 +46,6 @@ public class InteragibileNPC : MonoBehaviour
                     devoIlluminarmi = true;
             }
 
-            // Se sta già parlando spegniamo la freccia
             if (staParlando) devoIlluminarmi = false;
 
             if (devoIlluminarmi) evidenziatore.Accendi(); else evidenziatore.Spegni();
@@ -61,7 +59,6 @@ public class InteragibileNPC : MonoBehaviour
         bool èIlMioTurno = (GameManager.instance.taskAttuale == tipoReparto);
         NPC_Staff staffScript = GetComponent<NPC_Staff>();
 
-        // --- GESTIONE PRODUZIONE (Tutorial/Radio) ---
         if (tipoReparto == GameManager.Reparto.Produzione) 
         { 
             NPCWander produzioneScript = GetComponent<NPCWander>();
@@ -71,18 +68,15 @@ public class InteragibileNPC : MonoBehaviour
             return;
         }
 
-        // --- GESTIONE REGIA (Nuovo Flusso con Blocco Interazioni) ---
         if (tipoReparto == GameManager.Reparto.Regia && èIlMioTurno) 
         { 
             if (staffScript != null)
             {
-                // 1. Prima volta: Ti fa l'introduzione e blocca il set
                 if (!staffScript.haGiaParlato)
                 {
                     StartCoroutine(GestisciIntroRegista(staffScript));
                     return;
                 }
-                // 2. Seconda volta: Ciak Finale (se la preview è attiva)
                 else
                 {
                     if (RegiaManager.instance != null && RegiaManager.instance.previewInCorso) 
@@ -95,7 +89,6 @@ public class InteragibileNPC : MonoBehaviour
             }
         }
 
-        // --- GESTIONE REPARTI TECNICI (Fotografia, Luci, Fonico) ---
         if (!èIlMioTurno)
         {
             Debug.Log($"<color=yellow>[{tipoReparto}]:</color> Non disturbare ora. Non è il mio turno.");
@@ -148,22 +141,17 @@ public class InteragibileNPC : MonoBehaviour
         }
     }
 
-    // --- NUOVA COROUTINE ESCLUSIVA PER IL REGISTA ---
     private IEnumerator GestisciIntroRegista(NPC_Staff regista)
     {
         staParlando = true;
 
-        // 1. Spegne temporaneamente la capacità di interagire con gli oggetti/tavoli/NPC
         InterazioneGiocatore playerInteract = Object.FindFirstObjectByType<InterazioneGiocatore>();
         if (playerInteract != null) playerInteract.enabled = false;
 
-        // 2. Ruota il regista verso di te
         if (playerInteract != null) regista.AttivaInterazione(playerInteract.transform);
         
-        // 3. Fa partire l'audio
         regista.AvviaDialogoIniziale();
 
-        // 4. Calcola in automatico quanto dura l'audio per sapere quanto aspettare
         float durataIntro = 3f; 
         if (regista.clipsIntroduzione != null && regista.clipsIntroduzione.Length > 0)
         {
@@ -174,14 +162,11 @@ public class InteragibileNPC : MonoBehaviour
             }
         }
 
-        // Aspetta pazientemente la fine del discorso
         yield return new WaitForSeconds(durataIntro);
 
-        // 5. Riaccende le interazioni del giocatore (ora puoi modificare tutto!)
         if (playerInteract != null) playerInteract.enabled = true;
         staParlando = false;
 
-        // 6. Attiva la modalità revisione e manda in scena gli attori
         if (RegiaManager.instance != null) RegiaManager.instance.AttivaPreview();
         if (GameManager.instance != null) GameManager.instance.MandaAttoriInScena();
 

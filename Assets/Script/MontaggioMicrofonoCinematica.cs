@@ -8,7 +8,7 @@ public class MontaggioMicrofonoCinematica : MonoBehaviour
     [Header("Setup Visuale & Animazione")]
     public Camera cameraIspezione; 
     public Transform puntoMontaggioMic; 
-    public float distanzaPartenza = 1.0f; // Scende dall'alto
+    public float distanzaPartenza = 1.0f;
     public float durataAnimazione = 2.0f;
 
     [Header("Riferimenti Player & UI")]
@@ -114,10 +114,8 @@ public class MontaggioMicrofonoCinematica : MonoBehaviour
         Vector3 posFinale = mic.position;
         Quaternion rotFinale = mic.rotation;
 
-        // Scende dall'alto (Asse Y)
         Vector3 posIniziale = posFinale + (Vector3.up * distanzaPartenza);
         
-        // Un po' di rotazione iniziale per dare l'idea dell'incastro
         mic.Rotate(0, 90f, 0, Space.Self);
         Quaternion rotIniziale = mic.rotation;
 
@@ -203,7 +201,6 @@ public class MontaggioMicrofonoCinematica : MonoBehaviour
         float nextVUStep = 0f;
         float targetVU1 = 0f, targetVU2 = 0f, targetVU3 = 0f;
         
-        // Colori classici da Mixer Audio: Verde, Giallo, Rosso
         Color cVerde = new Color(0.1f, 0.9f, 0.1f, 0.8f); 
         Color cGiallo = new Color(0.9f, 0.9f, 0.1f, 0.8f); 
         Color cRosso = new Color(0.9f, 0.1f, 0.1f, 0.8f);
@@ -215,7 +212,6 @@ public class MontaggioMicrofonoCinematica : MonoBehaviour
         while (cinematicaInCorso)
         {
             timer += Time.deltaTime;
-            // Aggiorna i valori a scatti, proprio come un vero livello audio
             if (timer > nextVUStep)
             {
                 targetVU1 = Random.Range(0.4f, 1f);   

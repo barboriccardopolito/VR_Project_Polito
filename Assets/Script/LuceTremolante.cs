@@ -65,21 +65,17 @@ public class LuceTremolante : MonoBehaviour
 
             for (int i = 0; i < numeroScatti; i++)
             {
-                // La luce si abbassa!
                 float nuovaIntensita = (Random.value < probabilitaSpegnimento) ? intensitaMinima : Random.Range(intensitaMinima, intensitaNormale / 2f);
                 ApplicaIntensita(nuovaIntensita);
 
-                // FA PARTIRE L'AUDIO DELLA SCINTILLA
                 if (audioSource != null && suonoScintilla != null)
                 {
-                    // Cambia leggermente il pitch per non farlo sembrare ripetitivo
                     audioSource.pitch = Random.Range(0.85f, 1.15f);
                     audioSource.PlayOneShot(suonoScintilla, volumeScintilla);
                 }
 
                 yield return new WaitForSeconds(Random.Range(durataScattoMin, durataScattoMax));
 
-                // La luce si riaccende!
                 RiaccendiLuce();
 
                 yield return new WaitForSeconds(Random.Range(0.02f, 0.08f));

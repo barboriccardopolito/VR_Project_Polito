@@ -60,7 +60,6 @@ public class GestoreRecitazione : MonoBehaviour
         if (audioAttore) audioAttore.Stop();
         if (audioAttrice) audioAttrice.Stop();
         
-        // Attori
         if (animatoreAttore) {
             animatoreAttore.speed = 1; 
             animatoreAttore.Play(nomeStatoAnimazione, 0, 0f);
@@ -71,8 +70,8 @@ public class GestoreRecitazione : MonoBehaviour
         }
 
         if (animatoreTappo) {
-            animatoreTappo.speed = 1; // Assicuriamoci che si muova
-            animatoreTappo.Play(nomeStatoTappo, 0, 0f); // Reset a 0
+            animatoreTappo.speed = 1;
+            animatoreTappo.Play(nomeStatoTappo, 0, 0f);
         }
 
         if (RegiaManager.instance.previewInCorso) inLoop = true; 

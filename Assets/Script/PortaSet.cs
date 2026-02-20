@@ -13,7 +13,6 @@ public class PortaSet : MonoBehaviour
 
     void Start()
     {
-        // Calcoliamo il traguardo esatto mantenendo X e Z originali, ma forzando la Y a -120
         Vector3 angoliAttuali = transform.localEulerAngles;
         rotazioneAperta = Quaternion.Euler(angoliAttuali.x, rotazioneApertaY, angoliAttuali.z);
     }
@@ -22,14 +21,13 @@ public class PortaSet : MonoBehaviour
     {
         if (isOpen)
         {
-            // Ruota fluidamente la porta verso i -120 gradi
             transform.localRotation = Quaternion.Lerp(transform.localRotation, rotazioneAperta, Time.deltaTime * velocitaApertura);
         }
     }
 
     public void TentaApertura()
     {
-        Debug.Log("Hai cliccato la porta!"); // Questo ci confermerà se il click funziona
+        Debug.Log("Hai cliccato la porta!");
         
         if (GameManager.instance != null && GameManager.instance.taskAttuale == GameManager.Reparto.Produzione)
         {
@@ -40,7 +38,6 @@ public class PortaSet : MonoBehaviour
             isOpen = true;
             Debug.Log("<color=green>Apertura porta in corso verso -120 Y...</color>");
             
-            // Disabilitiamo il collider così puoi passarci attraverso senza sbattere
             Collider col = GetComponent<Collider>();
             if (col != null) col.enabled = false;
         }

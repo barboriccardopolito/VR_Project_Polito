@@ -262,10 +262,8 @@ public class SupportoMicrofono : MonoBehaviour
             yield return new WaitForSeconds(3.5f);
         }
 
-        // 1. RIACCENDIAMO SEMPRE i Renderer
         ImpostaVisibilitaOggetti(true);
 
-        // 2. TOGLIAMO l'oggetto (così il giocatore si ritrova con le mani vuote ma pronte al prossimo oggetto)
         InventarioGiocatore invFinale = Object.FindFirstObjectByType<InventarioGiocatore>();
         if (invFinale != null) invFinale.RimuoviOggetto();
 

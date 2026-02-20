@@ -63,15 +63,13 @@ public class NPC_Staff : MonoBehaviour
         if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
         audioSource.spatialBlend = 1.0f; 
 
-        // Trova lo script dell'evidenziatore attaccato all'NPC
         evidenziatore = GetComponent<Evidenziatore>();
         if (evidenziatore == null) evidenziatore = GetComponentInChildren<Evidenziatore>();
     }
 
     void Update()
     {
-        GestisciEvidenziatore(); // <--- Controllo costante della freccia
-
+        GestisciEvidenziatore();
         if (animator != null && agent != null) animator.SetFloat("Speed", agent.velocity.magnitude);
 
         if (staParlando)
@@ -94,16 +92,12 @@ public class NPC_Staff : MonoBehaviour
         }
     }
 
-    // --- NUOVA LOGICA FRECCIA SULL'NPC ---
     void GestisciEvidenziatore()
     {
         if (evidenziatore == null || GameManager.instance == null) return;
 
         bool isMioTurno = (GameManager.instance.taskAttuale == ruoloNPC);
 
-        // La freccia dell'NPC è accesa SOLO SE:
-        // 1. È il momento del suo reparto (es. Fotografia)
-        // 2. NON gli ho ancora parlato (haGiaParlato è falso)
         if (isMioTurno && !haGiaParlato)
         {
             evidenziatore.Accendi();
@@ -147,7 +141,6 @@ public class NPC_Staff : MonoBehaviour
 
         if (haGiaParlato) return;
         
-        // Appena imposto questa a true, l'Update spegnerà la freccia istantaneamente!
         haGiaParlato = true; 
         staParlando = true;  
         

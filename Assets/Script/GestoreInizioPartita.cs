@@ -16,13 +16,11 @@ public class GestoreInizioPartita : MonoBehaviour
 
     void Start()
     {
-        // Appena parte il gioco, spegniamo le gambe!
         BloccaMovimento(true);
     }
 
     void Update()
     {
-        // Se la task della Produzione è finita (il GameManager è passato al prossimo reparto)
         if (!miSonoAlzato && GameManager.instance != null && GameManager.instance.taskAttuale != GameManager.Reparto.Produzione)
         {
             Alzati();
@@ -33,7 +31,6 @@ public class GestoreInizioPartita : MonoBehaviour
     {
         miSonoAlzato = true;
 
-        // Ti teletrasporta al punto in piedi (se lo hai assegnato)
         if (puntoDiRilascio != null && controller != null)
         {
             controller.enabled = false; 
@@ -41,7 +38,6 @@ public class GestoreInizioPartita : MonoBehaviour
             controller.enabled = true;
         }
 
-        // Riaccende le gambe!
         BloccaMovimento(false);
         
         Debug.Log("<color=cyan>Ti sei alzato dalla sedia! Ora vai alla porta.</color>");

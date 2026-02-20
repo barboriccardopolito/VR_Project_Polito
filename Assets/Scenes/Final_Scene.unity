@@ -8,8 +8,8 @@ OcclusionCullingSettings:
     smallestOccluder: 5
     smallestHole: 0.25
     backfaceThreshold: 100
-  m_SceneGUID: 00000000000000000000000000000000
-  m_OcclusionCullingData: {fileID: 0}
+  m_SceneGUID: f19bfb4c5763ebb4f99294826167a24d
+  m_OcclusionCullingData: {fileID: 36300000, guid: 356dc428099c94619bdec0dc85aede60, type: 2}
 --- !u!104 &2
 RenderSettings:
   m_ObjectHideFlags: 0
@@ -93,7 +93,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 0}
+  m_LightingDataAsset: {fileID: 112000000, guid: fa4f292f4c92b42abbec338c81a67782, type: 2}
   m_LightingSettings: {fileID: 4890085278179872738, guid: e9deaa5c2d2c1ea41af243db19f6db63, type: 2}
 --- !u!196 &4
 NavMeshSettings:
@@ -5963,7 +5963,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a83d2f7ae04ab6f4f99b0d85377be998, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.RenderPipelines.Core.Runtime::UnityEngine.Rendering.ProbeVolumePerSceneData
-  serializedBakingSet: {fileID: 0}
+  serializedBakingSet: {fileID: 11400000, guid: 96e9160d8ea6341c7bb6e8f375ffdeb5, type: 2}
   sceneGUID: f19bfb4c5763ebb4f99294826167a24d
   obsoleteAsset: {fileID: 0}
   obsoleteCellSharedDataAsset: {fileID: 0}
@@ -11177,7 +11177,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 1
-  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_BoundingSphereOverride: {x: 0, y: 0, z: 7.4936597e+31, w: 2.7259573e+20}
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
   m_ForceVisible: 0
@@ -12808,7 +12808,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1421282164845611995, guid: 2b58e3d8b65b12f4dacc08d12255e7cf, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1421282164845611995, guid: 2b58e3d8b65b12f4dacc08d12255e7cf, type: 3}
       propertyPath: m_TagString
@@ -13231,7 +13231,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.RenderPipelines.Core.Runtime::UnityEngine.Rendering.ProbeVolume
   mode: 0
-  size: {x: 24.634993, y: 23.614204, z: 36.89203}
+  size: {x: 24.634993, y: 23.614202, z: 36.892033}
   overrideRendererFilters: 0
   minRendererVolumeSize: 0.1
   objectLayerMask:
@@ -13240,7 +13240,7 @@ MonoBehaviour:
   lowestSubdivLevelOverride: 0
   highestSubdivLevelOverride: 3
   overridesSubdivLevels: 1
-  mightNeedRebaking: 1
+  mightNeedRebaking: 0
   cachedTransform:
     e00: 1
     e01: 0
@@ -13258,7 +13258,7 @@ MonoBehaviour:
     e31: 0
     e32: 0
     e33: 1
-  cachedHashCode: 381191482
+  cachedHashCode: -953058034
   fillEmptySpaces: 0
   version: 2
   globalVolume: 0
@@ -13271,7 +13271,7 @@ Transform:
   m_GameObject: {fileID: 414358793}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.6675553, y: 9.997556, z: -3.0799828}
+  m_LocalPosition: {x: 4.6675553, y: 9.997556, z: -3.0799809}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -14788,7 +14788,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1421282164845611995, guid: 2b58e3d8b65b12f4dacc08d12255e7cf, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1421282164845611995, guid: 2b58e3d8b65b12f4dacc08d12255e7cf, type: 3}
       propertyPath: m_TagString
@@ -15203,63 +15203,6 @@ MonoBehaviour:
     esaltando la prospettiva. Ideale per stabilire l'ambientazione (establishing
     shot), girare in spazi ristretti o far apparire i soggetti pi\xF9 distanti dallo
     sfondo."
---- !u!1001 &513192193
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 1813224598300294, guid: 95354847711d363408aebd57a0dc92ae, type: 3}
-      propertyPath: m_Name
-      value: LiteFPSCounter
-      objectReference: {fileID: 0}
-    - target: {fileID: 4679105028047868, guid: 95354847711d363408aebd57a0dc92ae, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 5.25994
-      objectReference: {fileID: 0}
-    - target: {fileID: 4679105028047868, guid: 95354847711d363408aebd57a0dc92ae, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 3.7223
-      objectReference: {fileID: 0}
-    - target: {fileID: 4679105028047868, guid: 95354847711d363408aebd57a0dc92ae, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -14.743
-      objectReference: {fileID: 0}
-    - target: {fileID: 4679105028047868, guid: 95354847711d363408aebd57a0dc92ae, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4679105028047868, guid: 95354847711d363408aebd57a0dc92ae, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4679105028047868, guid: 95354847711d363408aebd57a0dc92ae, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4679105028047868, guid: 95354847711d363408aebd57a0dc92ae, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4679105028047868, guid: 95354847711d363408aebd57a0dc92ae, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4679105028047868, guid: 95354847711d363408aebd57a0dc92ae, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4679105028047868, guid: 95354847711d363408aebd57a0dc92ae, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 95354847711d363408aebd57a0dc92ae, type: 3}
 --- !u!1001 &514237598
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -26102,7 +26045,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2dfe2ae846b55704683df9e390071262, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
-  taskAttuale: 2
+  taskAttuale: 0
   visualizzatoreObiettivo: {fileID: 1412070064}
   gestoreSchermi: {fileID: 1776337951}
   lenteSceltaFinale: 
@@ -29331,7 +29274,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 1
-  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_BoundingSphereOverride: {x: 4.305905e+21, y: 1.579333e-19, z: 1.3555898e-19, w: 1.468639e+25}
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
   m_ForceVisible: 0
@@ -29571,7 +29514,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 1
-  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_BoundingSphereOverride: {x: 0, y: 0, z: 1.6632139e+22, w: 2.3801702e+20}
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
   m_ForceVisible: 0
@@ -31769,7 +31712,7 @@ Light:
   m_BounceIntensity: 2
   m_ColorTemperature: 6570
   m_UseColorTemperature: 1
-  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_BoundingSphereOverride: {x: 4e-45, y: 1.61e-43, z: 0, w: -5.568331e-32}
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
   m_ForceVisible: 0
@@ -36298,7 +36241,7 @@ MonoBehaviour:
         z: 1.0695385
       Rotation:
         value:
-          x: -0.0111064315
+          x: -0.011106435
           y: 0.98704994
           z: -0.15015098
           w: -0.055351824
@@ -36307,19 +36250,19 @@ MonoBehaviour:
         y: -1.5837231
         z: -5.77689
       TangentIn:
-        x: -0
-        y: -0
+        x: 0
+        y: 0
         z: -1.1131927
       TangentOut:
         x: 0
         y: 0
-        z: 1.0385802
+        z: 0.10983344
       Rotation:
         value:
-          x: 0.0014742839
-          y: 0.9991266
-          z: -0.017944934
-          w: 0.037704106
+          x: 0.0018071809
+          y: 0.99918467
+          z: -0.018601926
+          w: 0.035787564
     - Position:
         x: 0.31819582
         y: -1.5880527
@@ -36343,19 +36286,19 @@ MonoBehaviour:
         y: -1.5899591
         z: -9.733479
       TangentIn:
-        x: -0
-        y: -0
-        z: -0.6493368
+        x: 0
+        y: 0
+        z: -0.1311838
       TangentOut:
         x: 0
         y: 0
         z: 0.48317033
       Rotation:
         value:
-          x: -0.02975187
-          y: 0.55608517
-          z: 0.02247158
-          w: 0.8302886
+          x: -0.03518572
+          y: 0.7484496
+          z: 0.013997223
+          w: 0.6621097
     - Position:
         x: 3.9406683
         y: -1.4008201
@@ -36397,11 +36340,11 @@ MonoBehaviour:
       Tension: 0.5
     - Mode: 0
       Tension: 0.5
-    - Mode: 0
+    - Mode: 3
       Tension: 0.5
     - Mode: 0
       Tension: 0.5
-    - Mode: 0
+    - Mode: 3
       Tension: 0.5
     - Mode: 0
       Tension: 0.5
@@ -74961,7 +74904,6 @@ SceneRoots:
   - {fileID: 1673676155}
   - {fileID: 1528476610}
   - {fileID: 1263174759}
-  - {fileID: 513192193}
   - {fileID: 1961512950}
   - {fileID: 1034173104}
   - {fileID: 750011610}

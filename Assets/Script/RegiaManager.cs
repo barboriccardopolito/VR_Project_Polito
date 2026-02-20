@@ -58,7 +58,6 @@ public class RegiaManager : MonoBehaviour
         {
             if (camereSet[i] != null)
             {
-                // Salviamo le texture originali dei mirini
                 textureMiriniOriginali[i] = camereSet[i].targetTexture;
                 camereSet[i].gameObject.SetActive(true);
                 camereSet[i].enabled = true;
@@ -163,9 +162,6 @@ public class RegiaManager : MonoBehaviour
 
         if (mainCameraPlayer) mainCameraPlayer.enabled = false; 
 
-        // --- CALCOLO MATEMATICO DEL TEMPO (26 Secondi Totali) ---
-        // Se hai 2 camere, farà 13 secondi per camera. Se ne hai 3, farà circa 8.6 secondi.
-        // In ogni caso, il totale prima della fine sarà esattamente 26 secondi!
         float tempoPerOgniCamera = durataScenaFinale / camereSet.Length;
 
         for (int i = 0; i < camereSet.Length; i++)
@@ -187,7 +183,6 @@ public class RegiaManager : MonoBehaviour
             
             if (GameManager.instance != null) ApplicaEffettiScelti(camAttuale);
 
-            // Attende la fetta di tempo calcolata
             yield return new WaitForSeconds(tempoPerOgniCamera); 
         }
 

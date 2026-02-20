@@ -24,7 +24,7 @@ public class MontaggioLenteCinematica : MonoBehaviour
     
     [Header("UI Olografica (Usa il tuo Prefab)")]
     [Tooltip("Se lo sfondo non si scurisce, abbassa questo valore (es. 0.5) per evitare che finisca dentro il muro!")]
-    public float distanzaSfondo = 0.8f; // Abbassato di default!
+    public float distanzaSfondo = 0.8f;
     [Range(0f, 1f)] public float opacitaSfondo = 0.85f;
     public float velocitaFadeSfondo = 5f;
 
@@ -69,7 +69,6 @@ public class MontaggioLenteCinematica : MonoBehaviour
         GameObject panelObj = new GameObject("PannelloNero");
         panelObj.transform.SetParent(canvasObj.transform, false);
         immagineSfondo = panelObj.AddComponent<Image>();
-        // Parte totalmente invisibile (Alpha a 0)
         immagineSfondo.color = new Color(0.05f, 0.05f, 0.05f, 0f);
 
         RectTransform rt = immagineSfondo.rectTransform;
@@ -88,7 +87,7 @@ public class MontaggioLenteCinematica : MonoBehaviour
         if (cameraIspezione != null) cameraIspezione.gameObject.SetActive(true);
 
         sfondoCanvas.gameObject.SetActive(true);
-        targetAlphaSfondo = opacitaSfondo; // Inizia a scurire dolcemente
+        targetAlphaSfondo = opacitaSfondo;
 
         if (pannelloSchedaUI != null) pannelloSchedaUI.SetActive(true);
 
@@ -99,7 +98,6 @@ public class MontaggioLenteCinematica : MonoBehaviour
 
     void Update()
     {
-        // Gestisce la sfumatura morbida dello sfondo nero
         if (immagineSfondo != null)
         {
             Color c = immagineSfondo.color;
@@ -150,7 +148,7 @@ public class MontaggioLenteCinematica : MonoBehaviour
     void ConcludiCinematica()
     {
         cinematicaInCorso = false;
-        targetAlphaSfondo = 0f; // Fa dissolvere il nero
+        targetAlphaSfondo = 0f;
         
         if (pannelloSchedaUI != null) pannelloSchedaUI.SetActive(false);
         if (cameraIspezione != null) cameraIspezione.gameObject.SetActive(false);

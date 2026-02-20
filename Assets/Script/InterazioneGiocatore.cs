@@ -62,13 +62,11 @@ public class InterazioneGiocatore : MonoBehaviour
             bool hoMic = (inv != null && inv.haUnOggetto && inv.categoriaInMano == OggettoRaccolta.TipoOggetto.Microfono);
             bool hoLente = (inv != null && inv.haUnOggetto && inv.categoriaInMano == OggettoRaccolta.TipoOggetto.Lente);
 
-            // 1. NPC (Se sta parlando O l'audio sta suonando, nascondiamo tutto)
             InteragibileNPC npc = hit.collider.GetComponent<InteragibileNPC>();
             if (npc == null) npc = hit.collider.GetComponentInParent<InteragibileNPC>(); // Sicurezza per collider multipli
 
             if (npc != null)
             {
-                // CONTROLLO AUDIO: Se l'NPC sta emettendo suono dal suo AudioSource, consideriamolo "parlante"
                 AudioSource voceNpc = npc.GetComponentInChildren<AudioSource>();
                 bool staRiproducendoAudio = (voceNpc != null && voceNpc.isPlaying);
 
@@ -79,7 +77,6 @@ public class InterazioneGiocatore : MonoBehaviour
                 }
             }
             
-            // 2. SUPPORTI LUCI
             else if (hit.collider.GetComponent<SupportoLuce>() != null) 
             {
                 SupportoLuce luce = hit.collider.GetComponent<SupportoLuce>();
@@ -92,13 +89,11 @@ public class InterazioneGiocatore : MonoBehaviour
                 }
             }
 
-// 3. SUPPORTI MICROFONI
             else if (hit.collider.GetComponent<SupportoMicrofono>() != null)
             {
                 SupportoMicrofono mic = hit.collider.GetComponent<SupportoMicrofono>();
                 if (GameManager.instance != null)
                 {
-                    // Controlla se la chiave corrisponde alla serratura!
                     bool astaCorretta = true;
                     if (hoMic && !string.IsNullOrEmpty(mic.tipoMicrofonoAccettato))
                     {

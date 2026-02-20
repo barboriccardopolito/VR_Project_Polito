@@ -4,7 +4,7 @@ public class AddettoLuci : MonoBehaviour
 {
     public void ParlaConAddettoLuci()
     {
-        GameManager gm = FindFirstObjectByType<GameManager>(); // Uso la versione nuova, ma FindObjectOfType va bene uguale
+        GameManager gm = FindFirstObjectByType<GameManager>();
 
         if (gm == null) 
         {

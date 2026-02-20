@@ -34,9 +34,9 @@ public class GameManager : MonoBehaviour
     public int attoriMicrofonatiAttuali = 0;
 
     [Header("Effetti Post-Processing (Wow Factor)")]
-    public GameObject volumeGrandangolo;     // Es: Vignettatura e nitidezza estrema
-    public GameObject volumeCinematografica; // Es: Bande nere (UI), Film Grain, Depth of Field
-    public GameObject volumeDistorta;        // Es: Lens Distortion (Fisheye) e Aberrazione Cromatica
+    public GameObject volumeGrandangolo;
+    public GameObject volumeCinematografica;
+    public GameObject volumeDistorta;
 
     [Header("Parametri Lenti HDRP")]
     public float fovStandard = 60f;
@@ -240,12 +240,10 @@ public class GameManager : MonoBehaviour
 
 public void ApplicaEffettoLente(string nomeLente) 
     {
-        // 1. Spegni prima tutti gli effetti per resettare la visuale
         if (volumeGrandangolo) volumeGrandangolo.SetActive(false);
         if (volumeCinematografica) volumeCinematografica.SetActive(false);
         if (volumeDistorta) volumeDistorta.SetActive(false);
 
-        // 2. Accendi solo il volume corrispondente
         switch (nomeLente) 
         {
             case "Grandangolo": 
@@ -262,7 +260,6 @@ public void ApplicaEffettoLente(string nomeLente)
 
     public void ResetEffettoLente() 
     {
-        // Spegniamo tutti i volumi
         if (volumeGrandangolo) volumeGrandangolo.SetActive(false);
         if (volumeCinematografica) volumeCinematografica.SetActive(false);
         if (volumeDistorta) volumeDistorta.SetActive(false);

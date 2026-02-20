@@ -6,7 +6,6 @@ public class LookAtPlayer : MonoBehaviour
 
     void Start()
     {
-        // Trova la camera principale all'inizio
         if (Camera.main != null)
         {
             cameraPrincipale = Camera.main.transform;
@@ -17,7 +16,6 @@ public class LookAtPlayer : MonoBehaviour
     {
         if (cameraPrincipale != null)
         {
-            // Fa ruotare l'oggetto verso la camera
             transform.LookAt(transform.position + cameraPrincipale.forward);
         }
     }

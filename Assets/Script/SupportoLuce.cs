@@ -162,8 +162,6 @@ public class SupportoLuce : MonoBehaviour
         InventarioGiocatore inv = Object.FindFirstObjectByType<InventarioGiocatore>();
         if (inv != null)
         {
-            // Questa volta li spegniamo o accendiamo sempre e senza filtri, 
-            // così quando prendi un nuovo oggetto lo vedi!
             Renderer[] rends = inv.GetComponentsInChildren<Renderer>(true);
             foreach (Renderer r in rends) r.enabled = visibile;
         }
@@ -254,11 +252,7 @@ public class SupportoLuce : MonoBehaviour
             yield return new WaitForSeconds(3.5f);
         }
 
-        // 1. Riaccendiamo SEMPRE i renderer (così sono pronti per i futuri oggetti in mano)
         ImpostaVisibilitaOggetti(true);
-        
-        // 2. Chiamiamo la verifica (che, nello stesso frame, svuota le mani se hai finito le luci)
-        // Visto che avviene tutto in un istante, non c'è il glitch del fantasma visibile!
         VerificaCompletamentoLuci();
         
         BloccaGiocatore(false);

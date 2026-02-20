@@ -8,8 +8,8 @@ public class PlayerMovement : MonoBehaviour
     
     public CharacterController controller;
 
-    private Vector3 velocity; // Serve per calcolare la caduta (gravità)
-    private bool isGrounded;  // Tocchiamo terra?
+    private Vector3 velocity;
+    private bool isGrounded;
 
     void Start()
     {

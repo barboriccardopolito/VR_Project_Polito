@@ -242,7 +242,6 @@ public class SelettoreOggetti : MonoBehaviour
         inSelezione = true;
         possoUscire = false;
         
-        // Cerca il primo oggetto attivo da mostrare
         indiceAttuale = 0;
         for (int i = 0; i < oggetti.Length; i++)
         {
@@ -336,7 +335,6 @@ public class SelettoreOggetti : MonoBehaviour
         AggiornaPallini(); 
     }
 
-    // --- LOGICA PALLINI POTENZIATA E RISOLTA ---
     void AggiornaPallini()
     {
         if (palliniIndicatori == null || palliniIndicatori.Length == 0) return;
@@ -345,7 +343,6 @@ public class SelettoreOggetti : MonoBehaviour
         {
             if (palliniIndicatori[i] != null)
             {
-                // Un pallino si accende SOLO se c'è un oggetto in quello slot ED È ATTIVO SUL TAVOLO
                 if (i < oggetti.Length && oggetti[i] != null && oggetti[i].gameObject.activeInHierarchy)
                 {
                     palliniIndicatori[i].gameObject.SetActive(true);
@@ -396,10 +393,8 @@ public class SelettoreOggetti : MonoBehaviour
         StartCoroutine(EseguiScambioERiattiva());
     }
 
-    // --- FIX SUI MODELLI 3D AL TAVOLO ---
     void SvuotaSupportiInScenaERiattivaTavolo()
     {
-        // Variabile per tenere traccia del nome dell'oggetto che stiamo per tirare giù dal set
         string nomeOggettoDaRiattivare = "";
 
         if (taskRichiesta == GameManager.Reparto.Luci)
@@ -435,7 +430,6 @@ public class SelettoreOggetti : MonoBehaviour
             }
         }
 
-        // SE C'ERA UN OGGETTO SUL SET, ORA LO RIACCENDIAMO FISICAMENTE SUL TAVOLO!
         if (!string.IsNullOrEmpty(nomeOggettoDaRiattivare))
         {
             foreach (OggettoRaccolta ogg in oggetti)
@@ -453,10 +447,8 @@ public class SelettoreOggetti : MonoBehaviour
     {
         InventarioGiocatore inv = Object.FindFirstObjectByType<InventarioGiocatore>();
 
-        // 1. Pulizia set e riattivazione 3D sul tavolo
         SvuotaSupportiInScenaERiattivaTavolo();
 
-        // 2. FASE DI RESTITUZIONE dell'oggetto eventualmente in mano
         if (inv != null && inv.haUnOggetto)
         {
             if (GameManager.instance != null) GameManager.instance.RestituisciOggettoAlTavolo(inv.oggettoInMano);
@@ -464,7 +456,6 @@ public class SelettoreOggetti : MonoBehaviour
             yield return new WaitForEndOfFrame(); 
         }
 
-        // 3. FASE DI RACCOLTA (e spegnimento dal tavolo) del nuovo oggetto
         try 
         {
             if (oggetti[indiceAttuale] != null && oggetti[indiceAttuale].gameObject.activeInHierarchy)

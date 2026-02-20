@@ -9,7 +9,7 @@ public class NPCWander : MonoBehaviour
     public GameObject oggettoRadioFisico; 
 
     [Header("Posizioni")]
-    public Transform puntoDiUscitaSedia; // Trascina qui l'oggetto vuoto "sicuro"
+    public Transform puntoDiUscitaSedia;
 
     [Header("Movimento")]
     public float raggioMovimento = 3f;
@@ -49,7 +49,6 @@ public class NPCWander : MonoBehaviour
 
         if (promptTastoR != null) promptTastoR.SetActive(false);
 
-        // Se il giocatore ha già la radio, l'NPC parte già in piedi che cammina
         if (radioSistema != null && radioSistema.haLaRadio)
             StartInPiedi();
         else
@@ -151,7 +150,6 @@ public class NPCWander : MonoBehaviour
             lavagna.AvviaInquadratura();
             yield return new WaitForSeconds(0.5f); 
             
-            // Aspetta finché il giocatore non preme E e chiude la lavagna
             yield return new WaitWhile(() => lavagna.isFocusAttivo);
         }
         else

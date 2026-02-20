@@ -7,14 +7,14 @@ using TMPro;
 public class GestoreFinale : MonoBehaviour
 {
     [Header("Collegamenti UI")]
-    public GameObject gruppoFinale;      // L'oggetto padre che contiene tutto (spento all'inizio)
+    public GameObject gruppoFinale;
     public TextMeshProUGUI testoTitoli;  
     public Image pannelloNero;           
 
     [Header("Impostazioni Scorrimento")]
     public float velocitaScorrimento = 100f;
     [Tooltip("Da quanto in basso deve partire il testo? (es. -1000)")]
-    public float puntoDiPartenzaY = 0f; // <-- NUOVA VARIABILE
+    public float puntoDiPartenzaY = 0f;
     public float puntoDiArrestoY = 2500f;
     public string nomeScenaMenu = "MenuPrincipale"; 
 
@@ -68,14 +68,12 @@ public class GestoreFinale : MonoBehaviour
 
     IEnumerator SequenzaFinale()
     {
-        // 1. IL FIX: Teletrasportiamo il testo in basso PRIMA di accendere lo schermo!
         if (testoTitoli != null)
         {
             RectTransform rtIniziale = testoTitoli.GetComponent<RectTransform>();
             rtIniziale.anchoredPosition = new Vector2(0, puntoDiPartenzaY);
         }
 
-        // 2. Ora possiamo accendere tutto in sicurezza
         if (gruppoFinale != null) gruppoFinale.SetActive(true);
 
         if (pannelloNero != null)
@@ -84,12 +82,10 @@ public class GestoreFinale : MonoBehaviour
             pannelloNero.CrossFadeAlpha(1f, 1.0f, false);
         }
 
-        // 3. Aspettiamo che il nero si dissolva
         yield return new WaitForSeconds(1.5f);
 
         RectTransform rt = testoTitoli.GetComponent<RectTransform>();
         
-        // 4. E infine facciamo scorrere
         while (rt.anchoredPosition.y < puntoDiArrestoY)
         {
             rt.anchoredPosition += new Vector2(0, velocitaScorrimento * Time.deltaTime);

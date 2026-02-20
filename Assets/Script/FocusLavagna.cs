@@ -13,7 +13,6 @@ public class FocusLavagna : MonoBehaviour
     public GameObject giocatore;
     public string[] nomiScriptDaDisabilitare;
 
-    // L'NPC leggerà questa variabile per sapere se stiamo ancora guardando la lavagna
     public bool isFocusAttivo = false; 
 
     void Start()
@@ -45,7 +44,7 @@ public class FocusLavagna : MonoBehaviour
         {
             Debug.LogError("ERRORE GRAVE: Non hai assegnato la Camera_Lavagna nello script FocusLavagna!");
             isFocusAttivo = false;
-            yield break; // Interrompe tutto se manca la telecamera, salvando il gioco dal bloccarsi
+            yield break;
         }
 
         BloccaGiocatore(true);

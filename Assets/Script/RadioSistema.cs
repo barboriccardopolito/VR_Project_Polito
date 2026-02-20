@@ -1,5 +1,5 @@
 using UnityEngine;
-using System.Collections; // Necessario per le Coroutine
+using System.Collections;
 
 public class RadioSistema : MonoBehaviour
 {
@@ -54,7 +54,6 @@ public class RadioSistema : MonoBehaviour
 
     public void AttivaLogicaRadio()
     {
-        // Attiva ufficialmente la radio DOPO che l'NPC ha finito di parlare
         if (haLaRadio) return;
         haLaRadio = true;
 
@@ -70,17 +69,16 @@ public class RadioSistema : MonoBehaviour
 
     IEnumerator SequenzaCambioTask(GameManager.Reparto vecchia, GameManager.Reparto nuova)
     {
-        // 1. Riproduci AUDIO FINE (Della task vecchia)
-        AudioClip clipFine = OttieniClip(audioPostTask, (int)vecchia); // Foto è 1, ma array è 0... gestiamo indici dopo
+        AudioClip clipFine = OttieniClip(audioPostTask, (int)vecchia);
 
-        int indexFine = (int)vecchia - 1; // Es. Fotografia(1) -> Array[0]
+        int indexFine = (int)vecchia - 1;
         if (indexFine >= 0 && indexFine < audioPostTask.Length && audioPostTask[indexFine] != null)
         {
             Debug.Log($"[Radio] Post-Task: {vecchia}");
             audioSource.Stop();
             audioSource.clip = audioPostTask[indexFine];
             audioSource.Play();
-            yield return new WaitForSeconds(audioPostTask[indexFine].length + 0.5f); // Aspetta che finisca + pausa
+            yield return new WaitForSeconds(audioPostTask[indexFine].length + 0.5f);
         }
 
         RiproduciPreTask(nuova);
@@ -88,12 +86,12 @@ public class RadioSistema : MonoBehaviour
 
     void RiproduciPreTask(GameManager.Reparto fase)
     {
-        int index = (int)fase - 1; // Fotografia(1) -> 0
+        int index = (int)fase - 1;
         
         if (index >= 0 && index < audioPreTask.Length && audioPreTask[index] != null)
         {
             Debug.Log($"[Radio] Pre-Task: {fase}");
-            audioSource.Stop(); // Ferma eventuali altri suoni
+            audioSource.Stop();
             audioSource.PlayOneShot(audioPreTask[index]);
         }
     }
@@ -102,7 +100,7 @@ public class RadioSistema : MonoBehaviour
     {
         if (GameManager.instance == null) return;
         
-        int index = (int)GameManager.instance.taskAttuale - 1; // Fotografia(1) -> 0
+        int index = (int)GameManager.instance.taskAttuale - 1;
 
         if (index >= 0 && index < audioIntermedi.Length && audioIntermedi[index] != null)
         {
