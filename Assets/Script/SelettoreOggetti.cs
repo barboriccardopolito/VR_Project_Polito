@@ -226,7 +226,6 @@ public class SelettoreOggetti : MonoBehaviour
         }
         else if (faseRevisione)
         {
-            // ORA SI ACCENDE SOLO SE IL REGISTA HA FINITO DI PARLARE
             if (ControllaIntroRegista() && !hoOggettoInMano) evidenziatore.Accendi();
             else evidenziatore.Spegni();
         }
@@ -243,6 +242,7 @@ public class SelettoreOggetti : MonoBehaviour
         inSelezione = true;
         possoUscire = false;
         
+        // Cerca il primo oggetto attivo da mostrare
         indiceAttuale = 0;
         for (int i = 0; i < oggetti.Length; i++)
         {
@@ -336,6 +336,7 @@ public class SelettoreOggetti : MonoBehaviour
         AggiornaPallini(); 
     }
 
+    // --- LOGICA PALLINI POTENZIATA E RISOLTA ---
     void AggiornaPallini()
     {
         if (palliniIndicatori == null || palliniIndicatori.Length == 0) return;
@@ -344,11 +345,8 @@ public class SelettoreOggetti : MonoBehaviour
         {
             if (palliniIndicatori[i] != null)
             {
-                if (i < oggetti.Length && (oggetti[i] == null || !oggetti[i].gameObject.activeInHierarchy))
-                {
-                    palliniIndicatori[i].gameObject.SetActive(false);
-                }
-                else
+                // Un pallino si accende SOLO se c'è un oggetto in quello slot ED È ATTIVO SUL TAVOLO
+                if (i < oggetti.Length && oggetti[i] != null && oggetti[i].gameObject.activeInHierarchy)
                 {
                     palliniIndicatori[i].gameObject.SetActive(true);
                     
@@ -356,6 +354,10 @@ public class SelettoreOggetti : MonoBehaviour
                         palliniIndicatori[i].color = colorePallinoAttivo;
                     else
                         palliniIndicatori[i].color = colorePallinoInattivo;
+                }
+                else
+                {
+                    palliniIndicatori[i].gameObject.SetActive(false);
                 }
             }
         }
@@ -394,28 +396,54 @@ public class SelettoreOggetti : MonoBehaviour
         StartCoroutine(EseguiScambioERiattiva());
     }
 
-    // --- NUOVA FUNZIONE: Pulizia dei supporti sul set ---
-    void SvuotaSupportiInScena()
+    // --- FIX SUI MODELLI 3D AL TAVOLO ---
+    void SvuotaSupportiInScenaERiattivaTavolo()
     {
+        // Variabile per tenere traccia del nome dell'oggetto che stiamo per tirare giù dal set
+        string nomeOggettoDaRiattivare = "";
+
         if (taskRichiesta == GameManager.Reparto.Luci)
         {
             SupportoLuce[] supporti = Object.FindObjectsByType<SupportoLuce>(FindObjectsSortMode.None);
-            foreach (SupportoLuce s in supporti) s.ResettaSupporto();
+            foreach (SupportoLuce s in supporti)
+            {
+                if (s.luceGiaPosizionata) nomeOggettoDaRiattivare = GameManager.instance.LuceScelta; 
+                s.ResettaSupporto();
+            }
         }
         else if (taskRichiesta == GameManager.Reparto.Fotografia)
         {
             SpostamentoCamera[] camere = Object.FindObjectsByType<SpostamentoCamera>(FindObjectsSortMode.None);
-            foreach (SpostamentoCamera c in camere) c.ResettaVisualeLenti();
+            foreach (SpostamentoCamera c in camere)
+            {
+                if (c.lenteMontata) nomeOggettoDaRiattivare = GameManager.instance.lenteSceltaFinale;
+                c.ResettaVisualeLenti();
+            }
         }
         else if (taskRichiesta == GameManager.Reparto.Fonico)
         {
-            // Metodo sicuro per il microfono (cerca classi con 'Microfono' nel nome e lancia il reset)
             MonoBehaviour[] tutti = Object.FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None);
             foreach (MonoBehaviour mb in tutti)
             {
                 if (mb.GetType().Name.Contains("Microfono"))
                 {
+                    nomeOggettoDaRiattivare = GameManager.instance.micScelto;
+                    if (string.IsNullOrEmpty(nomeOggettoDaRiattivare)) nomeOggettoDaRiattivare = GameManager.instance.micDaInstallare;
+                    
                     mb.SendMessage("ResettaSupporto", SendMessageOptions.DontRequireReceiver);
+                }
+            }
+        }
+
+        // SE C'ERA UN OGGETTO SUL SET, ORA LO RIACCENDIAMO FISICAMENTE SUL TAVOLO!
+        if (!string.IsNullOrEmpty(nomeOggettoDaRiattivare))
+        {
+            foreach (OggettoRaccolta ogg in oggetti)
+            {
+                if (ogg != null && ogg.nomeOggetto.Contains(nomeOggettoDaRiattivare))
+                {
+                    ogg.gameObject.SetActive(true); 
+                    break;
                 }
             }
         }
@@ -425,10 +453,10 @@ public class SelettoreOggetti : MonoBehaviour
     {
         InventarioGiocatore inv = Object.FindFirstObjectByType<InventarioGiocatore>();
 
-        // 1. LA MAGIA: Appena confermi la scelta, tutti i supporti (luci, camere o aste) si smontano!
-        SvuotaSupportiInScena();
+        // 1. Pulizia set e riattivazione 3D sul tavolo
+        SvuotaSupportiInScenaERiattivaTavolo();
 
-        // 2. FASE DI RESTITUZIONE
+        // 2. FASE DI RESTITUZIONE dell'oggetto eventualmente in mano
         if (inv != null && inv.haUnOggetto)
         {
             if (GameManager.instance != null) GameManager.instance.RestituisciOggettoAlTavolo(inv.oggettoInMano);
@@ -436,7 +464,7 @@ public class SelettoreOggetti : MonoBehaviour
             yield return new WaitForEndOfFrame(); 
         }
 
-        // 3. FASE DI RACCOLTA
+        // 3. FASE DI RACCOLTA (e spegnimento dal tavolo) del nuovo oggetto
         try 
         {
             if (oggetti[indiceAttuale] != null && oggetti[indiceAttuale].gameObject.activeInHierarchy)
